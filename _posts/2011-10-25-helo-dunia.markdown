@@ -1,7 +1,6 @@
 ---
 layout: post
 title: Helo Dunia!
-lang: my
 ---
 
 ###{{ page.title }}
