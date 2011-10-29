@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Helo Dunia!
+comments: false
 ---
 
 ###{{ page.title }}
