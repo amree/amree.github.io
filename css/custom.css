@@ -1,3 +1,7 @@
 pre {
   overflow: auto;
 }
+
+#livefyre {
+  min-height: 10px;
+}
