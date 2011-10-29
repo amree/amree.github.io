@@ -3,5 +3,5 @@ pre {
 }
 
 #livefyre {
-  min-height: 10px;
+  min-height: 10px !important;
 }
