@@ -5,11 +5,16 @@ layout: default
 {{ content }}
 </div>
 
-<div id="related">
-  <h2>Related Posts</h2>
-  <ul class="posts">
-    {% for post in site.related_posts limit:3 %}
-      <li><span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ post.url }}">{{ post.title }}</a></li>
-    {% endfor %}
-  </ul>
+<div id="comments">
+{% if page.comments %}
+<!-- START: Livefyre Embed -->
+<script type='text/javascript' src='http://www.livefyre.com/wjs/v1.0/javascripts/livefyre_init.js'></script>
+<script type='text/javascript'>
+    var fyre = LF({
+        site_id: 291431,
+        version: '1.0'
+    });
+</script>
+<!-- END: Livefyre Embed -->
+{% endif %}
 </div>
