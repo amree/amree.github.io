@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Helo Dunia!
+meta-description: My first post using Jekyll
 comments: false
 ---
 
