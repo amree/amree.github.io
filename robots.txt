@@ -1,0 +1,3 @@
+User-agent: *
+Disallow:
+Sitemap: http://amree.github.com/sitemap.xml
