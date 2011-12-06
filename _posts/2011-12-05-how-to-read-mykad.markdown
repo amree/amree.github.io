@@ -76,7 +76,6 @@ I'm not going to give explanation about the code. Instead, I'm going to guide yo
 
 	You should get something like this:
 
-		# pcscd -d -f
 		00000000 pcscdaemon.c:233:main() pcscd set to foreground with debug send to stdout
 		00000044 configfile.l:287:DBGetReaderList() Parsing conf file: /usr/local/etc/reader.conf.d
 		00000008 pcscdaemon.c:518:main() pcsc-lite 1.8.1 daemon ready.
