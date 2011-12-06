@@ -2,6 +2,14 @@ pre {
   overflow: auto;
 }
 
-#livefyre {
-  min-height: 10px !important;
+li p {
+  margin: 0;
+}
+
+pre {
+  margin: 1em 0;
+}
+
+h1 {
+  margin-top: 1em;
 }
