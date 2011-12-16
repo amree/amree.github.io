@@ -19,7 +19,7 @@ View some remote **information**:
 
 	git push origin newfeature
 
-Or when you're in the checkout branch:
+Or when you want to **push in the checkout branch**:
 
 	git push origin HEAD
 
