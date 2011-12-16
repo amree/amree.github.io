@@ -41,7 +41,7 @@ You can always add the printer using the web interface, just make sure you choos
 
 Test this Java code, it should print out a barcode:
 
-{% higlight java %}
+{% highlight java %}
 import javax.print.Doc;
 import javax.print.DocFlavor;
 import javax.print.DocPrintJob;
