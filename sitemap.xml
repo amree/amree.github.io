@@ -10,7 +10,7 @@
   </url>
   {% for post in site.posts limit:20 %}
   <url>
-    <loc>http://amree.github.com{{ post.url }}</loc>
+    <loc>http://ieatbinary.com{{ post.url }}</loc>
     <lastmod>{{ post.date | date_to_xmlschema }}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
