@@ -2,6 +2,10 @@ pre {
   overflow: auto;
 }
 
+li {
+  padding-bottom: 5px;
+}
+
 li p {
   margin: 0;
 }
@@ -12,4 +16,24 @@ pre {
 
 h1 {
   margin-top: 1em;
+}
+
+h2 {
+  margin-top: 1.2em;
+  margin-bottom: 1em;
+}
+
+hr {
+  margin: 10px 0 19px;
+  border: 0;
+  border-bottom: 1px solid #bbb;
+}
+
+img {
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+
+.site {
+  text-align: left;
 }
