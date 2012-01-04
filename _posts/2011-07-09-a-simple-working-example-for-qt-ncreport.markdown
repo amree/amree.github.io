@@ -15,7 +15,7 @@ comments: false
 
 		C:\NCReport\2.6.1.mingw.eval
 
-1. Get the full source code of the project at my Github.
+1. Get the full [source code](https://github.com/amree/ncreport-example) of the project at my Github.
 
 1. Go to Projects (bar at the left) > Run Settings > Click Details on the Run Environment > Edit PATH’s variable and append the following line at the end of the string.
 
@@ -33,7 +33,7 @@ Tested on:
 
 1. Install NCReport at `/opt/ncreport`
 
-1. Get the full source code of the project at my Github.
+1. Get the full [source code](https://github.com/amree/ncreport-example) of the project at my Github.
 
 1. Run the project in **Debug** and **Release** mode. You should be able to run the report by clicking the button.
 
