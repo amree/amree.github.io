@@ -11,7 +11,7 @@ It has been quite a while since I wrote the previous guide. Since that particula
 
 1. Download Qt SDK and install it. In my case, I installed it at `C:\QtSDK`. You must make sure that you’ve chosen to install Qt Sources. If you have Qt SDK installed but you haven’t install Qt sources, just go to **Start > All Programs > Qt SDK > Maintain Qt SDK** to install it.
 
-	![alt text](/images/2011-07-11-qt.png "")
+	![alt text](/images/posts/2011-07-11-qt.png "")
 
 1. Download MySQL and install it. In my case, I choose to install it at:
 
@@ -19,7 +19,7 @@ It has been quite a while since I wrote the previous guide. Since that particula
 
 	You don’t need to install everything if you want to compile the plugin. Make sure you will at least choose to **install Client C API Library**.
 
-	![alt text](/images/2011-07-11-mysql.png "")
+	![alt text](/images/posts/2011-07-11-mysql.png "")
 
 
 1. Open **Start > All Programs > Qt SDK > Desktop > Qt 4.7.3 for Desktop (MingW)**
