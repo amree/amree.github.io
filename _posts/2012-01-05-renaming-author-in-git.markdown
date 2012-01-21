@@ -11,7 +11,7 @@ In Linux, I use Netbeans a lot as a diff viewer. For now, I think it's the best 
 
 Recently, I noticed that there are other authors with a different name in my Git's history. Apparently, I've accidentally committed into the repository using a different author's name and email. This is mainly due to the way Netbeans stores author's information history.
 
-<img src="/images/posts/2011-01-05-diff.png" width="586">
+<img src="/images/posts/2011-01-05-diff.png" width="584">
 
 So, in order to fix it, I ran this little script from Github in my master branch.
 
