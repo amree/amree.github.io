@@ -30,8 +30,9 @@ hr {
 }
 
 img {
-  padding-top: 1em;
-  padding-bottom: 1em;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  border: 1px solid #bbb;
 }
 
 .site {
