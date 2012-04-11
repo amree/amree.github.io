@@ -31,6 +31,12 @@ So, here are some fun facts about our Redmine + (Git/Subversion):
 
 9. There're about 40++ projects in the Redmine right now (still increasing).
 
+10. The repositories are hosting codes from different programming languages such as Pascal, Java, C++, Ruby and PHP. So, we need to be extra careful about the `.gitigore` and `svn:ignore` configurations.
+
+11. Tutorials has been written for newcomers on how to use version control for Netbeans, Delphi and also Qt Creator. For the time being, everyone is encourage to use their IDE to do all the commits and not doing it through command line unless they know what they are doing.
+
+12. Most developers chose Subversion due to its low lurning curve.
+
 In the next few days (or weeks), I'm going to post the configuration that I used to make the intergration between Git/Subversion with Redmine. It seems that the wiki from Redmine itself is not complete enough and I had to dig deeper into other websites. So, hopefully it will help anyone who's lost just like me before. 
 
 By the way, you can view a screenshot from the Redmine's projects page [here](https://twitter.com/#!/aurorius/status/187829585759580160).
