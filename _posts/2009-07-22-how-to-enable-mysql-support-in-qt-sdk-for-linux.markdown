@@ -7,9 +7,13 @@ comments: false
 
 #{{ page.title }}
 
+	Known to work with:
+		- Slackware v13.37, Qt SDK v1.1.5 (32 bit), Qt v4.8.0, MySQL v5.5.18
+
+
 1. Download Qt SDK for Linux/X11 at Qt Software.
 
-2. Install it anywhere you want, just make sure you remember the path.
+2. Install it anywhere you want, just make sure you remember the path. I installed mine at `/opt`.
 
 3. To build MySQL as a plugin, you need to know two other paths:
 
@@ -26,39 +30,30 @@ comments: false
 			libheap.a    libmysqlclient.a    libmysqlclient.so.15@      libmysqlclient_r.la*  libmysqlclient_r.so.15.0.0*  libvio.a
 			libmyisam.a  libmysqlclient.la*  libmysqlclient.so.15.0.0*  libmysqlclient_r.so@  libmystrings.a
 
-4. For Slackware v12.2, it should be at:
+4. I installed my MySQL at `/opt`, so those files will be in:
 
 		# Headers directory
-		/usr/include/mysql  
+		/opt/mysql-5.5.18-linux2.6-i686/include/  
 
 		# Libraries directory
-		/usr/lib/mysql      
+		/opt/mysql-5.5.18-linux2.6-i686/lib      
 
-5. Go your main Qt SDK installation's path:
+5. Go to your main Qt SDK installation's path:
 
-		cd /opt/qtsdk-2009.03/
-		cd qt/src/plugins/sqldrivers/mysql/
+		cd /opt/QtSDK/
+		cd QtSources/4.8.0/src/plugins/sqldrivers
 		# Replace all the path based on your computer environment. 
-		# Make sure 'qmake' can be run from anywhere or you'd have to specify the full path for it.
-		qmake -o Makefile "INCLUDEPATH+=/usr/include/mysql" "LIBS+=-L/usr/lib/mysql -lmysqlclient" mysql.pro
+		/opt/QtSDK/Desktop/Qt/4.8.0/gcc/bin/qmake -o Makefile "INCLUDEPATH+=/opt/mysql-5.5.18-linux2.6-i686/include/" "LIBS+=-L/opt/mysql-5.5.18-linux2.6-i686/lib -lmysqlclient" mysql.pro
 		make
+		/opt/QtSDK/Desktop/Qt/4.8.0/gcc/bin/qmake "INCLUDEPATH+=/opt/mysql-5.5.18-linux2.6-i686/include/" "LIBS+=-L/opt/mysql-5.5.18-linux2.6-i686/lib -lmysqlclient_r" mysql.pro
+		make
+		make install
+		
+6. Some files with `mysql` in the name will be copied in your sqldrivers path:
 
-6. You should have these files created for you
-
-		Makefile
-		README
-		libqsqlmysql.so*
-		main.cpp
-		main.o
-		moc_qsql_mysql.cpp
-		moc_qsql_mysql.o
-		mysql.pro
-		qsql_mysql.moc
-		qsql_mysql.o
-
-7. Copy MySQL plugin to your Qt’s plugins directory,
-
-		cp libqsqlmysql.so /opt/qtsdk-2009.03/qt/plugins/sqldrivers
+		/opt/QtSDK/Desktop/Qt/4.8.0/gcc/plugins/sqldrivers
+		
+7. Before trying your MySQL coding, please make sure `libmysqlclient.so` is in the`LD_LIBRARY_PATH`.
 
 8. Create a new project and put these codes to test your new plugin. 
 		
@@ -88,8 +83,8 @@ comments: false
 		}
 
 
-	You should get these outputs when you ran the application:
+	You should get `QMYSQL` in the outputs when you ran the application:
 
 		("QSQLITE", "QMYSQL3", "QMYSQL")
 
-That's it, good luck!
+You can find my info at [http://qt-project.org/doc/qt-4.8/sql-driver.html](http://qt-project.org/doc/qt-4.8/sql-driver.html).
