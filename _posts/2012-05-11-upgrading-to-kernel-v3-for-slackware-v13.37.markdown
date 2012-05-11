@@ -59,3 +59,5 @@ comments: true
 	You should get something like this:
    
 		Linux slackware 3.2.13-smp #1 SMP Fri Mar 23 23:21:11 CDT 2012 i686 Intel(R) Core(TM)2 Duo CPU     P8800  @ 2.66GHz GenuineIntel GNU/Linux
+		
+9. That's it.
