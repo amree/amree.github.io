@@ -9,6 +9,16 @@ comments: true
 
 These are the steps I used to replace LILO with GRUB as the boot manager after [upgrading my kernel to v3](/2012/05/11/upgrading-to-kernel-v3-for-slackware-v13.37/).
 
+1. Download directly and install:
+
+		wget http://slackware.osuosl.org/slackware-13.37/extra/grub/grub-0.97-i486-9.txz
+		installpkg grub-0.97-i486-9.txz
+
+	Then jump to Step 3 and make sure you'll skip Step 4.
+		
+**OR**
+
+
 1. If you haven't set any mirror for your `slackpkg`, you need to edit your mirror list:
 
 		vim /etc/slackpkg/mirrors
@@ -59,7 +69,7 @@ These are the steps I used to replace LILO with GRUB as the boot manager after [
 		title --- For usage examples, type: 'cat /boot/grub/grub.txt'
 		root (hd0)
 
-6. That's it :)
+That's it :)
 
 References:
 
