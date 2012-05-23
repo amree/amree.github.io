@@ -7,9 +7,13 @@ comments: false
 
 #{{ page.title }}
 
-	Known to work with:
-		- Slackware v13.37, Qt SDK v1.1.5 (32 bit), Qt v4.8.0, MySQL v5.5.18
+	Updated: 8 May 2012
 
+**Known to work with:**
+
+* Slackware v13.37, Qt SDK v1.1.5 (32 bit), Qt v4.8.0, MySQL v5.5.18
+
+Please follow this guide properly:
 
 1. Download Qt SDK for Linux/X11 at Qt Software.
 
