@@ -3,33 +3,35 @@ layout: default
 title: search
 ---
 
-<div id="cse" style="width: 100%;">Loading</div>
-<script src="http://www.google.com/jsapi" type="text/javascript"></script>
-<script type="text/javascript">
-  var _gaq = _gaq || [];
-  _gaq.push(["_setAccount", "UA-1068163-7"]);
-  function _trackQuery(control, searcher, query) {
-    var loc = document.location;
-    var url = [
-      loc.pathname,
-      loc.search,
-      loc.search ? '&' : '?',
-      encodeURIComponent('search'),
-      '=',
-      encodeURIComponent(query)
-    ];
-    _gaq.push(["_trackPageview", url.join('')]);
-  }
+<div id="home" class="content main">
+  <div id="cse">Loading</div>
+  <script src="http://www.google.com/jsapi" type="text/javascript"></script>
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(["_setAccount", "UA-1068163-7"]);
+    function _trackQuery(control, searcher, query) {
+      var loc = document.location;
+      var url = [
+        loc.pathname,
+        loc.search,
+        loc.search ? '&' : '?',
+        encodeURIComponent('search'),
+        '=',
+        encodeURIComponent(query)
+      ];
+      _gaq.push(["_trackPageview", url.join('')]);
+    }
 
-  google.load('search', '1', {language : 'en', style : google.loader.themes.MINIMALIST});
-  google.setOnLoadCallback(function() {
-    var customSearchControl = new google.search.CustomSearchControl(
-      '002684591719688774627:gizrf8nucio');
+    google.load('search', '1', {language : 'en', style : google.loader.themes.MINIMALIST});
+    google.setOnLoadCallback(function() {
+      var customSearchControl = new google.search.CustomSearchControl(
+        '002684591719688774627:gizrf8nucio');
 
-    customSearchControl.setResultSetSize(google.search.Search.FILTERED_CSE_RESULTSET);
-    customSearchControl.setSearchStartingCallback(null, _trackQuery);
-    var options = new google.search.DrawOptions();
-    options.setAutoComplete(true);
-    customSearchControl.draw('cse', options);
-  }, true);
-</script>
+      customSearchControl.setResultSetSize(google.search.Search.FILTERED_CSE_RESULTSET);
+      customSearchControl.setSearchStartingCallback(null, _trackQuery);
+      var options = new google.search.DrawOptions();
+      options.setAutoComplete(true);
+      customSearchControl.draw('cse', options);
+    }, true);
+  </script>
+</div>

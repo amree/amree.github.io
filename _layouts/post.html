@@ -1,25 +1,16 @@
 ---
 layout: default
 ---
-<div id="post">
-{{ content }}
+
+<div class="content article">
+    <p id="date">APR 24, 2012</p>
+
+    {{ content }}
 </div>
 
-<div id="social">
-<!-- Place this tag where you want the +1 button to render -->
-<g:plusone size="small" annotation="inline"></g:plusone>
+<hr>
 
-<!-- Place this render call where appropriate -->
-<script type="text/javascript">
-  (function() {
-    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-    po.src = 'https://apis.google.com/js/plusone.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-  })();
-</script>
-</div>
-
-<div id="comments">
+<div class="content comments">
 {% if page.comments %}
 <div id="disqus_thread"></div>
 <script type="text/javascript">

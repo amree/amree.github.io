@@ -7,17 +7,13 @@
    <link href="http://feeds.feedburner.com/" rel="alternate" title="Mohd Amree" type="application/atom+xml" />
 
    <!-- syntax highlighting CSS -->
-   <link rel="stylesheet" href="/css/syntax.css" type="text/css" />
+   <!-- <link rel="stylesheet" href="/css/syntax.css" type="text/css" /> -->
 
    <!-- Homepage CSS -->
-   <link rel="stylesheet" href="/css/screen.css" type="text/css" media="screen, projection" />
+   <link rel="stylesheet" href="/css/global.css" type="text/css" media="screen, projection" />
 
    <!-- Custom CSS -->
    <link rel="stylesheet" href="/css/custom.css" type="text/css" media="screen, projection" />
-
-   <!-- Typekit -->
-   <script type="text/javascript" src="http://use.typekit.com/jpd0pfm.js"></script>
-   <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
 
    <!-- SEO -->
    <meta name="description" content="{{ page.meta-description }}" />
@@ -40,33 +36,34 @@
 </head>
 <body>
 
-<div class="site">
-  <div class="title">
-    <a href="/">ieatbinary</a>
-    <a class="extra" href="http://twitter.com/aurorius">@aurorius</a>
-    <a class="extra" href="/archives">archives</a>
-    <a class="extra" href="/search">search</a>
+  <div class="content header article">
+    <div class="site">
+      <div class="title">
+        <a href="/">Mohd Amree</a>
+        <a class="extra" href="/archives">archives</a>
+        <a class="extra" href="/search">search</a>
+        <a class="extra" href="http://about.me/amree">about</a>
+      </div>
+    </div>
   </div>
+
+  <hr>
 
   {{ content }}
 
-  <div class="footer">
+  <hr>
+
+  <div class="content footer article">
     <div class="contact">
       <p>
-        <a href="http://about.me/amree">Mohd Amree</a>
-        <br />
-        Powered by <a href="https://github.com/mojombo/jekyll">Jekyll</a>
+        Powered by <a href="https://github.com/mojombo/jekyll">Jekyll</a>.
+        Get the <a href="http://feeds.feedburner.com/ieatbinary">RSS</a>
+        or the <a href="https://github.com/amree/amree.github.com">source</a>.
+        Design copied from <a href="https://twitter.com/samvermette">Sam Vermette</a>.
       </p>
-    </div>
-    <div class="rss">
-      <a href="http://feeds.feedburner.com/ieatbinary">
-        <img src="/images/rss.png" alt="Subscribe to RSS Feed" />
-      </a>
     </div>
   </div>
 </div>
-
-<a href="http://github.com/amree"><img style="position: absolute; top: 0; right: 0; border: 0; padding-top: 0; padding-bottom: 0; margin: 0" src="http://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" /></a>
 
 </body>
 </html>
