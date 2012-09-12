@@ -233,8 +233,8 @@ Put these configs (before starting anything related to Xen) into your `/etc/rc.d
 	
 	brctl addbr virbr0
 	brctl addif virbr0 eth0
-	ifconfig virbr0 10.1.127.155 netmask 255.255.248.0
-	route add default gw 10.1.120.1
+	ifconfig virbr0 192.168.1.10 netmask 255.255.255.0
+	route add default gw 192.168.1.1
 	
 Clear out any values set in your `/etc/rc.d/rc.inet1.conf`. Usually the value of `IPADDR[0]`, `NETMASK[0]` and `GATEWAY`.
 
@@ -275,7 +275,7 @@ You'll get something that looks like this after the reboot (if you got it right)
 	          RX bytes:336 (336.0 B)  TX bytes:336 (336.0 B)
 	
 	virbr0    Link encap:Ethernet  HWaddr bc:30:5b:db:e2:99  
-	          inet addr:10.1.127.150  Bcast:10.1.127.255  Mask:255.255.248.0
+	          inet addr:192.168.1.10  Bcast:192.168.1.255  Mask:255.255.255.0
 	          inet6 addr: fe80::be30:5bff:fedb:e299/64 Scope:Link
 	          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
 	          RX packets:147426 errors:0 dropped:506 overruns:0 frame:0
@@ -300,7 +300,7 @@ Restart your `ssh` server:
 		
 Reconnect to `Dom0` using `-Y` option:
 
-	$ ssh -Y root@10.1.127.150
+	$ ssh -Y root@192.168.1.10
 	$ xclock
 	
 If you can see a clock ticking, that means the X11 forward is working.
