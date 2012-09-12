@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Getting Started with Xen on Slackware
-meta-description: How to setup and use Corosync and Pacemaker in Slackware
+meta-description: How to install and setup Dom0 + DomU in Slackware
 comments: true
 ---
 
