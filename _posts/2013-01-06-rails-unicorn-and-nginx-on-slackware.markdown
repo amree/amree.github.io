@@ -86,7 +86,7 @@ Create `unicorn.rb` in `/opt/neuro/config/unicorn.rb`
 
     # Listen on a UNIX data socket
     listen "/tmp/unicorn.neuro.sock", :backlog => 64
-    listen 8080, :tcp_nopush => true
+    # houllisten 8080, :tcp_nopush => true
 
     worker_processes 2
 
