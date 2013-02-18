@@ -35,14 +35,14 @@ The MySQL data is not syncronized, this post is just about [Corosync](http://www
 
 1. Download and install these packages (by this order) in both nodes:
 
-	* [http://slackbuilds.org/repository/13.37/libraries/libnet/](http://slackbuilds.org/repository/13.37/libraries/libnet/)
-	* [http://slackbuilds.org/repository/13.37/libraries/libesmtp/](http://slackbuilds.org/repository/13.37/libraries/libesmtp/)
-	* [http://slackbuilds.org/repository/13.37/system/clusterglue/](http://slackbuilds.org/repository/13.37/system/clusterglue/)
-	* [http://slackbuilds.org/repository/13.37/system/clusterresourceagents/](http://slackbuilds.org/repository/13.37/system/clusterresourceagents/)
-	* [http://slackbuilds.org/repository/13.37/system/corosync/](http://slackbuilds.org/repository/13.37/system/corosync/)
-	* [http://slackbuilds.org/repository/13.37/system/pacemaker/](http://slackbuilds.org/repository/13.37/system/pacemaker/)
-	
-	I strongly suggest you build these packages one by one just to be sure there are no missing dependencies. BTW, some script adjustments are needed for Cluster Resource Agents but I'm sure you guys can handle it ;-)
+* [http://slackbuilds.org/repository/13.37/libraries/libnet/](http://slackbuilds.org/repository/13.37/libraries/libnet/)
+* [http://slackbuilds.org/repository/13.37/libraries/libesmtp/](http://slackbuilds.org/repository/13.37/libraries/libesmtp/)
+* [http://slackbuilds.org/repository/13.37/system/clusterglue/](http://slackbuilds.org/repository/13.37/system/clusterglue/)
+* [http://slackbuilds.org/repository/13.37/system/clusterresourceagents/](http://slackbuilds.org/repository/13.37/system/clusterresourceagents/)
+* [http://slackbuilds.org/repository/13.37/system/corosync/](http://slackbuilds.org/repository/13.37/system/corosync/)
+* [http://slackbuilds.org/repository/13.37/system/pacemaker/](http://slackbuilds.org/repository/13.37/system/pacemaker/)
+
+I strongly suggest you build these packages one by one just to be sure there are no missing dependencies. BTW, some script adjustments are needed for Cluster Resource Agents but I'm sure you guys can handle it ;-)
 	
 2. It would be easier for the next steps if [password-less](http://www.debian-administration.org/articles/152) login with OpenSSH is enabled. In your `Node 1`:
 
@@ -144,13 +144,13 @@ The MySQL data is not syncronized, this post is just about [Corosync](http://www
 		commit
 		quit
 		
-	* If you're getting some errors such as `ERROR: cib-bootstrap-options: attribute last-lrm-refresh does not exist`, just proceed. It maybe a [bug](http://www.gossamer-threads.com/lists/linuxha/users/63183).
-		
-	* We had to disable `stonith` since we just want our Pacemaker to be running. However, in real production environment, you really need to configure `stonith`, you can read more about it [here](http://www.novell.com/support/kb/doc.php?id=7004817).
-		
-	* We also need to ignore quorum policy since we're only using 2 nodes and you can read more about it [here](http://www.clusterlabs.org/wiki/FAQ#I_Killed_a_Node_but_the_Cluster_Didn.27t_Recover).
+* If you're getting some errors such as `ERROR: cib-bootstrap-options: attribute last-lrm-refresh does not exist`, just proceed. It maybe a [bug](http://www.gossamer-threads.com/lists/linuxha/users/63183).
+	
+* We had to disable `stonith` since we just want our Pacemaker to be running. However, in real production environment, you really need to configure `stonith`, you can read more about it [here](http://www.novell.com/support/kb/doc.php?id=7004817).
+	
+* We also need to ignore quorum policy since we're only using 2 nodes and you can read more about it [here](http://www.clusterlabs.org/wiki/FAQ#I_Killed_a_Node_but_the_Cluster_Didn.27t_Recover).
 
-	* You can see your new configuration by running:
+* You can see your new configuration by running:
 	
 			crm configure show
 			
