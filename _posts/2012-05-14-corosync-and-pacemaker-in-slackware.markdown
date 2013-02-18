@@ -41,7 +41,7 @@ The MySQL data is not syncronized, this post is just about [Corosync](http://www
 	* [http://slackbuilds.org/repository/13.37/system/clusterresourceagents/](http://slackbuilds.org/repository/13.37/system/clusterresourceagents/)
 	* [http://slackbuilds.org/repository/13.37/system/corosync/](http://slackbuilds.org/repository/13.37/system/corosync/)
 	* [http://slackbuilds.org/repository/13.37/system/pacemaker/](http://slackbuilds.org/repository/13.37/system/pacemaker/)
-
+	
 	I strongly suggest you build these packages one by one just to be sure there are no missing dependencies. BTW, some script adjustments are needed for Cluster Resource Agents but I'm sure you guys can handle it ;-)
 	
 2. It would be easier for the next steps if [password-less](http://www.debian-administration.org/articles/152) login with OpenSSH is enabled. In your `Node 1`:
