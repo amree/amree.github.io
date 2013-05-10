@@ -40,92 +40,95 @@ I'm putting my Rails app in `/opt/neuro`, so, adjust it accordingly.
 
 Create `nginx.conf` in  `/opt/neuro/config/nginx.conf`:
 
-    upstream unicorn {
-      server unix:/tmp/unicorn.neuro.sock fail_timeout=0;
-    }
+{% highlight nginx %}
+upstream unicorn {
+  server unix:/tmp/unicorn.neuro.sock fail_timeout=0;
+}
 
-    server {
-      listen 80 default deferred;
-      server_name neuro.husmnet
-      root /opt/neuro/public;
+server {
+  listen 80 default deferred;
+  server_name neuro.husmnet
+  root /opt/neuro/public;
 
-      location ^~ /assets/ {
-        root /opt/neuro/public;
-        gzip_static on;
-        expires max;
-        add_header Cache-Control public;
-      }
+  location ^~ /assets/ {
+    root /opt/neuro/public;
+    gzip_static on;
+    expires max;
+    add_header Cache-Control public;
+  }
 
-      try_files $uri/index.html $uri @unicorn;
+  try_files $uri/index.html $uri @unicorn;
 
-      location @unicorn {
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header Host $http_host;
-        proxy_redirect off;
-        proxy_pass http://unicorn;
-      }
+  location @unicorn {
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $http_host;
+    proxy_redirect off;
+    proxy_pass http://unicorn;
+  }
 
-      error_page 500 502 503 504 /500.html;
-      client_max_body_size 4G;
-      keepalive_timeout 10;
-    }
+  error_page 500 502 503 504 /500.html;
+  client_max_body_size 4G;
+  keepalive_timeout 10;
+}
+
+{% endhighlight %}
 
 Create `unicorn.rb` in `/opt/neuro/config/unicorn.rb`
 
-    root = "#{Dir.pwd}"
+{% highlight ruby %}
 
-    # Define worker directory for Unicorn
-    working_directory root
+root = "#{Dir.pwd}"
 
-    # Location of PID file
-    pid "#{root}/tmp/pids/unicorn.pid"
+# Define worker directory for Unicorn
+working_directory root
 
-    # Define Log paths
-    stderr_path "#{root}/log/unicorn.log"
-    stdout_path "#{root}/log/unicorn.log"
+# Location of PID file
+pid "#{root}/tmp/pids/unicorn.pid"
 
-    # Listen on a UNIX data socket
-    listen "/tmp/unicorn.neuro.sock", :backlog => 64
-    # houllisten 8080, :tcp_nopush => true
+# Define Log paths
+stderr_path "#{root}/log/unicorn.log"
+stdout_path "#{root}/log/unicorn.log"
 
-    worker_processes 2
+# Listen on a UNIX data socket
+listen "/tmp/unicorn.neuro.sock", :backlog => 64
+# houllisten 8080, :tcp_nopush => true
 
-    # Load rails before forking workers for better worker spawn time
-    preload_app true
+worker_processes 2
 
-    # Restart workes hangin' out for more than 240 secs
-    timeout 240
+# Load rails before forking workers for better worker spawn time
+preload_app true
+
+# Restart workes hangin' out for more than 240 secs
+timeout 240
 
 Replace `/etc/nginx/nginx.conf` with this content:
 
-    # user  root;
-    worker_processes  1;
+# user  root;
+worker_processes  1;
 
-    error_log  /var/log/nginx/error.log;
-    #error_log  logs/error.log  notice;
-    #error_log  logs/error.log  info;
+error_log  /var/log/nginx/error.log;
+#error_log  logs/error.log  notice;
+#error_log  logs/error.log  info;
 
-    #pid        logs/nginx.pid;
+#pid        logs/nginx.pid;
 
+events {
+  worker_connections  1024;
+}
 
-    events {
-        worker_connections  1024;
-    }
+http {
+  include       mime.types;
+  default_type  application/octet-stream;
 
+  sendfile        on;
 
-    http {
-        include       mime.types;
-        default_type  application/octet-stream;
+  keepalive_timeout  65;
 
-        sendfile        on;
+  gzip  on;
 
-        keepalive_timeout  65;
-
-        gzip  on;
-
-        include /etc/nginx/sites-enabled/*;
-
-    }
+  include /etc/nginx/sites-enabled/*;
+}
+{% endhighlight %}
 
 Create `sites-enabled` directory in `/etc/nginx` and create a softlink to the `nginx.conf` in our app:
 
