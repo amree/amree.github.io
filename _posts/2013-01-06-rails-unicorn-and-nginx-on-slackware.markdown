@@ -105,7 +105,7 @@ timeout 240
 
 Replace `/etc/nginx/nginx.conf` with this content:
 
-{% highlight conf %}
+{% highlight nginx %}
 
 # user  root;
 worker_processes  1;
