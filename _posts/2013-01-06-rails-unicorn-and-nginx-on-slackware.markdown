@@ -41,12 +41,12 @@ I'm putting my Rails app in `/opt/neuro`, so, adjust it accordingly.
 Create `nginx.conf` in  `/opt/neuro/config/nginx.conf`:
 
 {% highlight nginx %}
-upstream unicorn {
+upstream neuro {
   server unix:/tmp/unicorn.neuro.sock fail_timeout=0;
 }
 
 server {
-  listen 80 default deferred;
+  listen neuro.husmnet:80;
   server_name neuro.husmnet
   root /opt/neuro/public;
 
@@ -63,7 +63,7 @@ server {
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header Host $http_host;
     proxy_redirect off;
-    proxy_pass http://unicorn;
+    proxy_pass http://neuro;
   }
 
   error_page 500 502 503 504 /500.html;
@@ -101,7 +101,11 @@ preload_app true
 # Restart workes hangin' out for more than 240 secs
 timeout 240
 
+{% endhighlight %}
+
 Replace `/etc/nginx/nginx.conf` with this content:
+
+{% highlight conf %}
 
 # user  root;
 worker_processes  1;
@@ -134,6 +138,10 @@ Create `sites-enabled` directory in `/etc/nginx` and create a softlink to the `n
 
     $ mkdir /etc/nginx/sites-enabled
     $ ln -s /opt/neuro/config/nginx.conf neuro.conf
+
+Create a directory for the pid
+
+    $ mkdir /opt/neuro/tmp/pids
 
 Before starting it for the first time, let us monitor important logs (open it using different
 terminals) :
