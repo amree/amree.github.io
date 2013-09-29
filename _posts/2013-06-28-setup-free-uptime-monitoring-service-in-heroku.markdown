@@ -21,7 +21,7 @@ Login using [heroku command line](https://devcenter.heroku.com/categories/comman
 
 Run this command to create the `Procfile`:
 
-    echo "web: node web.js" > Procfile
+    echo "web: node app.js" > Procfile
 
 Commit your changes
 
