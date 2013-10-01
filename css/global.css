@@ -2,7 +2,7 @@
   margin: 0;
   padding: 0;
   border: 0;
-  font-family: "HelveticaNeue-Light", "Helvetica", "Arial";
+  font-family: 'PT Sans', sans-serif;
   text-shadow: 0 1px 0 #FFF;
   font-weight: normal;
 }
@@ -12,6 +12,7 @@ body {
   padding-top: 60px;
   background: url('/images/bg.jpg') repeat;
   -webkit-background-size: 100px 100px;
+  font-size: 1.05em;
 }
 
 a {
@@ -33,7 +34,7 @@ td.title {
 }
 
 strong, b {
-  font-family: "HelveticaNeue-Bold";
+  font-family: 'PT Sans', serif;
 }
 
 div.content {
@@ -62,24 +63,24 @@ hr {
 
 h1 {
   font-size: 40px;
-  font-family: "HelveticaNeue-Bold";
-  margin: 0 0 10px 0;
+  font-family: 'PT Sans', serif;
+  font-weight: bold;
+  margin: 0 0 30px 0;
 }
 
 .header h1 {
   font-size: 20px;
   line-height: 30px;
-  font-family: "HelveticaNeue-Light";
 }
 
 .header h1 strong, .header h1 strong a {
   font-size: 20px;
   color: #000;
-  font-family: "HelveticaNeue-Bold";
+  font-family: 'PT Sans', serif;
 }
 
 .footer, .footer * {
-  font-family: "HelveticaNeue-Bold";
+  font-family: 'PT Sans', serif;
   font-size: 14px;
 }
 
@@ -87,6 +88,7 @@ h2 {
   font-size: 24px;
   line-height: 36px;
   margin-bottom: 14px;
+  font-weight: bold;
 }
 
 .header h2, .header h2 * {
@@ -96,7 +98,7 @@ h2 {
 
 h3, h3 * {
   font-size: 24px;
-  font-family: "HelveticaNeue-Bold";
+  font-family: 'PT Sans', serif;
   margin-bottom: 25px;
 }
 
@@ -108,7 +110,7 @@ h4, h4 * {
 
 h5, h5 * {
   font-size: 14px;
-  font-family: "HelveticaNeue-Bold";
+  font-family: 'PT Sans', serif;
   margin: 10px 0 10px 0;
 }
 
@@ -123,7 +125,7 @@ div.app {
 }
 
 div.app a {
-  font-family: "HelveticaNeue-Bold";
+  font-family: 'PT Sans', serif;
   color: #000;
 }
 
@@ -131,7 +133,7 @@ div.app a {
 .more, a.more, div.app a.more, .header a.more {
   color: #bfbfbf;
   font-size: 12px;
-  font-family: "HelveticaNeue-Bold";
+  font-family: 'PT Sans', serif;
   margin-left: 8px;
 }
 
@@ -188,12 +190,9 @@ table tr {
   width: 100%;
 }
 
-
-
-
 .article p, .article ul, .article ol, .article li, .article i {
-  font-size: 14px;
-  line-height: 24px;
+  font-size: 1.05em;
+  line-height: 1.55em;
 }
 
 .article p {
@@ -203,7 +202,7 @@ table tr {
 .article p#date {
   color: #acacac;
   margin-bottom: 8px;
-  font: 12px "HelveticaNeue-Bold";
+  font: 12px 'PT Sans', serif;
 }
 
 .article br {
@@ -220,7 +219,8 @@ table tr {
 }
 
 .article strong {
-  font-family: "HelveticaNeue-Bold";
+  font-family: 'PT Sans', serif;
+  font-weight: bold;
 }
 
 .article h3 {
@@ -229,14 +229,11 @@ table tr {
 }
 
 .article h2 {
-  font-size: 20px;
-  font-family: "Myriad Pro Bold", "HelveticaNeue-Bold";
   margin: 20px 0 6px 0;
 }
 
 .article h4 {
   font-size: 16px;
-  font-family: "HelveticaNeue-Bold";
   margin: 22px 0 6px 0;
 }
 
@@ -269,7 +266,7 @@ table tr {
 }
 
 .article table th {
-  font-family: "HelveticaNeue-Bold";
+  font-family: 'PT Sans', serif;
   text-align: left;
   padding-right: 40px;
   border-bottom: 1px solid #ebebeb;
@@ -280,22 +277,23 @@ table tr {
 }
 
 .article pre {
-  overflow: scroll;
+  overflow: auto;
   margin-bottom: 10px;
   margin-top: 15px;
   padding: 2px 5px 2px 5px;
   background-color: #edeff1;
-  font: 12px/22px "Monaco", "Courier";
+  font-family: "Monaco", "Courier";
   border: 1px solid #e3e3e3;
 }
 
 .article code {
   background-color: #edeff1;
-  font: 13px "Monaco", "Courier";
+  font-family: "Monaco", "Courier";
+  font-size: 0.9em;
 }
 
 code span {
-  font: 13px "Monaco", "Courier";
+  font-family: "Monaco", "Courier";
 }
 
 .article #share-buttons {
