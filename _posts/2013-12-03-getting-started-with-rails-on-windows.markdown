@@ -112,5 +112,3 @@ Open it using this URL: [http://localhost:3000](http://localhost:3000).
 If you haven't noticed, you should see that everything that was changed in `/vagrant` will reflect your `rails` directory in Windows. This means, you can just use your favourite editor to load that particular directory and start coding. It's as if you're doing development directly in the server. For everything else, make sure you'll do it through Putty or through `vagrant ssh`.
 
 I guess that's it. Good luck !
-
-Written by [Mohd Amree Zaid](https://plus.google.com/106989524215046675447/?rel=author).
