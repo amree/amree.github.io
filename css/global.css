@@ -10,7 +10,6 @@
 body {
   width: 100%;
   padding-top: 60px;
-  background: url('/images/bg.jpg') repeat;
   -webkit-background-size: 100px 100px;
   font-size: 1.05em;
 }
