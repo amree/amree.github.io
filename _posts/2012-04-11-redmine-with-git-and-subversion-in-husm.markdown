@@ -2,7 +2,7 @@
 layout: post
 title: Redmine with Git and Subversion in HUSM
 meta-description: The status of Redmine with Git and Subversion implementation in Hospital Universiti Sains Malaysia
-comments: true
+comments: false
 ---
 
 #{{ page.title }}

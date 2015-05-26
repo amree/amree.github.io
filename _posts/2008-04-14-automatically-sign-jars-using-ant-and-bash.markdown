@@ -2,7 +2,7 @@
 layout: post
 title: Automatically Sign JARs Using Ant and Bash
 meta-description: This script will basically sign the jars after all the jars has been build.
-comments: true
+comments: false
 ---
 
 #{{ page.title }}

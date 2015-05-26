@@ -2,7 +2,7 @@
 layout: post
 title: Adding memcached support to PHP in Slackware 13.1
 meta-description: Configure your PHP to work with memcached in Slackware 13.1
-comments: true
+comments: false
 ---
 
 # {{ page.title }}

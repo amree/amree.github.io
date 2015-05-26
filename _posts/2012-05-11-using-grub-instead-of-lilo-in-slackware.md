@@ -2,7 +2,7 @@
 layout: post
 title: Using GRUB instead of LILO in Slackware
 meta-description: How to use GRUB instead of LILO in Slackware
-comments: true
+comments: false
 ---
 
 #{{ page.title }}

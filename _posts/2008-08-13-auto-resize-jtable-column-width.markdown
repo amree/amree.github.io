@@ -2,7 +2,7 @@
 layout: post
 title: Auto Resize JTable Column Width
 meta-description: A simple function to auto resize any JTable
-comments: true
+comments: false
 ---
 
 #{{ page.title }}

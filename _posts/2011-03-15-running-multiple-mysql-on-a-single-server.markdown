@@ -2,7 +2,7 @@
 layout: post
 title: Running Multiple MySQL on a Single Server
 meta-description: How to run multiple MySQL instance on a single server
-comments: true
+comments: false
 ---
 
 # {{ page.title }}

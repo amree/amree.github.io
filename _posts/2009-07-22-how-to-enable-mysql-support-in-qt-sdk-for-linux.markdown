@@ -2,7 +2,7 @@
 layout: post
 title: How to Enable MySQL Support in Qt SDK for Linux
 meta-description: Enable MySQL plugin in Qt SDK for Linux
-comments: true
+comments: false
 ---
 
 #{{ page.title }}

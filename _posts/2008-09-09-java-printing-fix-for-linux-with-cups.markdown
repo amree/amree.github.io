@@ -2,7 +2,7 @@
 layout: post
 title: Java Printing Fix for Linux
 meta-description: A fix for CUPS for your printings in Linux
-comments: true
+comments: false
 ---
 
 #{{ page.title }}

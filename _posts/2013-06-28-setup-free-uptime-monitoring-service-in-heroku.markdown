@@ -2,7 +2,7 @@
 layout: post
 title: Setup Free Uptime Monitoring Service in Heroku
 meta-description: Setup free uptime monitoring service in Heroku using free open source software
-comments: true
+comments: false
 ---
 
 #{{ page.title }}

@@ -2,7 +2,7 @@
 layout: post
 title: Getting Started with Rails on Windows
 meta-description: Running your first Rails app on Windows
-comments: true
+comments: false
 ---
 
 #{{ page.title }}

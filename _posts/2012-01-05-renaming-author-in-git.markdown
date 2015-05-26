@@ -2,7 +2,7 @@
 layout: post
 title: Renaming Author in Git
 meta-description: Renaming Author in Git
-comments: true
+comments: false
 ---
 
 #{{ page.title }}

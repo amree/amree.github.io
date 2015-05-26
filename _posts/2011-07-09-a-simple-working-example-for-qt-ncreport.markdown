@@ -2,7 +2,7 @@
 layout: post
 title: A Simple Working Example for Qt NCReport
 meta-description: A Simple Working Example for Qt NCReport (with source codes)
-comments: true
+comments: false
 ---
 
 # {{ page.title }}

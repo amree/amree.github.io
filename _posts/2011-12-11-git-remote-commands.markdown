@@ -2,7 +2,7 @@
 layout: post
 title: Git Remote Commands
 meta-description: Some useful commands for git remote branches
-comments: true
+comments: false
 ---
 
 #{{ page.title }}
