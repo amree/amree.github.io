@@ -90,5 +90,3 @@ Open your app
 
 That's it, good luck! :)
 
-Written by [Mohd Amree](https://plus.google.com/106989524215046675447/?rel=author)
-
