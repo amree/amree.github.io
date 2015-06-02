@@ -98,6 +98,7 @@ h2 {
 h3, h3 * {
   font-size: 24px;
   font-family: 'PT Sans', serif;
+  margin-top: 25px;
   margin-bottom: 25px;
 }
 
@@ -276,6 +277,7 @@ table tr {
 }
 
 .article pre {
+  font-size: 80%;
   overflow: auto;
   margin-bottom: 10px;
   margin-top: 15px;
