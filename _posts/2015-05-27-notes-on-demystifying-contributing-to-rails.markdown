@@ -381,8 +381,7 @@ An example of `git reflog` output:
     c6f43a6 HEAD@{12}: rebase -i (finish): returning to refs/heads/practicing-git
     c6f43a6 HEAD@{13}: commit (amend): Fix spacing on bisect commands
 
-
-
+I guess that's it. Thanks for reading :)
 
 ## References
 
