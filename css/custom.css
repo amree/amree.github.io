@@ -25,10 +25,10 @@ ul.posts {
 
 ul.posts li {
   line-height: 1.75em;
-}
-
-ul.posts li a {
+  /* Truncation */
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 ul.posts span {
