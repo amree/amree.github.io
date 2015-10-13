@@ -1,17 +1,14 @@
----
-layout: nil
----
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
- <title>Mohd Amree</title>
- <link href="http://amree.github.io/atom.xml" rel="self"/>
- <link href="http://amree.github.io/"/>
+ <title>Amree Zaid</title>
+ <link href="https://amree.github.io/atom.xml" rel="self"/>
+ <link href="https://amree.github.io/"/>
  <updated>{{ site.time | date_to_xmlschema }}</updated>
  <id>http://amree.github.io/</id>
  <author>
-   <name>Mohd Amree</name>
-   <email>amree@linux.org.my</email>
+   <name>Amree Zaid</name>
+   <email>mohd.amree@gmail.com</email>
  </author>
 
  {% for post in site.posts %}

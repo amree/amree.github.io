@@ -3,8 +3,8 @@ layout: default
 title: archives
 ---
 
-<div id="home" class="content main">
-  <h1>Archives</h1>
+<div id="home" class="content">
+  <h3>Archives</h3>
   <ul class="posts">
     {% for post in site.posts %}
       <li><span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ post.url }}">{{ post.title }}</a></li>

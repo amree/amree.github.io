@@ -1,6 +1,6 @@
-div.content.comments {
-  width: 600px;
-  margin: 50px 0 50px -300px;
+.title {
+  font-size: 80%;
+  text-align: left;
 }
 
 .title a {
@@ -27,6 +27,10 @@ ul.posts li {
   line-height: 1.75em;
 }
 
+ul.posts li a {
+  white-space: nowrap;
+}
+
 ul.posts span {
   color: #aaa;
   font-family: Monaco, "Courier New", monospace;
@@ -34,12 +38,24 @@ ul.posts span {
 }
 
 div.content.main {
-    width: 600px;
-    margin: 50px 0 50px -300px;
+  width: 600px;
+  margin: 50px 0 50px -300px;
+}
+
+.article h1 {
+  font-size: 1.7em;
+  font-weight: bold;
+  margin-bottom: 0.3em;
+}
+
+.article h2 {
+  font-size: 1.6em;
+  font-weight: bold;
+  margin-bottom: 0.3em;
 }
 
 /* GCSE */
 #gs_tti50 {
   padding-bottom: 4px;
 }
-}
+
