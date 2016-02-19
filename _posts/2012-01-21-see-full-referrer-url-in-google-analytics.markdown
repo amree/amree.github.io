@@ -2,7 +2,6 @@
 layout: post
 title: See Full Referrer URL in Google Analytics
 meta-description: How to generate full referrer URL in the new Google Analytics
-comments: false
 ---
 
 #{{ page.title }}

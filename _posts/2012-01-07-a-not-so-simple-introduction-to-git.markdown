@@ -2,7 +2,6 @@
 layout: post
 title: A Not So Simple Introduction to Git
 meta-description: A good (but not so simple) introduction to Git with a lot of examples
-comments: false
 ---
 
 # {{ page.title }}

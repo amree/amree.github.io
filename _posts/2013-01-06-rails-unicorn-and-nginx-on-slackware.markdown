@@ -2,7 +2,6 @@
 layout: post
 title: Rails, Unicorn and Nginx on Slackware
 meta-description: Deploying Rails on Slackware using Unicorn and Nginx
-comments: false
 ---
 
 #{{ page.title }}

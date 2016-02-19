@@ -2,7 +2,6 @@
 layout: post
 title: Using Sybase with Ruby on Rails on Linux
 meta-description: Configure your Ruby on Rails to work with Sybase on Linux
-comments: false
 ---
 
 # {{ page.title }}

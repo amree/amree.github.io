@@ -2,7 +2,6 @@
 layout: post
 title: Printing to Zebra S4M Using Java and ZPL II
 meta-description: Some code examples for Zebra S4M using Java and ZPL II
-comments: false
 ---
 
 #{{ page.title }}

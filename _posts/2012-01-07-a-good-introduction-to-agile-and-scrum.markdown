@@ -2,7 +2,6 @@
 layout: post
 title: A Good Introduction to Agile and Scrum
 meta-description: Basically an easy to under presentation to Agile and Scrum
-comments: false
 ---
 
 # {{ page.title }}

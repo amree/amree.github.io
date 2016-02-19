@@ -2,7 +2,6 @@
 layout: post
 title: Corosync and Pacemaker in Slackware
 meta-description: How to setup and use Corosync and Pacemaker in Slackware
-comments: false
 ---
 
 #{{ page.title }}

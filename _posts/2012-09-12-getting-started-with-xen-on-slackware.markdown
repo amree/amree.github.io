@@ -2,7 +2,6 @@
 layout: post
 title: Getting Started with Xen on Slackware
 meta-description: How to install and setup Dom0 + DomU in Slackware
-comments: false
 ---
 
 # {{ page.title }}

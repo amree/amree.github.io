@@ -2,7 +2,6 @@
 layout: post
 title: Printing to PDF using CUPS
 meta-description: How to print to PDF from your Linux
-comments: false
 ---
 
 #{{ page.title }}

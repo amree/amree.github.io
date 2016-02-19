@@ -2,7 +2,6 @@
 layout: post
 title: MyKad Codes Takedown
 meta-description: The removal of MyKad codes
-comments: false
 ---
 
 # {{ page.title }}

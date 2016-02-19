@@ -2,7 +2,6 @@
 layout: post
 title: Reading Mifare 1K Card using Java in Linux
 meta-description: How to read Mifare 1K card using Java in Linux
-comments: false
 ---
 
 # {{ page.title }}

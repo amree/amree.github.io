@@ -2,7 +2,6 @@
 layout: post
 title: HUSM at Malaysia Open Source Conference 2011
 meta-description: Hospital Universiti Sains Malaysia at Malaysia Open Source Conference 2011
-comments: false
 ---
 
 # {{ page.title }}

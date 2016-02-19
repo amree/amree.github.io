@@ -2,7 +2,6 @@
 layout: post
 title: Configuring Linux to work with NVidia Hybrid SLI Technology
 meta-description: Configure your Linux to work with NVidia Hybrid SLI technology
-comments: false
 ---
 
 # {{ page.title }}

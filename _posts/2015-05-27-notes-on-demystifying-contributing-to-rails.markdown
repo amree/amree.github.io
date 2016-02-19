@@ -2,7 +2,6 @@
 layout: post
 title: Notes on Demystifying Contributing to Rails
 meta-description: My notes on Breaking Down the Barrier - Demystifying Contributing to Rails by Eileen Uchitelle from RailsConf 2015
-comments: true
 ---
 
 #{{ page.title }}

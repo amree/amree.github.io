@@ -2,7 +2,6 @@
 layout: post
 title: How to enable MySQL Support in Qt SDK for Windows
 meta-description: How to enable MySQL Support in Qt SDK for Windows
-comments: false
 ---
 
 # {{ page.title }}
