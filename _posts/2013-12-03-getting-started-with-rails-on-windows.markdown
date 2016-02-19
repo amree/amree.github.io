@@ -4,7 +4,7 @@ title: Getting Started with Rails on Windows
 meta-description: Running your first Rails app on Windows
 ---
 
-#{{ page.title }}
+# {{ page.title }}
 
 First of all, let's get one thing straight. This is not a guide for those who are trying their best to not use Unix like environment in develop Rails application. This is more like a guide to do almost everything in Linux without replacing your Windows.
 

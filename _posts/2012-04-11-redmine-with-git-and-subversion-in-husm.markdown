@@ -4,7 +4,7 @@ title: Redmine with Git and Subversion in HUSM
 meta-description: The status of Redmine with Git and Subversion implementation in Hospital Universiti Sains Malaysia
 ---
 
-#{{ page.title }}
+# {{ page.title }}
 
 It's official, almost every piece of our codes in Hospital Universiti Sains Malaysia (HUSM) has been versioned in either Git or Subversion (mostly the latter). We've also linked all of the repositories into Redmine for easier project management. It's not really a walk in the park for us since this is the first time we tried to do it this big.
 

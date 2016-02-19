@@ -4,7 +4,7 @@ title: Printing to Zebra S4M Using Java and ZPL II
 meta-description: Some code examples for Zebra S4M using Java and ZPL II
 ---
 
-#{{ page.title }}
+# {{ page.title }}
 
 Apparently there're some codes scattered on the net telling people that you can print to a Zebra printer by sending ZPL II codes using `PrintService`. But the problem is, it's not working, I don't know why, maybe because of a different version of printer or model but I'm pretty sure the thing that came out from the printer are just ordinary texts not barcode which is what the code was supposed to output.
 

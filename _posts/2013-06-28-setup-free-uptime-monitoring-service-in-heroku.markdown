@@ -4,7 +4,7 @@ title: Setup Free Uptime Monitoring Service in Heroku
 meta-description: Setup free uptime monitoring service in Heroku using free open source software
 ---
 
-#{{ page.title }}
+# {{ page.title }}
 
 Clone the [uptime](https://github.com/fzaninotto/uptime.git) repository
 

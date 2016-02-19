@@ -4,7 +4,7 @@ title: Corosync and Pacemaker in Slackware
 meta-description: How to setup and use Corosync and Pacemaker in Slackware
 ---
 
-#{{ page.title }}
+# {{ page.title }}
 
 This will be multi part post about high availability solution for Slackware. My first post will be about Corosync and Pacemaker.
 

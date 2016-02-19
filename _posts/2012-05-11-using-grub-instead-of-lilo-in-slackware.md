@@ -4,7 +4,7 @@ title: Using GRUB instead of LILO in Slackware
 meta-description: How to use GRUB instead of LILO in Slackware
 ---
 
-#{{ page.title }}
+# {{ page.title }}
 
 These are the steps I used to replace LILO with GRUB as the boot manager after [upgrading my kernel to v3](/2012/05/11/upgrading-to-kernel-v3-for-slackware-v13.37/).
 

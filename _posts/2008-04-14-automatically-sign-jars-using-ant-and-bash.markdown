@@ -4,7 +4,7 @@ title: Automatically Sign JARs Using Ant and Bash
 meta-description: This script will basically sign the jars after all the jars has been build.
 ---
 
-#{{ page.title }}
+# {{ page.title }}
 
 This guide is more towards Netbeans project, but it can be used as a reference for you to customize the script to suit your needs.
 

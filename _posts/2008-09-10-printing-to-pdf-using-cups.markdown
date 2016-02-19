@@ -4,7 +4,7 @@ title: Printing to PDF using CUPS
 meta-description: How to print to PDF from your Linux
 ---
 
-#{{ page.title }}
+# {{ page.title }}
 
 1. **Install CUPS-PDF** based on your distro, you can download if from [here](http://www.physik.uni-wuerzburg.de/~vrbehr/cups-pdf/download.shtml).
 

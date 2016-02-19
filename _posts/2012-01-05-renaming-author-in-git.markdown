@@ -4,7 +4,7 @@ title: Renaming Author in Git
 meta-description: Renaming Author in Git
 ---
 
-#{{ page.title }}
+# {{ page.title }}
 
 In Linux, I use Netbeans a lot as a diff viewer. For now, I think it's the best diff viewer in Linux with side by side comparison and its easy to navigate UI. Plus, it's free.
 

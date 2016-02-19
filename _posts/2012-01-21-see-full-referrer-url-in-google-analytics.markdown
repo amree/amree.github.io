@@ -4,7 +4,7 @@ title: See Full Referrer URL in Google Analytics
 meta-description: How to generate full referrer URL in the new Google Analytics
 ---
 
-#{{ page.title }}
+# {{ page.title }}
 
 Most of the tutorial on the web focuses on the old version of Google Analytics. So, after poking around Google Analytics, I found out that there are two ways to see it (I stopped looking once I found the second method, so, there might be more).
 

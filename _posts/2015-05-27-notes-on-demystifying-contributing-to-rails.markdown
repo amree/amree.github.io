@@ -4,7 +4,7 @@ title: Notes on Demystifying Contributing to Rails
 meta-description: My notes on Breaking Down the Barrier - Demystifying Contributing to Rails by Eileen Uchitelle from RailsConf 2015
 ---
 
-#{{ page.title }}
+# {{ page.title }}
 
 This is my notes for presentation by [Eileen Uchitelle](https://twitter.com/eileencodes) from RailsConf 2015. You can find the video at [Confreaks](http://confreaks.tv/videos/railsconf2015-breaking-down-the-barrier-demystifying-contributing-to-rails). The slide can be found at [Speaker Deck](https://speakerdeck.com/eileencodes/breaking-down-the-barrier-demystifying-contributing-to-rails).
 

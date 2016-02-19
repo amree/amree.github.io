@@ -4,7 +4,7 @@ title: Java Printing Fix for Linux
 meta-description: A fix for CUPS for your printings in Linux
 ---
 
-#{{ page.title }}
+# {{ page.title }}
 
 Apparently, there's a bug in Java where people using newer version of CUPS cannot print (can't even display the print dialog) due to a null pointer exception and this is actually a known bug. So, how do we fix this? For people who use Gnome, you can refer to this [page](https://bugs.launchpad.net/ubuntu/+source/sun-java6/+bug/156191/comments/18)
 

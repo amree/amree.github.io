@@ -4,7 +4,7 @@ title: Git Remote Commands
 meta-description: Some useful commands for git remote branches
 ---
 
-#{{ page.title }}
+# {{ page.title }}
 
 View some remote **information**:
 

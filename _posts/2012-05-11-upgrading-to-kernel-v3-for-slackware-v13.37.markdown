@@ -4,7 +4,7 @@ title: Upgrading to Kernel v3 for Slackware v13.37
 meta-description: How to upgrade Slackware v13.37 to kernel v3.2.13
 ---
 
-#{{ page.title }}
+# {{ page.title }}
 
 1. Get all the necessary packages:
 

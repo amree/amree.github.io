@@ -4,7 +4,7 @@ title: How to Enable MySQL Support in Qt SDK for Linux
 meta-description: Enable MySQL plugin in Qt SDK for Linux
 ---
 
-#{{ page.title }}
+# {{ page.title }}
 
 	Updated: 8 May 2012
 
