@@ -356,10 +356,10 @@ pre, code {
     font-size: 0.8em;
 }
 
-.article pre > code {
+.article pre > code, .article code > span {
     font-family: "Monaco", "Courier";
     background-color: inherit;
-    font-size: 0.9em;
+    font-size: 13px;
     line-height: 1.7em;
     padding: 0;
     border: 0;
