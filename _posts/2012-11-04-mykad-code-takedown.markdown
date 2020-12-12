@@ -1,6 +1,6 @@
 ---
 layout: post
-title: MyKad Codes Takedown
+title: MyKad Code Takedown
 meta-description: The removal of MyKad codes
 ---
 
