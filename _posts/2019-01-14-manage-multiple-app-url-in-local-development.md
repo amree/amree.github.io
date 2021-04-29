@@ -18,7 +18,7 @@ brew install haproxy
 
 Create a new file at `/usr/local/etc/haproxy.cfg` and put these contents (customize as you wish):
 
-```cfg
+```
 global
   maxconn 4096
   daemon
@@ -57,7 +57,7 @@ backend admin
 
 Make sure you put the hosts declared before in `/etc/hosts`:
 
-```host
+```
 127.0.0.1  localhost
 127.0.0.1  myapp.local.sg # We can use different domain here
 127.0.0.1  myapp.local.hk
