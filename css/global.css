@@ -111,22 +111,6 @@ img#avatar {
   font-weight: bold;
 }
 
-.footer #twitter {
-  background: url('/images/twitter.png') no-repeat;
-  background-size: 100%;
-  display: block;
-  float: right;
-  margin-top: 0.05em;
-  margin-right: 0.4em;
-  width: 1.6em;
-  height: 1.6em;
-  opacity: 0.3;
-}
-
-.footer #twitter:hover {
-  opacity: 1;
-}
-
 h2 {
   font-size: 1.3em;
   margin-bottom: .4em;
@@ -331,8 +315,7 @@ table td.forks {
   padding-right: 2em;
 }
 
-pre, code {
-  font-size: 0.8em;
+pre, code, code span {
   font-family: "Monaco", "Courier";
 }
 
@@ -341,6 +324,7 @@ pre, code {
   margin-bottom: 1em;
   margin-top: 1em;
   padding: 0.2em 0.5em 0.2em 0.5em;
+  background-color: #edeff1;
   border: 1px solid #e3e3e3;
   font-family: "Monaco", "Courier";
   font-size: 0.8em;
@@ -352,13 +336,11 @@ pre, code {
   background-color: #f8f8f8;
   border-radius: 0.2em;
   font-family: "Monaco", "Courier";
-  font-size: 0.8em;
 }
 
-.article pre > code, .article code > span {
+.article pre > code {
   font-family: "Monaco", "Courier";
   background-color: inherit;
-  font-size: 13px;
   line-height: 1.7em;
   padding: 0;
   border: 0;

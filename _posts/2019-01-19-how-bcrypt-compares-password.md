@@ -9,7 +9,6 @@ Creating password in database:
 ```ruby
 > password = 'secret'
 > encrypted_password_in_database = BCrypt::Password.create(password)
-
 ```
 
 Comparing password:
