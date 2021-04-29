@@ -4,8 +4,6 @@ title: Auto Resize JTable Column Width
 meta-description: A simple function to auto resize any JTable
 ---
 
-# {{ page.title }}
-
 This code should resize your JTable column width based on the contents of the header and data.
 
 {% highlight java %}

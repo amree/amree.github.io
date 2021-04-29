@@ -4,8 +4,6 @@ title: Printing to Zebra S4M Using Java and ZPL II
 meta-description: Some code examples for Zebra S4M using Java and ZPL II
 ---
 
-# {{ page.title }}
-
 Apparently there're some codes scattered on the net telling people that you can print to a Zebra printer by sending ZPL II codes using `PrintService`. But the problem is, it's not working, I don't know why, maybe because of a different version of printer or model but I'm pretty sure the thing that came out from the printer are just ordinary texts not barcode which is what the code was supposed to output.
 
 ##New Version
@@ -54,24 +52,24 @@ import javax.print.attribute.standard.PrinterName;
 public class SimplePrint {
 
    public static void main(String[] args) {
-       
+
        try {
-           
+
            PrintService psZebra = null;
            String sPrinterName = null;
            PrintService[] services = PrintServiceLookup.lookupPrintServices(null, null);
-           
+
            for (int i = 0; i < services.length; i++) {
-               
+
                PrintServiceAttribute attr = services[i].getAttribute(PrinterName.class);
                sPrinterName = ((PrinterName) attr).getValue();
-               
+
                if (sPrinterName.toLowerCase().indexOf("zebra") >= 0) {
                    psZebra = services[i];
                    break;
                }
            }
-           
+
            if (psZebra == null) {
                System.out.println("Zebra printer is not found.");
                return;
@@ -84,10 +82,10 @@ public class SimplePrint {
            DocFlavor flavor = DocFlavor.BYTE_ARRAY.AUTOSENSE;
            Doc doc = new SimpleDoc(by, flavor, null);
            job.print(doc, null);
-           
+
        } catch (PrintException e) {
            e.printStackTrace();
-       }      
+       }
    }
 }
 {% endhighlight %}
@@ -106,16 +104,16 @@ public class FtpPrint {
 
        try {
 
-           FTPClient f = new FTPClient();            
+           FTPClient f = new FTPClient();
 
            f.connect("10.1.127.3");
            f.login("anonymous", "");
-           f.setFileType(FTP.ASCII_FILE_TYPE);                            
+           f.setFileType(FTP.ASCII_FILE_TYPE);
 
            FileInputStream in = new FileInputStream("/path/to/file");
            if (f.storeFile("filename", in)) {
                System.out.println("Upload ok");
-           }                
+           }
 
            f.logout();
            f.disconnect();

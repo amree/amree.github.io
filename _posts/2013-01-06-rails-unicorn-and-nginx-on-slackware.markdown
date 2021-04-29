@@ -4,8 +4,6 @@ title: Rails, Unicorn and Nginx on Slackware
 meta-description: Deploying Rails on Slackware using Unicorn and Nginx
 ---
 
-# {{ page.title }}
-
 I was trying to deploy a Rails application using Apache and got into some problems when I tried to
 configure the app so that Apache will be the one that serves the precompiled assets (javascripts,
 css, images and others). Since I'm on tight deadline (yeah, I should've tested production mode much

@@ -4,8 +4,6 @@ title: Adding memcached support to PHP in Slackware 13.1
 meta-description: Configure your PHP to work with memcached in Slackware 13.1
 ---
 
-# {{ page.title }}
-
 I just started learning Zend Framework and in one of the tutorials I read, I need to enable memcached in my PHP which is not available by default.
 
 1. Install [libevent](http://slackbuilds.org/repository/13.1/libraries/libevent/).

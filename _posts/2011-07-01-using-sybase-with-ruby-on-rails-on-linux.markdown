@@ -4,8 +4,6 @@ title: Using Sybase with Ruby on Rails on Linux
 meta-description: Configure your Ruby on Rails to work with Sybase on Linux
 ---
 
-# {{ page.title }}
-
 	Updated: 22 May 2012
 
 This guide will help you (mostly will help me in the future) to configure your Ruby on Rails to support connection to Sybase. I wrote this tutorial after everything’s good, so, I might miss a few steps that I’ve forgotten. Feel free to comment about it. With some adjustments, this guide **will also works with Mac OS X**.
@@ -22,14 +20,14 @@ This guide will help you (mostly will help me in the future) to configure your R
 3. Test the configuration, you should get something like this:
 
 		$ tsql -S myserver -U username
-		
+
 		locale is "C"
 		locale charset is "ANSI_X3.4-1968"
 		using default charset "ISO-8859-1"
 		Msg 5704 (severity 10, state 1) from ???:
 			"Changed client character set setting to 'iso_1'.
 		"
-		1> 
+		1>
 
 4. Put this gems in your `Gemfile` and run `bundle`:
 
@@ -41,17 +39,17 @@ This guide will help you (mostly will help me in the future) to configure your R
 		development:
 		  adapter: sybase
 		  dataserver: myserver
-		  username: 
-		  password: 
-		  database: 
-		  
+		  username:
+		  password:
+		  database:
+
 6. You can try some query using your `rails console` to make sure everything works fine.
 
 7. If you're trying to connect from your `irb` directly without using ActiveRecord you may want to put additional parameters. This works for me:
 
 		client = TinyTds::Client.new(
-					:username => '', 
-					:password => '', 
-					:dataserver => 'myserver',  
-					:tds_version => '100', 
-					:encoding => 'iso_1') 
+					:username => '',
+					:password => '',
+					:dataserver => 'myserver',
+					:tds_version => '100',
+					:encoding => 'iso_1')

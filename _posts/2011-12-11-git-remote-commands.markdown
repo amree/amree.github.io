@@ -4,8 +4,6 @@ title: Git Remote Commands
 meta-description: Some useful commands for git remote branches
 ---
 
-# {{ page.title }}
-
 View some remote **information**:
 
 	git remote show origin
@@ -41,4 +39,3 @@ Make an existing git branch to **track a remote** branch:
 **Checkout** a remote branch and **track** it:
 
 	git checkout -t origin/newfeature
-

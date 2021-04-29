@@ -4,8 +4,6 @@ title: Manage Multiple App URL in Local Development
 meta-description: Manage Multiple App URL in Local Development using haproxy
 ---
 
-# {{ page.title }}
-
 These days we might have multiple local applications that are running on different ports (e.g: `http://localhost:3000, http://localhost:3001` and so on). This is pretty troublesome as we have to remember which application is running on which port.
 
 `haproxy` can redirect a URL to a certain host with different port (this is impossible with `hosts`). Here's how we can do it in OS X:

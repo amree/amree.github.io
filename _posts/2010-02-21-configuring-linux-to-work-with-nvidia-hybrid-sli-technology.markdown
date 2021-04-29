@@ -4,11 +4,9 @@ title: Configuring Linux to work with NVidia Hybrid SLI Technology
 meta-description: Configure your Linux to work with NVidia Hybrid SLI technology
 ---
 
-# {{ page.title }}
-
 First of all, at the time of this writing, NVIDIA Hybrid SLI Technology is [not supported](http://www.nvnews.net/vbulletin/showpost.php?p=1613349&postcount=2) on Linux and without proper configuration, you won’t even be able to load your Desktop Environment such as Xfce.
 
-That’s not the only problem, based on an [interview](http://www.nvnews.net/articles/hybrid_sli_interview/index.shtml) with NVIDIA’s Tom Petersen, one of its main feature is called HybridPower which basically allows users to shut off the graphics card when not needed and dramatically reduce power consumption. This means, there is a possibility that if we can’t find a way to turn off the second GPU, it will consume more power that it should be. 
+That’s not the only problem, based on an [interview](http://www.nvnews.net/articles/hybrid_sli_interview/index.shtml) with NVIDIA’s Tom Petersen, one of its main feature is called HybridPower which basically allows users to shut off the graphics card when not needed and dramatically reduce power consumption. This means, there is a possibility that if we can’t find a way to turn off the second GPU, it will consume more power that it should be.
 
 But that’s another problem. Right now, we just want to boot into our Desktop Environment properly.
 

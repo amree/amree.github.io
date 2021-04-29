@@ -4,8 +4,6 @@ title: About Proc, Lambda and Block
 meta-description: About Proc, Lambda and Block
 ---
 
-# {{ page.title }}
-
 I keep on searching for this topic, so I guess it's time I put it on my blog.
 
 

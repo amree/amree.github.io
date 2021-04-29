@@ -4,11 +4,9 @@ title: How to enable MySQL Support in Qt SDK for Windows
 meta-description: How to enable MySQL Support in Qt SDK for Windows
 ---
 
-# {{ page.title }}
-
 It has been quite a while since I wrote the previous guide. Since that particular post gained a lot of visitors, I decided to write a new guide based on the new Qt SDK and MySQL so that it will help people with new version for both softwares.
 
-Download Qt SDK and install it. In my case, I installed it at `C:\QtSDK`. You must make sure that you’ve chosen to install Qt Sources. If you have Qt SDK installed but you haven’t install Qt sources, just go to **Start > All Programs > Qt SDK > Maintain Qt SDK** to install it. 
+Download Qt SDK and install it. In my case, I installed it at `C:\QtSDK`. You must make sure that you’ve chosen to install Qt Sources. If you have Qt SDK installed but you haven’t install Qt sources, just go to **Start > All Programs > Qt SDK > Maintain Qt SDK** to install it.
 
 ![](/images/posts/2011-07-11-qt.png)
 
@@ -16,7 +14,7 @@ Download MySQL and install it. In my case, I choose to install it at:
 
 C:\Program Files (x86)\MySQL\MySQL Server 5.5.
 
-You don’t need to install everything if you want to compile the plugin. Make sure you will at least choose to **install Client C API Library**. 
+You don’t need to install everything if you want to compile the plugin. Make sure you will at least choose to **install Client C API Library**.
 
 ![](/images/posts/2011-07-11-mysql.png)
 

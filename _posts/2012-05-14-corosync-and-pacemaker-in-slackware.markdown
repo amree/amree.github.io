@@ -4,8 +4,6 @@ title: Corosync and Pacemaker in Slackware
 meta-description: How to setup and use Corosync and Pacemaker in Slackware
 ---
 
-# {{ page.title }}
-
 This will be multi part post about high availability solution for Slackware. My first post will be about Corosync and Pacemaker.
 
 You need to combine Corosync and Pacemaker with other distributed storage system such as [DRBD](http://www.drbd.org/)/[OCFS2](http://oss.oracle.com/projects/ocfs2/)/[GFS](http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/5/html-single/Global_File_System_2/). I'll talk about these stacks in another post.
@@ -298,8 +296,3 @@ The MySQL data is not syncronized, this post is just about [Corosync](http://www
 20. Try turning off `Node 1` or `Node 2` and see how MySQL switches side from both of the nodes.
 
 I think that's it, next tutorial should be mainly about DRBD. Good luck!
-
-
-
-
-

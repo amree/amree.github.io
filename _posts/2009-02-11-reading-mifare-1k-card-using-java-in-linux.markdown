@@ -4,8 +4,6 @@ title: Reading Mifare 1K Card using Java in Linux
 meta-description: How to read Mifare 1K card using Java in Linux
 ---
 
-# {{ page.title }}
-
 ## The Story
 
 In the end of last year, my friends and I were tasked to read our staff card. The main objective was pretty simple which is to create a library where we don’t have to depend on the vendor every time we want to read our own staff card and the library should also work in Linux and Windows (that means Java to us).
@@ -59,7 +57,7 @@ import javax.smartcardio.TerminalFactory;
 public class Read {
 
    public Read() {
-       
+
        try {
 
            CardTerminal terminal = null;
@@ -168,7 +166,7 @@ public class Read {
 
 Make sure you have set the right connection protocol at line 43, as pointed out by Animesh (previous commentator).
 
-These codes use Java API to read the smartcard, but I suggest you use the jpcsc library. It’s much more robust when it comes to error handling. 
+These codes use Java API to read the smartcard, but I suggest you use the jpcsc library. It’s much more robust when it comes to error handling.
 
 ## The APDU Commands
 
@@ -178,7 +176,7 @@ These codes use Java API to read the smartcard, but I suggest you use the jpcsc 
 	+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
 	|   1    |   2    |   3    |   4    |   5    |   6    |   7    |   8    |   9    |   10   |   11   |
 	+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
-	
+
 	1   = CLA : (Fixed)
 	2   = INS : (Fixed)
 	3   = P1  : (Fixed)
@@ -190,28 +188,28 @@ These codes use Java API to read the smartcard, but I suggest you use the jpcsc 
 	9   = XX  :     |
 	10  = XX  :     |
 	11  = XX  : ----+
-	
+
 	# Autenthicate
 	+--------+--------+--------+--------+--------+--------+
 	|   FF   |   88   |   00   |   01   |   60   |   00   |
 	+--------+--------+--------+--------+--------+--------+
 	|   1    |   2    |   3    |   4    |   5    |   6    |
 	+--------+--------+--------+--------+--------+--------+
-	
+
 	1   = CLA : (Fixed)
 	2   = INS : (Fixed)
 	3   = P1  : (Fixed)
 	4   = P2  : Block Number you want to authenticate in Hex
 	5   = P3  : Mifare Block Number LSB
 	6   = XX  : Key type, could be 00, 1A, 1B
-	
+
 	# Read
 	+--------+--------+--------+--------+--------+
 	|   FF   |   B0   |   00   |   01   |   10   |
 	+--------+--------+--------+--------+--------+
 	|   1    |   2    |   3    |   4    |   5    |
 	+--------+--------+--------+--------+--------+
-	
+
 	1   = CLA : (Fixed)
 	2   = INS : (Fixed)
 	3   = P1  : (Fixed)

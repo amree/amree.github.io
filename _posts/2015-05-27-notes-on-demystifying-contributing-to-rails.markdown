@@ -4,8 +4,6 @@ title: Notes on Demystifying Contributing to Rails
 meta-description: My notes on Breaking Down the Barrier - Demystifying Contributing to Rails by Eileen Uchitelle from RailsConf 2015
 ---
 
-# {{ page.title }}
-
 This is my notes for presentation by [Eileen Uchitelle](https://twitter.com/eileencodes) from RailsConf 2015. You can find the video at [Confreaks](http://confreaks.tv/videos/railsconf2015-breaking-down-the-barrier-demystifying-contributing-to-rails). The slide can be found at [Speaker Deck](https://speakerdeck.com/eileencodes/breaking-down-the-barrier-demystifying-contributing-to-rails).
 
 This presentation is more about how to get yourself ready to contribute to Rails at GitHub.
@@ -147,7 +145,7 @@ Example of the output:
     (0.0ms) commit transaction
     (0.1ms) SELECT COUNT(*) FROM "comments" WHERE "comments"."post_id" = ? [["post_id", 1]]
     ../activerecord/lib/active_record/associations/ collection_proxy.rb 442
-    (0.0ms) SELECT COUNT(*) FROM "comments" WHERE "comments"."post_id" = ? [["post_id", 1]] 
+    (0.0ms) SELECT COUNT(*) FROM "comments" WHERE "comments"."post_id" = ? [["post_id", 1]]
 
 ### Use Ctags
 
@@ -194,7 +192,7 @@ Output example:
     .../activerecord/lib/active_record/callbacks.rb:301:in `block in create_or_update'
     .../activesupport/lib/active_support/callbacks.rb:86:in `run_callbacks'
     .../activerecord/lib/active_record/callbacks.rb:301:in `create_or_update'
-    .../activerecord/lib/active_record/persistence.rb:151:in `save!' 
+    .../activerecord/lib/active_record/persistence.rb:151:in `save!'
 
 Notice the first line of the output:
 
@@ -386,4 +384,3 @@ I guess that's it. Thanks for reading :)
 
 1. [http://www.eileencodes.com/posts/getting-your-local-environment-setup-to-contribute-to-rails](http://www.eileencodes.com/posts/getting-your-local-environment-setup-to-contribute-to-rails)
 2. [https://www.atlassian.com/git/tutorials/rewriting-history/git-reflog](https://www.atlassian.com/git/tutorials/rewriting-history/git-reflog)
-

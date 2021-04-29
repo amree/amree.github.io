@@ -4,8 +4,6 @@ title: Getting Started with Rails on Windows
 meta-description: Running your first Rails app on Windows
 ---
 
-# {{ page.title }}
-
 First of all, let's get one thing straight. This is not a guide for those who are trying their best to not use Unix like environment in develop Rails application. This is more like a guide to do almost everything in Linux without replacing your Windows.
 
 So, I need to teach my colleagues in the next two weeks on Ruby on Rails introductionary class. Since all of the computer labs are installed with Windows 7, I had to find a way to ensure a proper working environment for the students, hence, this article.

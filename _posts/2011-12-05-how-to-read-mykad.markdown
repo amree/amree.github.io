@@ -4,8 +4,6 @@ title: How to Read MyKad
 meta-description: How to read MyKad in Linux and Windows.  Application samples written in Java, Visual C and Visual Basic are included.
 ---
 
-# {{ page.title }}
-
 I've decided to merge posts about reading MyKad from my previous blog into a single post.
 
 Notes:

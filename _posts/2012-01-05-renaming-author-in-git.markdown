@@ -4,8 +4,6 @@ title: Renaming Author in Git
 meta-description: Renaming Author in Git
 ---
 
-# {{ page.title }}
-
 In Linux, I use Netbeans a lot as a diff viewer. For now, I think it's the best diff viewer in Linux with side by side comparison and its easy to navigate UI. Plus, it's free.
 
 Recently, I noticed that there are other authors with a different name in my Git's history. Apparently, I've accidentally committed into the repository using a different author's name and email. This is mainly due to the way Netbeans stores author's information history.
@@ -44,7 +42,7 @@ export GIT_COMMITTER_EMAIL="$cm"
 
 {% endhighlight %}
 
-To push it into the server, I need to use `git push -f` instead of `git push`. If you use the latter command, you'll end up with a merged history (every commit will have another one identical to it). 
+To push it into the server, I need to use `git push -f` instead of `git push`. If you use the latter command, you'll end up with a merged history (every commit will have another one identical to it).
 
 If you use Redmine, you may need to fetch change set. Just run this command in your Redmine's directory:
 

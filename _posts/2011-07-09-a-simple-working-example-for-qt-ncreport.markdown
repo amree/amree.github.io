@@ -4,13 +4,11 @@ title: A Simple Working Example for Qt NCReport
 meta-description: A Simple Working Example for Qt NCReport (with source codes)
 ---
 
-# {{ page.title }}
-
 ## Windows
 
 1. Download NCReport with MingW for Windows.
 
-1. Install NCReport at 
+1. Install NCReport at
 
 		C:\NCReport\2.6.1.mingw.eval
 

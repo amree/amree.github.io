@@ -4,8 +4,6 @@ title: Automatically Sign JARs Using Ant and Bash
 meta-description: This script will basically sign the jars after all the jars has been build.
 ---
 
-# {{ page.title }}
-
 This guide is more towards Netbeans project, but it can be used as a reference for you to customize the script to suit your needs.
 
 **signer.bash**
@@ -36,6 +34,6 @@ Put this in the last line of your `build.xml` but it must before the closing tag
 
 This script will basically sign the jars after all the jars has been build. Please note that it'd better if you set all the path using absolute path.
 
-After this, you just have to use **Clean and Build** to generate the jars and also automatically sign it. This script will also sign all of your included libraries. 
+After this, you just have to use **Clean and Build** to generate the jars and also automatically sign it. This script will also sign all of your included libraries.
 
 Good luck :)

@@ -4,8 +4,6 @@ title: Running Multiple MySQL on a Single Server
 meta-description: How to run multiple MySQL instance on a single server
 ---
 
-# {{ page.title }}
-
 I’m pretty sure I’m going to forget these steps, so, just to be safe, I’m putting it here.
 
 I’m dividing this tutorial into two sections, one for default MySQL that comes from Slackware and the other one is for new MySQL.
@@ -29,12 +27,12 @@ These are the settings that I’ve changed from the default file (other settings
 	[client]
 	port = 3307
 	socket = /var/run/mysql/mysql-1.sock
-	
+
 	[mysqld]
 	port = 3307
 	socket = /var/run/mysql/mysql-1.sock
 	server-id = 10
-	
+
 	innodb_data_home_dir = /var/lib/mysql-1/
 	innodb_log_group_home_dir = /var/lib/mysql-1/
 
@@ -45,7 +43,7 @@ To run our newly configured MySQL instance, use this command:
 By checking background process, you should see something like this
 
 	$ ps ax | grep mysql
-	
+
 	23416 pts/1    S      0:00 /bin/sh /usr/bin/mysqld_safe --defaults-file=/etc/my-1.cnf --datadir=/var/lib/mysql-1
 	23515 pts/1    Sl     0:00 /usr/libexec/mysqld --defaults-file=/etc/my-1.cnf --basedir=/usr --datadir=/var/lib/mysql-1 --user=mysql --log-error=/var/lib/mysql-1/eebox.err --pid-file=/var/lib/mysql-1/eebox.pid --socket=/var/run/mysql/mysql-1.sock --port=3307
 
@@ -83,12 +81,12 @@ Download [MySQL Download](http://dev.mysql.com/downloads/) > MySQL Community Ser
 	[client]
 	port = 3308
 	socket = /var/run/mysql/mysql-2.sock
-	
+
 	[mysqld]
 	port = 3308
 	socket = /var/run/mysql/mysql-2.sock
 	server-id = 20
-	
+
 	innodb_data_home_dir = /var/lib/mysql-1/
 	innodb_log_group_home_dir = /var/lib/mysql-1/
 

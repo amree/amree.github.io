@@ -4,8 +4,6 @@ title: Getting Started with Xen on Slackware
 meta-description: How to install and setup Dom0 + DomU in Slackware
 ---
 
-# {{ page.title }}
-
 ## Install Slackware
 
 I'll be doing this on Slackware v13.37 64 bit.
