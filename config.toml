@@ -53,6 +53,9 @@ paginate = 5
     [markup.goldmark.renderer]
       unsafe = true
 
+[permalinks]
+  posts = "/:year/:month/:day/:title/"
+
 [languages]
   [languages.en]
     languageName = "English"
