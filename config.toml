@@ -31,6 +31,7 @@ paginate = 5
   # set post to show the last updated
   # If you use git, you can set `enableGitInfo` to `true` and then post will automatically get the last updated
   showLastUpdated = false
+  # enableGitInfo = true
   # Provide a string as a prefix for the last update date. By default, it looks like this: 2020-xx-xx [Updated: 2020-xx-xx] :: Author
   # updatedDatePrefix = "Updated"
 
@@ -77,6 +78,11 @@ paginate = 5
       logoHomeLink = "/"
 
     [languages.en.menu]
+      [[languages.en.menu.main]]
+        identifier = "all-posts"
+        name = "All Posts"
+        url = "/all-posts"
+
       [[languages.en.menu.main]]
         identifier = "twitter"
         name = "Twitter"
