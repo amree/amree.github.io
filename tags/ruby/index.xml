@@ -51,7 +51,7 @@ being used. Sometimes we just forgot that we don&amp;rsquo;t need it anymore.&lt
 &lt;li>Reduce the number of routes by 91%&lt;/li>
 &lt;li>Reduce rake time by 55%&lt;/li>
 &lt;/ul>
-&lt;p>Thanks for reading&lt;/p></content></item><item><title>How to Integrate TradingView's HTML5 Charting Library with Ruby on Rails v6</title><link>https://amree.github.io/2020/11/23/how-to-integrate-tradingviews-html5-charting-library-with-ruby-on-rails-v6/</link><pubDate>Mon, 23 Nov 2020 00:00:00 +0000</pubDate><guid>https://amree.github.io/2020/11/23/how-to-integrate-tradingviews-html5-charting-library-with-ruby-on-rails-v6/</guid><description>&lt;p>As you probably know, the charting library is not accessible publicly. You need
+&lt;p>Thanks for reading&lt;/p></content></item><item><title>Integrate TradingView's HTML5 Charting Library with Ruby on Rails v6</title><link>https://amree.github.io/2020/11/23/integrate-tradingviews-html5-charting-library-with-ruby-on-rails-v6/</link><pubDate>Mon, 23 Nov 2020 00:00:00 +0000</pubDate><guid>https://amree.github.io/2020/11/23/integrate-tradingviews-html5-charting-library-with-ruby-on-rails-v6/</guid><description>&lt;p>As you probably know, the charting library is not accessible publicly. You need
 to request access from them. So, I can&amp;rsquo;t really give a complete repo as an
 example. I did however open a PR at
 &lt;a href="https://github.com/tradingview/charting-library-examples/pull/197,">https://github.com/tradingview/charting-library-examples/pull/197,&lt;/a> but I&amp;rsquo;m not
