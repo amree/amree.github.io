@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Amree Zaid</title><link>https://amree.github.io/</link><description>Recent content on Amree Zaid</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 09 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://amree.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Speed Up Ruby on Rails Development Environment</title><link>https://amree.github.io/posts/speed-up-your-ruby-on-rails-development/</link><pubDate>Sun, 09 May 2021 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/speed-up-your-ruby-on-rails-development/</guid><description>&lt;p>There will be a time when your Rails development environment started to become
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Amree Zaid</title><link>https://amree.github.io/</link><description>Recent content on Amree Zaid</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 09 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://amree.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Speed Up Ruby on Rails Development Environment</title><link>https://amree.github.io/2021/05/09/speed-up-ruby-on-rails-development-environment/</link><pubDate>Sun, 09 May 2021 00:00:00 +0000</pubDate><guid>https://amree.github.io/2021/05/09/speed-up-ruby-on-rails-development-environment/</guid><description>&lt;p>There will be a time when your Rails development environment started to become
 very slow due to multiple reasons, but mostly because your codebase is very big
 and the monolith architecture is just too sweet for you to pass on.&lt;/p></description><content>&lt;p>There will be a time when your Rails development environment started to become
 very slow due to multiple reasons, but mostly because your codebase is very big
@@ -51,7 +51,7 @@ being used. Sometimes we just forgot that we don&amp;rsquo;t need it anymore.&lt
 &lt;li>Reduce the number of routes by 91%&lt;/li>
 &lt;li>Reduce rake time by 55%&lt;/li>
 &lt;/ul>
-&lt;p>Thanks for reading&lt;/p></content></item><item><title>How to Integrate TradingView's HTML5 Charting Library with Ruby on Rails v6</title><link>https://amree.github.io/posts/how-to-integrate-tradingview-s-html5-charting-library-with-ruby-on-rails-v6/</link><pubDate>Mon, 23 Nov 2020 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/how-to-integrate-tradingview-s-html5-charting-library-with-ruby-on-rails-v6/</guid><description>&lt;p>As you probably know, the charting library is not accessible publicly. You need
+&lt;p>Thanks for reading&lt;/p></content></item><item><title>How to Integrate TradingView's HTML5 Charting Library with Ruby on Rails v6</title><link>https://amree.github.io/2020/11/23/how-to-integrate-tradingviews-html5-charting-library-with-ruby-on-rails-v6/</link><pubDate>Mon, 23 Nov 2020 00:00:00 +0000</pubDate><guid>https://amree.github.io/2020/11/23/how-to-integrate-tradingviews-html5-charting-library-with-ruby-on-rails-v6/</guid><description>&lt;p>As you probably know, the charting library is not accessible publicly. You need
 to request access from them. So, I can&amp;rsquo;t really give a complete repo as an
 example. I did however open a PR at
 &lt;a href="https://github.com/tradingview/charting-library-examples/pull/197,">https://github.com/tradingview/charting-library-examples/pull/197,&lt;/a> but I&amp;rsquo;m not
@@ -132,7 +132,7 @@ window.&lt;span style="color:#a6e22e">addEventListener&lt;/span>(&lt;span style=
 &amp;lt;/&lt;span style="color:#f92672">div&lt;/span>&amp;gt;
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>TradingView will use that ID to load the chart.&lt;/p>
 &lt;p>Just start your server and that&amp;rsquo;s it. You should have a working TradingView
-chart by now 👍&lt;/p></content></item><item><title>Exporting data from RDS to S3 using AWS Glue</title><link>https://amree.github.io/posts/exporting-data-from-rds-to-s3-using-aws-glue/</link><pubDate>Mon, 05 Oct 2020 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/exporting-data-from-rds-to-s3-using-aws-glue/</guid><description>&lt;h2 id="overview">Overview&lt;/h2>
+chart by now 👍&lt;/p></content></item><item><title>Exporting data from RDS to S3 using AWS Glue</title><link>https://amree.github.io/2020/10/05/exporting-data-from-rds-to-s3-using-aws-glue/</link><pubDate>Mon, 05 Oct 2020 00:00:00 +0000</pubDate><guid>https://amree.github.io/2020/10/05/exporting-data-from-rds-to-s3-using-aws-glue/</guid><description>&lt;h2 id="overview">Overview&lt;/h2>
 &lt;p>Why would we even want to do this? Just imagine if you have data that are
 infrequently accessed. Keeping it in your RDS might costs you more than it
 should. Besides, having big table is gonna cause you a bigger headache with your
@@ -385,7 +385,7 @@ Table&lt;/li>
 &lt;li>&lt;a href="https://aws.amazon.com/blogs/big-data/how-to-access-and-analyze-on-premises-data-stores-using-aws-glue/">https://aws.amazon.com/blogs/big-data/how-to-access-and-analyze-on-premises-data-stores-using-aws-glue/&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://stackoverflow.com/questions/34948296/using-pyspark-to-connect-to-postgresql">https://stackoverflow.com/questions/34948296/using-pyspark-to-connect-to-postgresql&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://dev.to/cloudforecast/watch-out-for-unexpected-s3-cost-when-using-athena-5hdm">https://dev.to/cloudforecast/watch-out-for-unexpected-s3-cost-when-using-athena-5hdm&lt;/a>&lt;/li>
-&lt;/ul></content></item><item><title>Order Update with Two-Step Payment</title><link>https://amree.github.io/posts/order-update-with-two-step-payment/</link><pubDate>Sat, 09 May 2020 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/order-update-with-two-step-payment/</guid><description>&lt;p>I was asked about this from my latest job application. Didn&amp;rsquo;t realize it&amp;rsquo;s going
+&lt;/ul></content></item><item><title>Order Update with Two-Step Payment</title><link>https://amree.github.io/2020/05/09/order-update-with-two-step-payment/</link><pubDate>Sat, 09 May 2020 00:00:00 +0000</pubDate><guid>https://amree.github.io/2020/05/09/order-update-with-two-step-payment/</guid><description>&lt;p>I was asked about this from my latest job application. Didn&amp;rsquo;t realize it&amp;rsquo;s going
 to be this long so I thought I should share it publicly, easier for me to show
 it to the next interviewer. The exact question was:&lt;/p></description><content>&lt;p>I was asked about this from my latest job application. Didn&amp;rsquo;t realize it&amp;rsquo;s going
 to be this long so I thought I should share it publicly, easier for me to show
@@ -472,7 +472,7 @@ ensure I don&amp;rsquo;t pollute the main service directory.&lt;/p>
 such as the ability to save and delete credit cards. The checkout is also easier
 as the customer can just select from the previous credit card. The support
 couldn&amp;rsquo;t be happier as well as they don&amp;rsquo;t have to handle manual order updates.&lt;/p>
-&lt;p>I think I better stop here lol&lt;/p></content></item><item><title>Rails 6 with Bootstrap (Webpacker for JS, Asset Pipeline for CSS)</title><link>https://amree.github.io/posts/rails-6-with-bootstrap-webpacker-for-js-asset-pipeline-for-css/</link><pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/rails-6-with-bootstrap-webpacker-for-js-asset-pipeline-for-css/</guid><description>&lt;p>I haven&amp;rsquo;t really worked on Rails for a while so I decided to take a sneak peek
+&lt;p>I think I better stop here lol&lt;/p></content></item><item><title>Rails 6 with Bootstrap (Webpacker for JS, Asset Pipeline for CSS)</title><link>https://amree.github.io/2020/02/02/rails-6-with-bootstrap-webpacker-for-js-asset-pipeline-for-css/</link><pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate><guid>https://amree.github.io/2020/02/02/rails-6-with-bootstrap-webpacker-for-js-asset-pipeline-for-css/</guid><description>&lt;p>I haven&amp;rsquo;t really worked on Rails for a while so I decided to take a sneak peek
 on what&amp;rsquo;s going in Ruby on Rails land.&lt;/p>
 &lt;p>The first thing I want to try is to integrate Rails with Bootstrap. It seems
 like a lot of tutorials are focusing on how to use webpack for CSS and JS.&lt;/p></description><content>&lt;p>I haven&amp;rsquo;t really worked on Rails for a while so I decided to take a sneak peek
@@ -668,7 +668,7 @@ $secondary&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9
 &lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#34;bootstrap&amp;#34;&lt;/span>;
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Checkout this &lt;a href="https://github.com/twbs/bootstrap/blob/master/scss/_variables.scss">variables list&lt;/a> and
 you can find more info at &lt;a href="https://getbootstrap.com/docs/4.1/getting-started/theming/#theme-colors">Bootstrap&amp;rsquo;s Documentation&lt;/a>.
-There&amp;rsquo;re lots more that you can actually do.&lt;/p></content></item><item><title>Trick to Make Telegram Bot Private</title><link>https://amree.github.io/posts/make-telegram-bot-private/</link><pubDate>Thu, 19 Dec 2019 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/make-telegram-bot-private/</guid><description>&lt;p>Recently, I learned a trick to make my Telegram bot private to certain users.&lt;/p>
+There&amp;rsquo;re lots more that you can actually do.&lt;/p></content></item><item><title>Trick to Make Telegram Bot Private</title><link>https://amree.github.io/2019/12/19/trick-to-make-telegram-bot-private/</link><pubDate>Thu, 19 Dec 2019 00:00:00 +0000</pubDate><guid>https://amree.github.io/2019/12/19/trick-to-make-telegram-bot-private/</guid><description>&lt;p>Recently, I learned a trick to make my Telegram bot private to certain users.&lt;/p>
 &lt;p>I tried not to create the whole CRUD thingy for the membership and after
 Googling I found out about one of the API provided.&lt;/p></description><content>&lt;p>Recently, I learned a trick to make my Telegram bot private to certain users.&lt;/p>
 &lt;p>I tried not to create the whole CRUD thingy for the membership and after
@@ -709,7 +709,7 @@ admin, compared to a group that can be added as a normal user.&lt;/p>
 exist.&lt;/p>
 &lt;p>As a summary, with this trick, you don&amp;rsquo;t have to build the whole CRUD and can
 reuse the group/channel that you already have (assuming you have one).&lt;/p>
-&lt;p>That&amp;rsquo;s it, folks, thanks for reading&lt;/p></content></item><item><title>How Bcrypt Compares Password</title><link>https://amree.github.io/posts/how-bcrypt-compares-password/</link><pubDate>Sat, 19 Jan 2019 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/how-bcrypt-compares-password/</guid><description>&lt;p>I&amp;rsquo;ve always wondered about this.&lt;/p></description><content>&lt;p>I&amp;rsquo;ve always wondered about this.&lt;/p>
+&lt;p>That&amp;rsquo;s it, folks, thanks for reading&lt;/p></content></item><item><title>How Bcrypt Compares Password</title><link>https://amree.github.io/2019/01/19/how-bcrypt-compares-password/</link><pubDate>Sat, 19 Jan 2019 00:00:00 +0000</pubDate><guid>https://amree.github.io/2019/01/19/how-bcrypt-compares-password/</guid><description>&lt;p>I&amp;rsquo;ve always wondered about this.&lt;/p></description><content>&lt;p>I&amp;rsquo;ve always wondered about this.&lt;/p>
 &lt;p>Creating password in database:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">&lt;span style="color:#f92672">&amp;gt;&lt;/span> password &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;secret&amp;#39;&lt;/span>
 &lt;span style="color:#f92672">&amp;gt;&lt;/span> encrypted_password_in_database &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">BCrypt&lt;/span>&lt;span style="color:#f92672">::&lt;/span>&lt;span style="color:#66d9ef">Password&lt;/span>&lt;span style="color:#f92672">.&lt;/span>create(password)
@@ -723,7 +723,7 @@ bcrypt-ruby project decided not to go with that. Read more about it here:&lt;/p>
 &lt;li>&lt;a href="https://github.com/codahale/bcrypt-ruby/issues/42">https://github.com/codahale/bcrypt-ruby/issues/42&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://github.com/codahale/bcrypt-ruby/pull/43">https://github.com/codahale/bcrypt-ruby/pull/43&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://github.com/codahale/bcrypt-ruby/pull/119">https://github.com/codahale/bcrypt-ruby/pull/119&lt;/a>&lt;/li>
-&lt;/ul></content></item><item><title>Manage Multiple App URL in Local Development</title><link>https://amree.github.io/posts/manage-multiple-app-url-in-local-development/</link><pubDate>Mon, 14 Jan 2019 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/manage-multiple-app-url-in-local-development/</guid><description>&lt;p>These days we might have multiple local applications that are running on
+&lt;/ul></content></item><item><title>Manage Multiple App URL in Local Development</title><link>https://amree.github.io/2019/01/14/manage-multiple-app-url-in-local-development/</link><pubDate>Mon, 14 Jan 2019 00:00:00 +0000</pubDate><guid>https://amree.github.io/2019/01/14/manage-multiple-app-url-in-local-development/</guid><description>&lt;p>These days we might have multiple local applications that are running on
 different ports (e.g: &lt;code>http://localhost:3000, http://localhost:3001&lt;/code> and so on).
 This is pretty troublesome as we have to remember which application is running
 on which port.&lt;/p></description><content>&lt;p>These days we might have multiple local applications that are running on
@@ -769,7 +769,7 @@ server admin 127.0.0.1:3002
 127.0.0.1 api.myapp.local
 &lt;/code>&lt;/pre>&lt;p>Run this command to ensure &lt;code>haproxy&lt;/code> will always be running&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">brew services start haproxy
-&lt;/code>&lt;/pre>&lt;/div></content></item><item><title>About Proc, Lambda and Block</title><link>https://amree.github.io/posts/about-proc-lambda-and-block/</link><pubDate>Sat, 08 Apr 2017 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/about-proc-lambda-and-block/</guid><description>&lt;p>I keep on searching for this topic, so I guess it&amp;rsquo;s time I put it on my blog.&lt;/p></description><content>&lt;p>I keep on searching for this topic, so I guess it&amp;rsquo;s time I put it on my blog.&lt;/p>
+&lt;/code>&lt;/pre>&lt;/div></content></item><item><title>About Proc, Lambda and Block</title><link>https://amree.github.io/2017/04/08/about-proc-lambda-and-block/</link><pubDate>Sat, 08 Apr 2017 00:00:00 +0000</pubDate><guid>https://amree.github.io/2017/04/08/about-proc-lambda-and-block/</guid><description>&lt;p>I keep on searching for this topic, so I guess it&amp;rsquo;s time I put it on my blog.&lt;/p></description><content>&lt;p>I keep on searching for this topic, so I guess it&amp;rsquo;s time I put it on my blog.&lt;/p>
 &lt;p>This is an example of a &lt;code>proc&lt;/code>:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">the_proc &lt;span style="color:#f92672">=&lt;/span> proc { puts &lt;span style="color:#e6db74">&amp;#34;I&amp;#39;m the proc&amp;#34;&lt;/span> }
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>To execute &lt;code>the_proc&lt;/code>, I need to explicityly to use:&lt;/p>
@@ -855,7 +855,7 @@ match &lt;span style="color:#e6db74">&amp;#34;/users&amp;#34;&lt;/span> &lt;span
 &lt;span style="color:#75715e"># match({ &amp;#34;/users&amp;#34; =&amp;gt; &amp;#34;users#index&amp;#34; })&lt;/span>
 match &lt;span style="color:#e6db74">&amp;#34;/login&amp;#34;&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;sessions#new&amp;#34;&lt;/span>
 &lt;span style="color:#66d9ef">end&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div></content></item><item><title>Notes on Demystifying Contributing to Rails</title><link>https://amree.github.io/posts/notes-on-demystifying-contributing-to-rails/</link><pubDate>Wed, 27 May 2015 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/notes-on-demystifying-contributing-to-rails/</guid><description>&lt;p>This is my notes for presentation by &lt;a href="https://twitter.com/eileencodes">Eileen
+&lt;/code>&lt;/pre>&lt;/div></content></item><item><title>Notes on Demystifying Contributing to Rails</title><link>https://amree.github.io/2015/05/27/notes-on-demystifying-contributing-to-rails/</link><pubDate>Wed, 27 May 2015 00:00:00 +0000</pubDate><guid>https://amree.github.io/2015/05/27/notes-on-demystifying-contributing-to-rails/</guid><description>&lt;p>This is my notes for presentation by &lt;a href="https://twitter.com/eileencodes">Eileen
 Uchitelle&lt;/a> from RailsConf 2015. You can find
 the video at &lt;a href="http://confreaks.tv/videos/railsconf2015-breaking-down-the-barrier-demystifying-contributing-to-rails">Confreaks&lt;/a>. The slide can be found at &lt;a href="https://speakerdeck.com/eileencodes/breaking-down-the-barrier-demystifying-contributing-to-rails">Speaker Deck&lt;/a>.&lt;/p></description><content>&lt;p>This is my notes for presentation by &lt;a href="https://twitter.com/eileencodes">Eileen
 Uchitelle&lt;/a> from RailsConf 2015. You can find
@@ -1150,7 +1150,7 @@ c6f43a6 HEAD@{13}: commit (amend): Fix spacing on bisect commands
 &lt;ol>
 &lt;li>&lt;a href="http://www.eileencodes.com/posts/getting-your-local-environment-setup-to-contribute-to-rails">http://www.eileencodes.com/posts/getting-your-local-environment-setup-to-contribute-to-rails&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.atlassian.com/git/tutorials/rewriting-history/git-reflog">https://www.atlassian.com/git/tutorials/rewriting-history/git-reflog&lt;/a>&lt;/li>
-&lt;/ol></content></item><item><title>Getting Started with Rails on Windows</title><link>https://amree.github.io/posts/getting-started-with-rails-on-windows/</link><pubDate>Tue, 03 Dec 2013 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/getting-started-with-rails-on-windows/</guid><description>&lt;p>First of all, let&amp;rsquo;s get one thing straight. This is not a guide for those who
+&lt;/ol></content></item><item><title>Getting Started with Rails on Windows</title><link>https://amree.github.io/2013/12/03/getting-started-with-rails-on-windows/</link><pubDate>Tue, 03 Dec 2013 00:00:00 +0000</pubDate><guid>https://amree.github.io/2013/12/03/getting-started-with-rails-on-windows/</guid><description>&lt;p>First of all, let&amp;rsquo;s get one thing straight. This is not a guide for those who
 are trying their best to not use Unix like environment in develop Rails
 application. This is more like a guide to do almost everything in Linux without
 replacing your Windows.&lt;/p></description><content>&lt;p>First of all, let&amp;rsquo;s get one thing straight. This is not a guide for those who
@@ -1231,7 +1231,7 @@ nano Gemfile
 just use your favourite editor to load that particular directory and start
 coding. It&amp;rsquo;s as if you&amp;rsquo;re doing development directly in the server. For
 everything else, make sure you&amp;rsquo;ll do it through Putty or through &lt;code>vagrant ssh&lt;/code>.&lt;/p>
-&lt;p>I guess that&amp;rsquo;s it. Good luck !&lt;/p></content></item><item><title>Setup Free Uptime Monitoring Service in Heroku</title><link>https://amree.github.io/posts/setup-free-uptime-monitoring-service-in-heroku/</link><pubDate>Fri, 28 Jun 2013 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/setup-free-uptime-monitoring-service-in-heroku/</guid><description>&lt;p>A free way for us to setup free version of uptime service.&lt;/p></description><content>&lt;p>A free way for us to setup free version of uptime service.&lt;/p>
+&lt;p>I guess that&amp;rsquo;s it. Good luck !&lt;/p></content></item><item><title>Setup Free Uptime Monitoring Service in Heroku</title><link>https://amree.github.io/2013/06/28/setup-free-uptime-monitoring-service-in-heroku/</link><pubDate>Fri, 28 Jun 2013 00:00:00 +0000</pubDate><guid>https://amree.github.io/2013/06/28/setup-free-uptime-monitoring-service-in-heroku/</guid><description>&lt;p>A free way for us to setup free version of uptime service.&lt;/p></description><content>&lt;p>A free way for us to setup free version of uptime service.&lt;/p>
 &lt;p>Clone the &lt;a href="https://github.com/fzaninotto/uptime.git">uptime&lt;/a> repository&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">git clone https://github.com/fzaninotto/uptime.git
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Get into the directory&lt;/p>
@@ -1281,7 +1281,7 @@ git commit -m &lt;span style="color:#e6db74">&amp;#39;Updated the configurations
 web.1: up 2013/06/28 19:03:30 &lt;span style="color:#f92672">(&lt;/span>~ 3m ago&lt;span style="color:#f92672">)&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Open your app&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">git push heroku master
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>That&amp;rsquo;s it, good luck! :)&lt;/p></content></item><item><title>Rails, Unicorn and Nginx on Slackware</title><link>https://amree.github.io/posts/rails-unicorn-and-nginx-on-slackware/</link><pubDate>Sun, 06 Jan 2013 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/rails-unicorn-and-nginx-on-slackware/</guid><description>&lt;p>I was trying to deploy a Rails application using Apache and got into some
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>That&amp;rsquo;s it, good luck! :)&lt;/p></content></item><item><title>Rails, Unicorn and Nginx on Slackware</title><link>https://amree.github.io/2013/01/06/rails-unicorn-and-nginx-on-slackware/</link><pubDate>Sun, 06 Jan 2013 00:00:00 +0000</pubDate><guid>https://amree.github.io/2013/01/06/rails-unicorn-and-nginx-on-slackware/</guid><description>&lt;p>I was trying to deploy a Rails application using Apache and got into some
 problems when I tried to configure the app so that Apache will be the one that
 serves the precompiled assets (javascripts, css, images and others). Since I&amp;rsquo;m
 on tight deadline (yeah, I should&amp;rsquo;ve tested production mode much more earlier),
@@ -1411,7 +1411,7 @@ X-Runtime: 0.017885
 X-Rack-Cache: miss
 Content-Encoding: gzip
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>I admit, this is a very simple config, but it&amp;rsquo;s good enough for a beginner like
-me to get started. Good luck!&lt;/p></content></item><item><title>Getting Started with Xen on Slackware</title><link>https://amree.github.io/posts/getting-started-with-xen-on-slackware/</link><pubDate>Wed, 12 Sep 2012 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/getting-started-with-xen-on-slackware/</guid><description>&lt;p>Here&amp;rsquo;s a guide on how to setup Xen virtualization in Slackware.&lt;/p></description><content>&lt;p>Here&amp;rsquo;s a guide on how to setup Xen virtualization in Slackware.&lt;/p>
+me to get started. Good luck!&lt;/p></content></item><item><title>Getting Started with Xen on Slackware</title><link>https://amree.github.io/2012/09/12/getting-started-with-xen-on-slackware/</link><pubDate>Wed, 12 Sep 2012 00:00:00 +0000</pubDate><guid>https://amree.github.io/2012/09/12/getting-started-with-xen-on-slackware/</guid><description>&lt;p>Here&amp;rsquo;s a guide on how to setup Xen virtualization in Slackware.&lt;/p></description><content>&lt;p>Here&amp;rsquo;s a guide on how to setup Xen virtualization in Slackware.&lt;/p>
 &lt;h2 id="install-slackware">Install Slackware&lt;/h2>
 &lt;p>I&amp;rsquo;ll be doing this on Slackware v13.37 64 bit.&lt;/p>
 &lt;ul>
@@ -1700,7 +1700,7 @@ I&amp;rsquo;ll update this post if I found anything worth of sharing.&lt;/p>
 &lt;li>&lt;a href="http://wiki.xen.org/wiki/Xen_Best_Practices">http://wiki.xen.org/wiki/Xen_Best_Practices&lt;/a>&lt;/li>
 &lt;li>&lt;a href="http://wiki.xen.org/wiki/Xen_Linux_PV_on_HVM_drivers">http://wiki.xen.org/wiki/Xen_Linux_PV_on_HVM_drivers&lt;/a>&lt;/li>
 &lt;li>&lt;a href="http://alien.slackbook.org/dokuwiki/doku.php?id=linux:kernelbuilding">http://alien.slackbook.org/dokuwiki/doku.php?id=linux:kernelbuilding&lt;/a>&lt;/li>
-&lt;/ul></content></item><item><title>Corosync and Pacemaker in Slackware</title><link>https://amree.github.io/posts/corosync-and-pacemaker-in-slackware/</link><pubDate>Mon, 14 May 2012 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/corosync-and-pacemaker-in-slackware/</guid><description>&lt;p>This will be multi part post about high availability solution for Slackware. My
+&lt;/ul></content></item><item><title>Corosync and Pacemaker in Slackware</title><link>https://amree.github.io/2012/05/14/corosync-and-pacemaker-in-slackware/</link><pubDate>Mon, 14 May 2012 00:00:00 +0000</pubDate><guid>https://amree.github.io/2012/05/14/corosync-and-pacemaker-in-slackware/</guid><description>&lt;p>This will be multi part post about high availability solution for Slackware. My
 first post will be about Corosync and Pacemaker.&lt;/p>
 &lt;p>You need to combine Corosync and Pacemaker with other distributed storage system
 such as
@@ -1993,7 +1993,7 @@ mysql (ocf::heartbeat:mysql): Started node1
 &lt;p>Try turning off &lt;code>Node 1&lt;/code> or &lt;code>Node 2&lt;/code> and see how MySQL switches side from both of the nodes.&lt;/p>
 &lt;/li>
 &lt;/ol>
-&lt;p>I think that&amp;rsquo;s it, next tutorial should be mainly about DRBD. Good luck!&lt;/p></content></item><item><title>Using GRUB instead of LILO in Slackware</title><link>https://amree.github.io/posts/using-grub-instead-of-lilo-in-slackware/</link><pubDate>Fri, 11 May 2012 05:00:00 +0000</pubDate><guid>https://amree.github.io/posts/using-grub-instead-of-lilo-in-slackware/</guid><description>&lt;p>These are the steps I used to replace LILO with GRUB as the boot manager after
+&lt;p>I think that&amp;rsquo;s it, next tutorial should be mainly about DRBD. Good luck!&lt;/p></content></item><item><title>Using GRUB instead of LILO in Slackware</title><link>https://amree.github.io/2012/05/11/using-grub-instead-of-lilo-in-slackware/</link><pubDate>Fri, 11 May 2012 05:00:00 +0000</pubDate><guid>https://amree.github.io/2012/05/11/using-grub-instead-of-lilo-in-slackware/</guid><description>&lt;p>These are the steps I used to replace LILO with GRUB as the boot manager after
 &lt;a href="https://amree.github.io/2012/05/11/upgrading-to-kernel-v3-for-slackware-v13.37/">upgrading my kernel to v3&lt;/a>.&lt;/p></description><content>&lt;p>These are the steps I used to replace LILO with GRUB as the boot manager after
 &lt;a href="https://amree.github.io/2012/05/11/upgrading-to-kernel-v3-for-slackware-v13.37/">upgrading my kernel to v3&lt;/a>.&lt;/p>
 &lt;p>Download directly and install:&lt;/p>
@@ -2052,7 +2052,7 @@ root (hd0)
 &lt;ul>
 &lt;li>&lt;a href="http://gnu-linux-slackware.blogspot.com/2009/07/booting-slackware-with-grub-gnu-grand.html">Booting Slackware with GRUB (GNU Grand Unified Bootloader)&lt;/a>&lt;/li>
 &lt;li>&lt;a href="http://www.linuxquestions.org/questions/slackware-14/how-do-i-modify-grub-to-boot-using-the-generic-kernel-863073/">How do I modify GRUB to boot using the generic kernel?&lt;/a>&lt;/li>
-&lt;/ul></content></item><item><title>Upgrading to Kernel v3 for Slackware v13.37</title><link>https://amree.github.io/posts/upgrading-to-kernel-v3-for-slackware-v13.37/</link><pubDate>Fri, 11 May 2012 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/upgrading-to-kernel-v3-for-slackware-v13.37/</guid><description>&lt;p>It&amp;rsquo;s time for an upgrade!&lt;/p></description><content>&lt;p>It&amp;rsquo;s time for an upgrade!&lt;/p>
+&lt;/ul></content></item><item><title>Upgrading to Kernel v3 for Slackware v13.37</title><link>https://amree.github.io/2012/05/11/upgrading-to-kernel-v3-for-slackware-v13.37/</link><pubDate>Fri, 11 May 2012 00:00:00 +0000</pubDate><guid>https://amree.github.io/2012/05/11/upgrading-to-kernel-v3-for-slackware-v13.37/</guid><description>&lt;p>It&amp;rsquo;s time for an upgrade!&lt;/p></description><content>&lt;p>It&amp;rsquo;s time for an upgrade!&lt;/p>
 &lt;ol>
 &lt;li>
 &lt;p>Get all the necessary packages:&lt;/p>
@@ -2107,7 +2107,7 @@ lilo -v
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">Linux slackware 3.2.13-smp &lt;span style="color:#75715e">#1 SMP Fri Mar 23 23:21:11 CDT 2012 i686 Intel(R) Core(TM)2 Duo CPU P8800 @ 2.66GHz GenuineIntel GNU/Linux&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;/li>
 &lt;/ol>
-&lt;p>That&amp;rsquo;s all. Thanks for reading!&lt;/p></content></item><item><title>Redmine with Git and Subversion in HUSM</title><link>https://amree.github.io/posts/redmine-with-git-and-subversion-in-husm/</link><pubDate>Wed, 11 Apr 2012 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/redmine-with-git-and-subversion-in-husm/</guid><description>&lt;p>It&amp;rsquo;s official, almost every piece of our codes in Hospital Universiti Sains
+&lt;p>That&amp;rsquo;s all. Thanks for reading!&lt;/p></content></item><item><title>Redmine with Git and Subversion in HUSM</title><link>https://amree.github.io/2012/04/11/redmine-with-git-and-subversion-in-husm/</link><pubDate>Wed, 11 Apr 2012 00:00:00 +0000</pubDate><guid>https://amree.github.io/2012/04/11/redmine-with-git-and-subversion-in-husm/</guid><description>&lt;p>It&amp;rsquo;s official, almost every piece of our codes in Hospital Universiti Sains
 Malaysia (HUSM) has been versioned in either Git or Subversion (mostly the
 latter). We&amp;rsquo;ve also linked all of the repositories into Redmine for easier
 project management. It&amp;rsquo;s not really a walk in the park for us since this is the
@@ -2173,7 +2173,7 @@ wiki from Redmine itself is not complete enough and I had to dig deeper into
 other websites. So, hopefully it will help anyone who&amp;rsquo;s lost just like me
 before.&lt;/p>
 &lt;p>By the way, you can view a screenshot from the Redmine&amp;rsquo;s projects page
-&lt;a href="https://twitter.com/#!/AmreeZaid/status/187829585759580160">here&lt;/a>.&lt;/p></content></item><item><title>See Full Referrer URL in Google Analytics</title><link>https://amree.github.io/posts/see-full-referrer-url-in-google-analytics/</link><pubDate>Sat, 21 Jan 2012 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/see-full-referrer-url-in-google-analytics/</guid><description>Most of the tutorial on the web focuses on the old version of Google Analytics. So, after poking around Google Analytics, I found out that there are two ways to see it (I stopped looking once I found the second method, so, there might be more).
+&lt;a href="https://twitter.com/#!/AmreeZaid/status/187829585759580160">here&lt;/a>.&lt;/p></content></item><item><title>See Full Referrer URL in Google Analytics</title><link>https://amree.github.io/2012/01/21/see-full-referrer-url-in-google-analytics/</link><pubDate>Sat, 21 Jan 2012 00:00:00 +0000</pubDate><guid>https://amree.github.io/2012/01/21/see-full-referrer-url-in-google-analytics/</guid><description>Most of the tutorial on the web focuses on the old version of Google Analytics. So, after poking around Google Analytics, I found out that there are two ways to see it (I stopped looking once I found the second method, so, there might be more).
 Go to Custom Reporting tab.
 Click Edit.
 If you&amp;rsquo;ve already added a tab, just click &amp;ldquo;+add report tab&amp;rdquo; for this purpose.</description><content>&lt;p>Most of the tutorial on the web focuses on the old version of Google Analytics.
@@ -2208,9 +2208,9 @@ more).&lt;/p>
 &lt;/ol>
 &lt;p>That&amp;rsquo;s it. You can refer to the screenshot below if you&amp;rsquo;re feeling lost:&lt;/p>
 &lt;p>&lt;img src="https://amree.github.io/images/posts/2012-01-21-ga.png" alt="image">&lt;/p>
-&lt;p>Good luck!&lt;/p></content></item><item><title>A Not So Simple Introduction to Git</title><link>https://amree.github.io/posts/a-not-so-simple-introduction-to-git/</link><pubDate>Sat, 07 Jan 2012 02:00:00 +0000</pubDate><guid>https://amree.github.io/posts/a-not-so-simple-introduction-to-git/</guid><description>&lt;p>Found another presentation from Speaker Deck about Git.&lt;/p></description><content>&lt;p>Found another presentation from Speaker Deck about Git.&lt;/p>
-&lt;script src="http://speakerdeck.com/embed/4ecfc649eee53a005000b88b.js">&lt;/script></content></item><item><title>A Good Introduction to Agile and Scrum</title><link>https://amree.github.io/posts/a-good-introduction-to-agile-and-scrum/</link><pubDate>Sat, 07 Jan 2012 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/a-good-introduction-to-agile-and-scrum/</guid><description>&lt;p>Found this in Speaker Deck. Love the simple explanation.&lt;/p></description><content>&lt;p>Found this in Speaker Deck. Love the simple explanation.&lt;/p>
-&lt;script src="http://speakerdeck.com/embed/4ea7b7b86428bd0054008cd4.js">&lt;/script></content></item><item><title>Renaming Author in Git</title><link>https://amree.github.io/posts/renaming-author-in-git/</link><pubDate>Thu, 05 Jan 2012 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/renaming-author-in-git/</guid><description>&lt;p>Recently, I noticed that there are other authors with a different name in my
+&lt;p>Good luck!&lt;/p></content></item><item><title>A Not So Simple Introduction to Git</title><link>https://amree.github.io/2012/01/07/a-not-so-simple-introduction-to-git/</link><pubDate>Sat, 07 Jan 2012 02:00:00 +0000</pubDate><guid>https://amree.github.io/2012/01/07/a-not-so-simple-introduction-to-git/</guid><description>&lt;p>Found another presentation from Speaker Deck about Git.&lt;/p></description><content>&lt;p>Found another presentation from Speaker Deck about Git.&lt;/p>
+&lt;script src="http://speakerdeck.com/embed/4ecfc649eee53a005000b88b.js">&lt;/script></content></item><item><title>A Good Introduction to Agile and Scrum</title><link>https://amree.github.io/2012/01/07/a-good-introduction-to-agile-and-scrum/</link><pubDate>Sat, 07 Jan 2012 00:00:00 +0000</pubDate><guid>https://amree.github.io/2012/01/07/a-good-introduction-to-agile-and-scrum/</guid><description>&lt;p>Found this in Speaker Deck. Love the simple explanation.&lt;/p></description><content>&lt;p>Found this in Speaker Deck. Love the simple explanation.&lt;/p>
+&lt;script src="http://speakerdeck.com/embed/4ea7b7b86428bd0054008cd4.js">&lt;/script></content></item><item><title>Renaming Author in Git</title><link>https://amree.github.io/2012/01/05/renaming-author-in-git/</link><pubDate>Thu, 05 Jan 2012 00:00:00 +0000</pubDate><guid>https://amree.github.io/2012/01/05/renaming-author-in-git/</guid><description>&lt;p>Recently, I noticed that there are other authors with a different name in my
 Git&amp;rsquo;s history. Apparently, I&amp;rsquo;ve accidentally committed into the repository using
 a different author&amp;rsquo;s name and email. This is mainly due to the way Netbeans
 stores author&amp;rsquo;s information history.&lt;/p></description><content>&lt;p>Recently, I noticed that there are other authors with a different name in my
@@ -2256,7 +2256,7 @@ will have another one identical to it).&lt;/p>
 &lt;ul>
 &lt;li>&lt;a href="http://theelitist.net/git-change-revision-author">http://theelitist.net/git-change-revision-author&lt;/a>&lt;/li>
 &lt;li>&lt;a href="http://help.github.com/change-author-info/">http://help.github.com/change-author-info/&lt;/a>&lt;/li>
-&lt;/ul></content></item><item><title>Git Remote Commands</title><link>https://amree.github.io/posts/git-remote-commands/</link><pubDate>Sun, 11 Dec 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/git-remote-commands/</guid><description>&lt;p>These are some of the &lt;code>git&lt;/code> commands that I usually use.&lt;/p></description><content>&lt;p>These are some of the &lt;code>git&lt;/code> commands that I usually use.&lt;/p>
+&lt;/ul></content></item><item><title>Git Remote Commands</title><link>https://amree.github.io/2011/12/11/git-remote-commands/</link><pubDate>Sun, 11 Dec 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/2011/12/11/git-remote-commands/</guid><description>&lt;p>These are some of the &lt;code>git&lt;/code> commands that I usually use.&lt;/p></description><content>&lt;p>These are some of the &lt;code>git&lt;/code> commands that I usually use.&lt;/p>
 &lt;p>View some remote &lt;strong>information&lt;/strong>:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">git remote show origin
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>List&lt;/strong> all remote branch:&lt;/p>
@@ -2275,7 +2275,7 @@ will have another one identical to it).&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">git remote prune origin
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Checkout&lt;/strong> a remote branch and &lt;strong>track&lt;/strong> it:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">git checkout -t origin/newfeature
-&lt;/code>&lt;/pre>&lt;/div></content></item><item><title>How to Read MyKad</title><link>https://amree.github.io/posts/how-to-read-mykad/</link><pubDate>Mon, 05 Dec 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/how-to-read-mykad/</guid><description>&lt;p>I&amp;rsquo;ve decided to merge posts about reading MyKad from my previous blog into a
+&lt;/code>&lt;/pre>&lt;/div></content></item><item><title>How to Read MyKad</title><link>https://amree.github.io/2011/12/05/how-to-read-mykad/</link><pubDate>Mon, 05 Dec 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/2011/12/05/how-to-read-mykad/</guid><description>&lt;p>I&amp;rsquo;ve decided to merge posts about reading MyKad from my previous blog into a
 single post.&lt;/p>
 &lt;p>Notes:&lt;/p>
 &lt;ol>
@@ -2398,7 +2398,7 @@ ldconfig
 &lt;p>Run the Java application, it should be working right now.&lt;/p>
 &lt;/li>
 &lt;/ol>
-&lt;p>That&amp;rsquo;s it, again, the full credit should goes to Xenon :)&lt;/p></content></item><item><title>HUSM at Malaysia Open Source Conference 2011</title><link>https://amree.github.io/posts/husm-at-malaysia-open-source-conference-2011/</link><pubDate>Tue, 12 Jul 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/husm-at-malaysia-open-source-conference-2011/</guid><description>&lt;p>On the 5th of July 2011, Hospital Universiti Sains Malaysia (HUSM) has been
+&lt;p>That&amp;rsquo;s it, again, the full credit should goes to Xenon :)&lt;/p></content></item><item><title>HUSM at Malaysia Open Source Conference 2011</title><link>https://amree.github.io/2011/07/12/husm-at-malaysia-open-source-conference-2011/</link><pubDate>Tue, 12 Jul 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/2011/07/12/husm-at-malaysia-open-source-conference-2011/</guid><description>&lt;p>On the 5th of July 2011, Hospital Universiti Sains Malaysia (HUSM) has been
 chosen as one of the speakers in Malaysia Open Source Conference 2011. It was
 presented by &lt;a href="http://my.linkedin.com/in/yusdirman">Mr Yusdirman Bin Yusoff&lt;/a> as
 “Open Source in Health Care: HUSM 10 Years of Innovation”.&lt;/p></description><content>&lt;p>On the 5th of July 2011, Hospital Universiti Sains Malaysia (HUSM) has been
@@ -2410,7 +2410,7 @@ Malaysia managed to develop its own Total Hospital Information System thus saved
 millions ringgit of taxpayers money. This is actually the first step for us (IT
 Unit, HUSM) to show to the world what we have done in this 10 years where most
 hospitals not willing to do.&lt;/p>
-&lt;p>The slide can be accessed at &lt;a href="https://speakerdeck.com/amree/open-source-in-healthcare-husm-10-years-of-innovative-effort">https://speakerdeck.com/amree/open-source-in-healthcare-husm-10-years-of-innovative-effort&lt;/a>&lt;/p></content></item><item><title>How to enable MySQL Support in Qt SDK for Windows</title><link>https://amree.github.io/posts/how-to-enable-mysql-support-in-qt-sdk-for-windows/</link><pubDate>Mon, 11 Jul 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/how-to-enable-mysql-support-in-qt-sdk-for-windows/</guid><description>&lt;p>It has been quite a while since I wrote the previous guide. Since that
+&lt;p>The slide can be accessed at &lt;a href="https://speakerdeck.com/amree/open-source-in-healthcare-husm-10-years-of-innovative-effort">https://speakerdeck.com/amree/open-source-in-healthcare-husm-10-years-of-innovative-effort&lt;/a>&lt;/p></content></item><item><title>How to enable MySQL Support in Qt SDK for Windows</title><link>https://amree.github.io/2011/07/11/how-to-enable-mysql-support-in-qt-sdk-for-windows/</link><pubDate>Mon, 11 Jul 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/2011/07/11/how-to-enable-mysql-support-in-qt-sdk-for-windows/</guid><description>&lt;p>It has been quite a while since I wrote the previous guide. Since that
 particular post gained a lot of visitors, I decided to write a new guide based
 on the new Qt SDK and MySQL so that it will help people with new version for
 both softwares.&lt;/p></description><content>&lt;p>It has been quite a while since I wrote the previous guide. Since that
@@ -2476,7 +2476,7 @@ qDebug() &lt;span style="color:#f92672">&amp;lt;&amp;lt;&lt;/span> QSqlDatabase&
 &lt;p>Tested on:&lt;/p>
 &lt;ul>
 &lt;li>11/7/2011 – Windows 64 Bit, MySQL Server 5.5.1 32 Bit (Community Version) and Qt 4.7.3.&lt;/li>
-&lt;/ul></content></item><item><title>A Simple Working Example for Qt NCReport</title><link>https://amree.github.io/posts/a-simple-working-example-for-qt-ncreport/</link><pubDate>Sat, 09 Jul 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/a-simple-working-example-for-qt-ncreport/</guid><description>&lt;p>This should help you with NCReport in Qt.&lt;/p></description><content>&lt;p>This should help you with NCReport in Qt.&lt;/p>
+&lt;/ul></content></item><item><title>A Simple Working Example for Qt NCReport</title><link>https://amree.github.io/2011/07/09/a-simple-working-example-for-qt-ncreport/</link><pubDate>Sat, 09 Jul 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/2011/07/09/a-simple-working-example-for-qt-ncreport/</guid><description>&lt;p>This should help you with NCReport in Qt.&lt;/p></description><content>&lt;p>This should help you with NCReport in Qt.&lt;/p>
 &lt;h2 id="windows">Windows&lt;/h2>
 &lt;ol>
 &lt;li>
@@ -2529,7 +2529,7 @@ of the string.&lt;/p>
 &lt;li>QtSDK 1.1.2&lt;/li>
 &lt;li>Qt 4.7.3&lt;/li>
 &lt;li>Qt Creator 2.2.1&lt;/li>
-&lt;/ul></content></item><item><title>Using Sybase with Ruby on Rails on Linux</title><link>https://amree.github.io/posts/using-sybase-with-ruby-on-rails-on-linux/</link><pubDate>Fri, 01 Jul 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/using-sybase-with-ruby-on-rails-on-linux/</guid><description>&lt;p>This guide will help you (mostly will help me in the future) to configure your
+&lt;/ul></content></item><item><title>Using Sybase with Ruby on Rails on Linux</title><link>https://amree.github.io/2011/07/01/using-sybase-with-ruby-on-rails-on-linux/</link><pubDate>Fri, 01 Jul 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/2011/07/01/using-sybase-with-ruby-on-rails-on-linux/</guid><description>&lt;p>This guide will help you (mostly will help me in the future) to configure your
 Ruby on Rails to support connection to Sybase.&lt;/p></description><content>&lt;p>This guide will help you (mostly will help me in the future) to configure your
 Ruby on Rails to support connection to Sybase.&lt;/p>
 &lt;p>I wrote this tutorial after everything’s good, so, I might miss a few steps that
@@ -2588,7 +2588,7 @@ ActiveRecord you may want to put additional parameters. This works for me:&lt;/p
 )
 &lt;/code>&lt;/pre>&lt;/div>&lt;/li>
 &lt;/ol>
-&lt;p>That&amp;rsquo;s it, good luck!&lt;/p></content></item><item><title>Running Multiple MySQL on a Single Server</title><link>https://amree.github.io/posts/running-multiple-mysql-on-a-single-server/</link><pubDate>Tue, 15 Mar 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/running-multiple-mysql-on-a-single-server/</guid><description>&lt;p>I’m pretty sure I’m going to forget these steps, so, just to be safe, I’m
+&lt;p>That&amp;rsquo;s it, good luck!&lt;/p></content></item><item><title>Running Multiple MySQL on a Single Server</title><link>https://amree.github.io/2011/03/15/running-multiple-mysql-on-a-single-server/</link><pubDate>Tue, 15 Mar 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/2011/03/15/running-multiple-mysql-on-a-single-server/</guid><description>&lt;p>I’m pretty sure I’m going to forget these steps, so, just to be safe, I’m
 putting it here. I’m dividing this tutorial into two sections, one for default
 MySQL that comes from Slackware and the other one is for new MySQL.&lt;/p></description><content>&lt;p>I’m pretty sure I’m going to forget these steps, so, just to be safe, I’m
 putting it here. I’m dividing this tutorial into two sections, one for default
@@ -2660,7 +2660,7 @@ nano /etc/my-2.cnf
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>To shut it down, you can use the following command&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">./bin/mysqladmin -h 127.0.0.1 -P &lt;span style="color:#ae81ff">3308&lt;/span> shutdown
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>You can test the server connection just like the method I used above.&lt;/p>
-&lt;p>That&amp;rsquo;s it, good luck!&lt;/p></content></item><item><title>Adding memcached support to PHP in Slackware 13.1</title><link>https://amree.github.io/posts/adding-memcached-support-to-php-in-slackware-13-1/</link><pubDate>Sat, 09 Oct 2010 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/adding-memcached-support-to-php-in-slackware-13-1/</guid><description>&lt;p>I just started learning Zend Framework and in one of the tutorials I read, I
+&lt;p>That&amp;rsquo;s it, good luck!&lt;/p></content></item><item><title>Adding memcached support to PHP in Slackware 13.1</title><link>https://amree.github.io/2010/10/09/adding-memcached-support-to-php-in-slackware-13.1/</link><pubDate>Sat, 09 Oct 2010 00:00:00 +0000</pubDate><guid>https://amree.github.io/2010/10/09/adding-memcached-support-to-php-in-slackware-13.1/</guid><description>&lt;p>I just started learning Zend Framework and in one of the tutorials I read, I
 need to enable memcached in my PHP which is not available by default.&lt;/p></description><content>&lt;p>I just started learning Zend Framework and in one of the tutorials I read, I
 need to enable memcached in my PHP which is not available by default.&lt;/p>
 &lt;ol>
@@ -2712,7 +2712,7 @@ $get_result &lt;span style="color:#f92672">=&lt;/span> $memcache&lt;span style="
 &lt;ul>
 &lt;li>&lt;a href="http://my2.php.net/manual/en/memcache.installation.php">http://my2.php.net/manual/en/memcache.installation.php&lt;/a>&lt;/li>
 &lt;li>&lt;a href="http://stackoverflow.com/questions/1442411/using-memcache-vs-memcached-with-php">http://stackoverflow.com/questions/1442411/using-memcache-vs-memcached-with-php&lt;/a>&lt;/li>
-&lt;/ul></content></item><item><title>Configuring Linux to work with NVidia Hybrid SLI Technology</title><link>https://amree.github.io/posts/configuring-linux-to-work-with-nvidia-hybrid-sli-technology/</link><pubDate>Sun, 21 Feb 2010 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/configuring-linux-to-work-with-nvidia-hybrid-sli-technology/</guid><description>&lt;p>First of all, at the time of this writing, NVIDIA Hybrid SLI Technology is &lt;a href="http://www.nvnews.net/vbulletin/showpost.php?p=1613349&amp;amp;postcount=2">not supported&lt;/a>
+&lt;/ul></content></item><item><title>Configuring Linux to work with NVidia Hybrid SLI Technology</title><link>https://amree.github.io/2010/02/21/configuring-linux-to-work-with-nvidia-hybrid-sli-technology/</link><pubDate>Sun, 21 Feb 2010 00:00:00 +0000</pubDate><guid>https://amree.github.io/2010/02/21/configuring-linux-to-work-with-nvidia-hybrid-sli-technology/</guid><description>&lt;p>First of all, at the time of this writing, NVIDIA Hybrid SLI Technology is &lt;a href="http://www.nvnews.net/vbulletin/showpost.php?p=1613349&amp;amp;postcount=2">not supported&lt;/a>
 on Linux and without proper configuration, you won’t even be able to load your
 Desktop Environment such as Xfce.&lt;/p></description><content>&lt;p>First of all, at the time of this writing, NVIDIA Hybrid SLI Technology is &lt;a href="http://www.nvnews.net/vbulletin/showpost.php?p=1613349&amp;amp;postcount=2">not supported&lt;/a>
 on Linux and without proper configuration, you won’t even be able to load your
@@ -2760,7 +2760,7 @@ EndSection
 make sure you put it in the correct format &lt;code>PCI:X:X:X&lt;/code>, X possibly refers
 to the last 3 digit number in your error log.&lt;/p>
 &lt;/li>
-&lt;/ol></content></item><item><title>How to Enable MySQL Support in Qt SDK for Linux</title><link>https://amree.github.io/posts/how-to-enable-mysql-support-in-qt-sdk-for-linux/</link><pubDate>Wed, 22 Jul 2009 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/how-to-enable-mysql-support-in-qt-sdk-for-linux/</guid><description>&lt;p>Known to work with:&lt;/p>
+&lt;/ol></content></item><item><title>How to Enable MySQL Support in Qt SDK for Linux</title><link>https://amree.github.io/2009/07/22/how-to-enable-mysql-support-in-qt-sdk-for-linux/</link><pubDate>Wed, 22 Jul 2009 00:00:00 +0000</pubDate><guid>https://amree.github.io/2009/07/22/how-to-enable-mysql-support-in-qt-sdk-for-linux/</guid><description>&lt;p>Known to work with:&lt;/p>
 &lt;ul>
 &lt;li>Slackware v13.37&lt;/li>
 &lt;li>Qt SDK v1.1.5 (32 bit)&lt;/li>
@@ -2842,7 +2842,7 @@ qDebug() &lt;span style="color:#f92672">&amp;lt;&amp;lt;&lt;/span> QSqlDatabase&
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">(&amp;#34;QSQLITE&amp;#34;, &amp;#34;QMYSQL3&amp;#34;, &amp;#34;QMYSQL&amp;#34;)
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>You can find my info at &lt;a href="http://qt-project.org/doc/qt-4.8/sql-driver.html">http://qt-project.org/doc/qt-4.8/sql-driver.html&lt;/a>.&lt;/p>
 &lt;/li>
-&lt;/ol></content></item><item><title>Reading Mifare 1K Card using Java in Linux</title><link>https://amree.github.io/posts/reading-mifare-1k-card-using-java-in-linux/</link><pubDate>Wed, 11 Feb 2009 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/reading-mifare-1k-card-using-java-in-linux/</guid><description>&lt;h2 id="the-story">The Story&lt;/h2>
+&lt;/ol></content></item><item><title>Reading Mifare 1K Card using Java in Linux</title><link>https://amree.github.io/2009/02/11/reading-mifare-1k-card-using-java-in-linux/</link><pubDate>Wed, 11 Feb 2009 00:00:00 +0000</pubDate><guid>https://amree.github.io/2009/02/11/reading-mifare-1k-card-using-java-in-linux/</guid><description>&lt;h2 id="the-story">The Story&lt;/h2>
 &lt;p>At the end of last year, my friends and I were tasked to read our staff card.
 The main objective was pretty simple which is to create a library where we don’t
 have to depend on the vendor every time we want to read our own staff card and
@@ -3033,7 +3033,7 @@ library. It’s much more robust when it comes to error handling.&lt;/p>
 3 = P1 : (Fixed)
 4 = P2 : Block Number that you want to read in Hex
 5 = Le : (Fixed)
-&lt;/code>&lt;/pre>&lt;p>That&amp;rsquo;s all, thanks for reading!&lt;/p></content></item><item><title>Printing to PDF using CUPS</title><link>https://amree.github.io/posts/printing-to-pdf-using-cups/</link><pubDate>Wed, 10 Sep 2008 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/printing-to-pdf-using-cups/</guid><description>Install CUPS-PDF based on your distro, you can download if from here.
+&lt;/code>&lt;/pre>&lt;p>That&amp;rsquo;s all, thanks for reading!&lt;/p></content></item><item><title>Printing to PDF using CUPS</title><link>https://amree.github.io/2008/09/10/printing-to-pdf-using-cups/</link><pubDate>Wed, 10 Sep 2008 00:00:00 +0000</pubDate><guid>https://amree.github.io/2008/09/10/printing-to-pdf-using-cups/</guid><description>Install CUPS-PDF based on your distro, you can download if from here.
 Go to http://localhost:631.
 If the page requested a username and password, just enter your root as username and password for your root.
 Go to Administration &amp;gt; Add Printer.
@@ -3081,7 +3081,7 @@ Label 1
 &lt;li>
 &lt;p>Restart CUPS&lt;/p>
 &lt;/li>
-&lt;/ol></content></item><item><title>Java Printing Fix for Linux</title><link>https://amree.github.io/posts/java-printing-fix-for-linux-with-cups/</link><pubDate>Tue, 09 Sep 2008 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/java-printing-fix-for-linux-with-cups/</guid><description>&lt;p>Apparently, there&amp;rsquo;s a bug in Java where people using newer version of CUPS
+&lt;/ol></content></item><item><title>Java Printing Fix for Linux</title><link>https://amree.github.io/2008/09/09/java-printing-fix-for-linux/</link><pubDate>Tue, 09 Sep 2008 00:00:00 +0000</pubDate><guid>https://amree.github.io/2008/09/09/java-printing-fix-for-linux/</guid><description>&lt;p>Apparently, there&amp;rsquo;s a bug in Java where people using newer version of CUPS
 cannot print (can&amp;rsquo;t even display the print dialog) due to a null pointer
 exception and this is actually a known bug. So, how do we fix this? For people
 who use Gnome, you can refer to this
@@ -3123,7 +3123,7 @@ at sun&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">p
 &lt;li>&lt;a href="https://bugs.launchpad.net/ubuntu/+source/sun-java6/+bug/156191/">Ubuntu Bugs Report&lt;/a>&lt;/li>
 &lt;li>&lt;a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6633656">Java Bugs Report&lt;/a>&lt;/li>
 &lt;/ul>
-&lt;p>FYI, you need to &lt;strong>restart your CUPS&lt;/strong> after editing the configuration (Thanks to Brandon Bell).&lt;/p></content></item><item><title>Auto Resize JTable Column Width</title><link>https://amree.github.io/posts/auto-resize-jtable-column-width/</link><pubDate>Wed, 13 Aug 2008 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/auto-resize-jtable-column-width/</guid><description>&lt;p>This will resize your JTable column width based on the contents of the header and data.&lt;/p></description><content>&lt;p>This will resize your JTable column width based on the contents of the header and data.&lt;/p>
+&lt;p>FYI, you need to &lt;strong>restart your CUPS&lt;/strong> after editing the configuration (Thanks to Brandon Bell).&lt;/p></content></item><item><title>Auto Resize JTable Column Width</title><link>https://amree.github.io/2008/08/13/auto-resize-jtable-column-width/</link><pubDate>Wed, 13 Aug 2008 00:00:00 +0000</pubDate><guid>https://amree.github.io/2008/08/13/auto-resize-jtable-column-width/</guid><description>&lt;p>This will resize your JTable column width based on the contents of the header and data.&lt;/p></description><content>&lt;p>This will resize your JTable column width based on the contents of the header and data.&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> JTable &lt;span style="color:#a6e22e">autoResizeColWidth&lt;/span>&lt;span style="color:#f92672">(&lt;/span>JTable table&lt;span style="color:#f92672">,&lt;/span> DefaultTableModel model&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
 table&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">setAutoResizeMode&lt;/span>&lt;span style="color:#f92672">(&lt;/span>JTable&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">AUTO_RESIZE_OFF&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
 table&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">setModel&lt;/span>&lt;span style="color:#f92672">(&lt;/span>model&lt;span style="color:#f92672">);&lt;/span>
@@ -3162,7 +3162,7 @@ SwingConstants&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#75715e">// Must pass the model
 &lt;/span>&lt;span style="color:#75715e">&lt;/span>DefaultTableModel model &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> DefaultTableModel&lt;span style="color:#f92672">();&lt;/span>
 jTable &lt;span style="color:#f92672">=&lt;/span> autoResizeColWidth&lt;span style="color:#f92672">(&lt;/span>jTable&lt;span style="color:#f92672">,&lt;/span> model&lt;span style="color:#f92672">);&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div></content></item><item><title>Printing to Zebra S4M Using Java</title><link>https://amree.github.io/posts/printing-to-zebra-s4m-using-java/</link><pubDate>Sun, 11 May 2008 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/printing-to-zebra-s4m-using-java/</guid><description>&lt;p>Apparently there&amp;rsquo;re some codes scattered on the net telling people that you can
+&lt;/code>&lt;/pre>&lt;/div></content></item><item><title>Printing to Zebra S4M Using Java</title><link>https://amree.github.io/2008/05/11/printing-to-zebra-s4m-using-java/</link><pubDate>Sun, 11 May 2008 00:00:00 +0000</pubDate><guid>https://amree.github.io/2008/05/11/printing-to-zebra-s4m-using-java/</guid><description>&lt;p>Apparently there&amp;rsquo;re some codes scattered on the net telling people that you can
 print to a Zebra printer by sending ZPL II codes using &lt;code>PrintService&lt;/code>. But the
 problem is, it&amp;rsquo;s not working, I don&amp;rsquo;t know why, maybe because of a different
 version of printer or model but I&amp;rsquo;m pretty sure the thing that came out from the
@@ -3274,7 +3274,7 @@ clientSocket&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e
 &lt;span style="color:#f92672">}&lt;/span>
 &lt;span style="color:#f92672">}&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>(I got it from &lt;a href="https://support.zebra.com">Zebra&amp;rsquo;s website&lt;/a>)&lt;/p>
-&lt;p>&lt;a href="http://www.zebra.com/id/zebra/na/en/index/products/printers/industrial_commercial/s4m.4.tabs.html">Download guide to ZPL II&lt;/a>&lt;/p></content></item><item><title>Automatically Sign JARs Using Ant and Bash</title><link>https://amree.github.io/posts/automatically-sign-jars-using-ant-and-bash/</link><pubDate>Mon, 14 Apr 2008 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/automatically-sign-jars-using-ant-and-bash/</guid><description>&lt;p>This guide is more towards Netbeans project, but it can be used as a reference
+&lt;p>&lt;a href="http://www.zebra.com/id/zebra/na/en/index/products/printers/industrial_commercial/s4m.4.tabs.html">Download guide to ZPL II&lt;/a>&lt;/p></content></item><item><title>Automatically Sign JARs Using Ant and Bash</title><link>https://amree.github.io/2008/04/14/automatically-sign-jars-using-ant-and-bash/</link><pubDate>Mon, 14 Apr 2008 00:00:00 +0000</pubDate><guid>https://amree.github.io/2008/04/14/automatically-sign-jars-using-ant-and-bash/</guid><description>&lt;p>This guide is more towards Netbeans project, but it can be used as a reference
 for you to customize the script to suit your needs.&lt;/p></description><content>&lt;p>This guide is more towards Netbeans project, but it can be used as a reference
 for you to customize the script to suit your needs.&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#75715e">#!/bin/bash

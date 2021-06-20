@@ -1,0 +1,121 @@
+<!doctype html><html lang=en><head><title>Rails, Unicorn and Nginx on Slackware :: Amree Zaid</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="I was trying to deploy a Rails application using Apache and got into some problems when I tried to configure the app so that Apache will be the one that serves the precompiled assets (javascripts, css, images and others). Since I&amp;rsquo;m on tight deadline (yeah, I should&amp;rsquo;ve tested production mode much more earlier), I tried my luck with Nginx and it worked easily without any hassle. So, this is how I did it.
+"><meta name=keywords content><meta name=robots content="noodp"><link rel=canonical href=https://amree.github.io/2013/01/06/rails-unicorn-and-nginx-on-slackware/><link rel=stylesheet href=https://amree.github.io/assets/style.css><link rel=stylesheet href=https://amree.github.io/assets/green.css><link rel=apple-touch-icon href=https://amree.github.io/img/apple-touch-icon-192x192.png><link rel="shortcut icon" href=https://amree.github.io/img/favicon/green.png><meta name=twitter:card content="summary"><meta name=twitter:site content><meta name=twitter:creator content><meta property="og:locale" content="en"><meta property="og:type" content="article"><meta property="og:title" content="Rails, Unicorn and Nginx on Slackware"><meta property="og:description" content="I was trying to deploy a Rails application using Apache and got into some problems when I tried to configure the app so that Apache will be the one that serves the precompiled assets (javascripts, css, images and others). Since I&amp;rsquo;m on tight deadline (yeah, I should&amp;rsquo;ve tested production mode much more earlier), I tried my luck with Nginx and it worked easily without any hassle. So, this is how I did it.
+"><meta property="og:url" content="https://amree.github.io/2013/01/06/rails-unicorn-and-nginx-on-slackware/"><meta property="og:site_name" content="Amree Zaid"><meta property="og:image" content="https://amree.github.io/img/favicon/green.png"><meta property="og:image:width" content="2048"><meta property="og:image:height" content="1024"><meta property="article:published_time" content="2013-01-06 00:00:00 +0000 UTC"></head><body class=green><div class="container center headings--one-size"><header class=header><div class=header__inner><div class=header__logo><a href=/><div class=logo>Amree Zaid</div></a></div><div class=menu-trigger>menu</div></div><nav class=menu><ul class="menu__inner menu__inner--desktop"><li><a href=/all-posts>All Posts</a></li><li><a href=https://twitter.com/AmreeZaid>Twitter</a></li></ul><ul class="menu__inner menu__inner--mobile"><li><a href=/all-posts>All Posts</a></li><li><a href=https://twitter.com/AmreeZaid>Twitter</a></li></ul></nav></header><div class=content><div class=post><h1 class=post-title><a href=https://amree.github.io/2013/01/06/rails-unicorn-and-nginx-on-slackware/>Rails, Unicorn and Nginx on Slackware</a></h1><div class=post-meta><span class=post-date>2013-01-06</span></div><span class=post-tags>#<a href=https://amree.github.io/tags/linux/>linux</a>&nbsp;
+#<a href=https://amree.github.io/tags/ruby/>ruby</a>&nbsp;</span><div class=post-content><div><p>I was trying to deploy a Rails application using Apache and got into some
+problems when I tried to configure the app so that Apache will be the one that
+serves the precompiled assets (javascripts, css, images and others). Since I&rsquo;m
+on tight deadline (yeah, I should&rsquo;ve tested production mode much more earlier),
+I tried my luck with Nginx and it worked easily without any hassle. So, this is
+how I did it.</p><h2 id=goals>Goals<a href=#goals class=hanchor arialabel=Anchor>&#8983;</a></h2><ul><li>Precompiled assets will be served by Nginx and not the Rails server itself.</li><li>Assets will be served in gzip.</li></ul><h2 id=environments>Environments<a href=#environments class=hanchor arialabel=Anchor>&#8983;</a></h2><ul><li>Slackware v14</li><li>Rails v3.2.10</li><li>Ruby v1.9.3</li></ul><h2 id=guides>Guides<a href=#guides class=hanchor arialabel=Anchor>&#8983;</a></h2><p>First of all, install <a href=http://slackbuilds.org/repository/14.0/network/nginx/>nginx</a> from Slackbuild.</p><p>Be sure to turn off Apache&rsquo;s startup script if you have it installed:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>chmod -x /etc/rc.d/rc.httpd
+</code></pre></div><p>This is to ensure no conflict since both of them by default will use port 80.</p><p>Put <code>unicorn</code> in your Gemfile and run <code>bundle</code>.</p><p>I&rsquo;m putting my Rails app in <code>/opt/neuro</code>, so, adjust it accordingly.</p><p>Create <code>nginx.conf</code> in <code>/opt/neuro/config/nginx.conf</code>:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nginx data-lang=nginx><span style=color:#66d9ef>upstream</span> <span style=color:#e6db74>neuro</span> {
+  <span style=color:#f92672>server</span> <span style=color:#e6db74>unix:/tmp/unicorn.neuro.sock</span> <span style=color:#e6db74>fail_timeout=0</span>;
+}
+
+<span style=color:#66d9ef>server</span> {
+  <span style=color:#f92672>listen</span> neuro.husmnet:<span style=color:#ae81ff>80</span>;
+  <span style=color:#f92672>server_name</span> <span style=color:#e6db74>neuro.husmnet</span>
+  <span style=color:#e6db74>root</span> <span style=color:#e6db74>/opt/neuro/public</span>;
+
+  <span style=color:#f92672>location</span> <span style=color:#e6db74>^~</span> <span style=color:#e6db74>/assets/</span> {
+    <span style=color:#f92672>root</span> <span style=color:#e6db74>/opt/neuro/public</span>;
+    <span style=color:#f92672>gzip_static</span> <span style=color:#66d9ef>on</span>;
+    <span style=color:#f92672>expires</span> <span style=color:#e6db74>max</span>;
+    <span style=color:#f92672>add_header</span> <span style=color:#e6db74>Cache-Control</span> <span style=color:#e6db74>public</span>;
+  }
+
+  <span style=color:#f92672>try_files</span> $uri/index.html $uri <span style=color:#e6db74>@unicorn</span>;
+
+  <span style=color:#f92672>location</span> <span style=color:#e6db74>@unicorn</span> {
+    <span style=color:#f92672>proxy_set_header</span> <span style=color:#e6db74>X-Forwarded-For</span> $proxy_add_x_forwarded_for;
+    <span style=color:#f92672>proxy_set_header</span> <span style=color:#e6db74>Host</span> $http_host;
+    <span style=color:#f92672>proxy_redirect</span> <span style=color:#66d9ef>off</span>;
+    <span style=color:#f92672>proxy_pass</span> <span style=color:#e6db74>http://neuro</span>;
+  }
+
+  <span style=color:#f92672>error_page</span> <span style=color:#ae81ff>500</span> <span style=color:#ae81ff>502</span> <span style=color:#ae81ff>503</span> <span style=color:#ae81ff>504</span> <span style=color:#e6db74>/500.html</span>;
+  <span style=color:#f92672>client_max_body_size</span> <span style=color:#e6db74>4G</span>;
+  <span style=color:#f92672>keepalive_timeout</span> <span style=color:#ae81ff>10</span>;
+}
+</code></pre></div><p>Create <code>unicorn.rb</code> in <code>/opt/neuro/config/unicorn.rb</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ruby data-lang=ruby>root <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>#{</span><span style=color:#66d9ef>Dir</span><span style=color:#f92672>.</span>pwd<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>
+
+<span style=color:#75715e># Define worker directory for Unicorn</span>
+working_directory root
+
+<span style=color:#75715e># Location of PID file</span>
+pid <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>#{</span>root<span style=color:#e6db74>}</span><span style=color:#e6db74>/tmp/pids/unicorn.pid&#34;</span>
+
+<span style=color:#75715e># Define Log paths</span>
+stderr_path <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>#{</span>root<span style=color:#e6db74>}</span><span style=color:#e6db74>/log/unicorn.log&#34;</span>
+stdout_path <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>#{</span>root<span style=color:#e6db74>}</span><span style=color:#e6db74>/log/unicorn.log&#34;</span>
+
+<span style=color:#75715e># Listen on a UNIX data socket</span>
+listen <span style=color:#e6db74>&#34;/tmp/unicorn.neuro.sock&#34;</span>, <span style=color:#e6db74>:backlog</span> <span style=color:#f92672>=&gt;</span> <span style=color:#ae81ff>64</span>
+<span style=color:#75715e># houllisten 8080, :tcp_nopush =&gt; true</span>
+
+worker_processes <span style=color:#ae81ff>2</span>
+
+<span style=color:#75715e># Load rails before forking workers for better worker spawn time</span>
+preload_app <span style=color:#66d9ef>true</span>
+
+<span style=color:#75715e># Restart workes hangin&#39; out for more than 240 secs</span>
+timeout <span style=color:#ae81ff>240</span>
+</code></pre></div><p>Replace <code>/etc/nginx/nginx.conf</code> with this content:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nginx data-lang=nginx><span style=color:#75715e># user  root;
+</span><span style=color:#75715e></span><span style=color:#66d9ef>worker_processes</span>  <span style=color:#ae81ff>1</span>;
+
+<span style=color:#66d9ef>error_log</span>  <span style=color:#e6db74>/var/log/nginx/error.log</span>;
+<span style=color:#75715e>#error_log  logs/error.log  notice;
+</span><span style=color:#75715e>#error_log  logs/error.log  info;
+</span><span style=color:#75715e></span>
+<span style=color:#75715e>#pid        logs/nginx.pid;
+</span><span style=color:#75715e></span>
+<span style=color:#66d9ef>events</span> {
+  <span style=color:#f92672>worker_connections</span>  <span style=color:#ae81ff>1024</span>;
+}
+
+<span style=color:#66d9ef>http</span> {
+  <span style=color:#f92672>include</span>       <span style=color:#e6db74>mime.types</span>;
+  <span style=color:#f92672>default_type</span>  <span style=color:#e6db74>application/octet-stream</span>;
+
+  <span style=color:#f92672>sendfile</span>        <span style=color:#66d9ef>on</span>;
+
+  <span style=color:#f92672>keepalive_timeout</span>  <span style=color:#ae81ff>65</span>;
+
+  <span style=color:#f92672>gzip</span>  <span style=color:#66d9ef>on</span>;
+
+  <span style=color:#f92672>include</span> <span style=color:#e6db74>/etc/nginx/sites-enabled/*</span>;
+}
+</code></pre></div><p>Create <code>sites-enabled</code> directory in <code>/etc/nginx</code> and create a softlink to the <code>nginx.conf</code> in our app:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>mkdir /etc/nginx/sites-enabled
+ln -s /opt/neuro/config/nginx.conf neuro.conf
+</code></pre></div><p>Create a directory for the pid</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>mkdir /opt/neuro/tmp/pids
+</code></pre></div><p>Before starting it for the first time, let us monitor important logs (open it using different
+terminals) :</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>tail -f /var/log/nginx/error.log
+tail -f /opt/neuro/log/unicorn.log
+</code></pre></div><p>Make sure you&rsquo;ve precompiled your assets:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>rake assets:clean
+rake assets:precompile
+</code></pre></div><p>Start unicorn:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>cd /opt/neuro
+unicorn -c config/unicorn.rb -E production -D
+</code></pre></div><p>Start nginx:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>nginx
+</code></pre></div><p>Congratulation! Make sure there&rsquo;s no error in your logs. If there&rsquo;re, you can use these commands to
+stop <code>nginx</code> and <code>unicorn</code> to start everything back:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>nginx -s stop
+killall unicorn
+</code></pre></div><p>Let&rsquo;s test the gzip compression using <code>curl</code>:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ curl -LI --compressed http://neuro.husmnet/
+</code></pre></div><p>You&rsquo;ll get something like this (notice the gzip info):</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt>HTTP/1.1 200 OK
+Server: nginx/1.2.2
+Date: Sat, 05 Jan 2013 21:00:26 GMT
+Content-Type: text/html; charset=utf-8
+Connection: keep-alive
+Status: 200 OK
+X-UA-Compatible: IE=Edge,chrome=1
+ETag: &#34;a66ac1d43d8f07ecc0737e64dd8a3366&#34;
+Cache-Control: max-age=0, private, must-revalidate
+Set-Cookie: _neuro_session=BAh7B0kiD3Nlc3Npb25faWQGOgZFRkkiJTQ2YTU2NjE3MDY0Y2RkNzk0Yzk3ODhhNDJlYmQ3ODA3BjsAVEkiEF9jc3JmX3Rva2VuBjsARkkiMVNvOXVTS2I2RXJIcTljbS9WeGRDODZyTUpVZENXL2NPVnJhTGR0V2xydGM9BjsARg%3D%3D--173e9d56a5cc434eb675b6626d90aced1cc17cd6; path=/; HttpOnly
+X-Request-Id: 760e233de4980dc75169f2c68a53dc31
+X-Runtime: 0.017885
+X-Rack-Cache: miss
+Content-Encoding: gzip
+</code></pre></div><p>I admit, this is a very simple config, but it&rsquo;s good enough for a beginner like
+me to get started. Good luck!</p></div></div><div class=pagination><div class=pagination__title><span class=pagination__title-h>Read other posts</span><hr></div><div class=pagination__buttons><span class="button previous"><a href=https://amree.github.io/2013/06/28/setup-free-uptime-monitoring-service-in-heroku/><span class=button__icon>←</span>
+<span class=button__text>Setup Free Uptime Monitoring Service in Heroku</span></a></span>
+<span class="button next"><a href=https://amree.github.io/2012/09/12/getting-started-with-xen-on-slackware/><span class=button__text>Getting Started with Xen on Slackware</span>
+<span class=button__icon>→</span></a></span></div></div></div></div><footer class=footer><div class=footer__inner><div class=copyright><span>© 2021 Powered by <a href=http://gohugo.io>Hugo</a></span>
+<span>:: Theme made by <a href=https://twitter.com/panr>panr</a></span></div></div></footer><script src=https://amree.github.io/assets/main.js></script><script src=https://amree.github.io/assets/prism.js></script></div></body></html>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>qt on Amree Zaid</title><link>https://amree.github.io/tags/qt/</link><description>Recent content in qt on Amree Zaid</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 11 Jul 2011 00:00:00 +0000</lastBuildDate><atom:link href="https://amree.github.io/tags/qt/index.xml" rel="self" type="application/rss+xml"/><item><title>How to enable MySQL Support in Qt SDK for Windows</title><link>https://amree.github.io/posts/how-to-enable-mysql-support-in-qt-sdk-for-windows/</link><pubDate>Mon, 11 Jul 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/how-to-enable-mysql-support-in-qt-sdk-for-windows/</guid><description>&lt;p>It has been quite a while since I wrote the previous guide. Since that
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>qt on Amree Zaid</title><link>https://amree.github.io/tags/qt/</link><description>Recent content in qt on Amree Zaid</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 11 Jul 2011 00:00:00 +0000</lastBuildDate><atom:link href="https://amree.github.io/tags/qt/index.xml" rel="self" type="application/rss+xml"/><item><title>How to enable MySQL Support in Qt SDK for Windows</title><link>https://amree.github.io/2011/07/11/how-to-enable-mysql-support-in-qt-sdk-for-windows/</link><pubDate>Mon, 11 Jul 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/2011/07/11/how-to-enable-mysql-support-in-qt-sdk-for-windows/</guid><description>&lt;p>It has been quite a while since I wrote the previous guide. Since that
 particular post gained a lot of visitors, I decided to write a new guide based
 on the new Qt SDK and MySQL so that it will help people with new version for
 both softwares.&lt;/p></description><content>&lt;p>It has been quite a while since I wrote the previous guide. Since that
@@ -64,7 +64,7 @@ qDebug() &lt;span style="color:#f92672">&amp;lt;&amp;lt;&lt;/span> QSqlDatabase&
 &lt;p>Tested on:&lt;/p>
 &lt;ul>
 &lt;li>11/7/2011 – Windows 64 Bit, MySQL Server 5.5.1 32 Bit (Community Version) and Qt 4.7.3.&lt;/li>
-&lt;/ul></content></item><item><title>A Simple Working Example for Qt NCReport</title><link>https://amree.github.io/posts/a-simple-working-example-for-qt-ncreport/</link><pubDate>Sat, 09 Jul 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/a-simple-working-example-for-qt-ncreport/</guid><description>&lt;p>This should help you with NCReport in Qt.&lt;/p></description><content>&lt;p>This should help you with NCReport in Qt.&lt;/p>
+&lt;/ul></content></item><item><title>A Simple Working Example for Qt NCReport</title><link>https://amree.github.io/2011/07/09/a-simple-working-example-for-qt-ncreport/</link><pubDate>Sat, 09 Jul 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/2011/07/09/a-simple-working-example-for-qt-ncreport/</guid><description>&lt;p>This should help you with NCReport in Qt.&lt;/p></description><content>&lt;p>This should help you with NCReport in Qt.&lt;/p>
 &lt;h2 id="windows">Windows&lt;/h2>
 &lt;ol>
 &lt;li>
@@ -117,7 +117,7 @@ of the string.&lt;/p>
 &lt;li>QtSDK 1.1.2&lt;/li>
 &lt;li>Qt 4.7.3&lt;/li>
 &lt;li>Qt Creator 2.2.1&lt;/li>
-&lt;/ul></content></item><item><title>How to Enable MySQL Support in Qt SDK for Linux</title><link>https://amree.github.io/posts/how-to-enable-mysql-support-in-qt-sdk-for-linux/</link><pubDate>Wed, 22 Jul 2009 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/how-to-enable-mysql-support-in-qt-sdk-for-linux/</guid><description>&lt;p>Known to work with:&lt;/p>
+&lt;/ul></content></item><item><title>How to Enable MySQL Support in Qt SDK for Linux</title><link>https://amree.github.io/2009/07/22/how-to-enable-mysql-support-in-qt-sdk-for-linux/</link><pubDate>Wed, 22 Jul 2009 00:00:00 +0000</pubDate><guid>https://amree.github.io/2009/07/22/how-to-enable-mysql-support-in-qt-sdk-for-linux/</guid><description>&lt;p>Known to work with:&lt;/p>
 &lt;ul>
 &lt;li>Slackware v13.37&lt;/li>
 &lt;li>Qt SDK v1.1.5 (32 bit)&lt;/li>

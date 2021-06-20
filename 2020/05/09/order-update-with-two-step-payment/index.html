@@ -1,0 +1,56 @@
+<!doctype html><html lang=en><head><title>Order Update with Two-Step Payment :: Amree Zaid</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="I was asked about this from my latest job application. Didn&amp;rsquo;t realize it&amp;rsquo;s going to be this long so I thought I should share it publicly, easier for me to show it to the next interviewer. The exact question was:
+"><meta name=keywords content><meta name=robots content="noodp"><link rel=canonical href=https://amree.github.io/2020/05/09/order-update-with-two-step-payment/><link rel=stylesheet href=https://amree.github.io/assets/style.css><link rel=stylesheet href=https://amree.github.io/assets/green.css><link rel=apple-touch-icon href=https://amree.github.io/img/apple-touch-icon-192x192.png><link rel="shortcut icon" href=https://amree.github.io/img/favicon/green.png><meta name=twitter:card content="summary"><meta name=twitter:site content><meta name=twitter:creator content><meta property="og:locale" content="en"><meta property="og:type" content="article"><meta property="og:title" content="Order Update with Two-Step Payment"><meta property="og:description" content="I was asked about this from my latest job application. Didn&amp;rsquo;t realize it&amp;rsquo;s going to be this long so I thought I should share it publicly, easier for me to show it to the next interviewer. The exact question was:
+"><meta property="og:url" content="https://amree.github.io/2020/05/09/order-update-with-two-step-payment/"><meta property="og:site_name" content="Amree Zaid"><meta property="og:image" content="https://amree.github.io/img/favicon/green.png"><meta property="og:image:width" content="2048"><meta property="og:image:height" content="1024"><meta property="article:published_time" content="2020-05-09 00:00:00 +0000 UTC"></head><body class=green><div class="container center headings--one-size"><header class=header><div class=header__inner><div class=header__logo><a href=/><div class=logo>Amree Zaid</div></a></div><div class=menu-trigger>menu</div></div><nav class=menu><ul class="menu__inner menu__inner--desktop"><li><a href=/all-posts>All Posts</a></li><li><a href=https://twitter.com/AmreeZaid>Twitter</a></li></ul><ul class="menu__inner menu__inner--mobile"><li><a href=/all-posts>All Posts</a></li><li><a href=https://twitter.com/AmreeZaid>Twitter</a></li></ul></nav></header><div class=content><div class=post><h1 class=post-title><a href=https://amree.github.io/2020/05/09/order-update-with-two-step-payment/>Order Update with Two-Step Payment</a></h1><div class=post-meta><span class=post-date>2020-05-09</span></div><span class=post-tags>#<a href=https://amree.github.io/tags/stripe/>stripe</a>&nbsp;</span><div class=post-content><div><p>I was asked about this from my latest job application. Didn&rsquo;t realize it&rsquo;s going
+to be this long so I thought I should share it publicly, easier for me to show
+it to the next interviewer. The exact question was:</p><blockquote><p>Describe a recent technical solution or achievement that you are proud of.
+Anything goes, from a tiny one hour ticket to a large system, we are just
+interested in how you think.</p></blockquote><p>The answer:</p><p>It&rsquo;s just order updating, how complex can it be? I realized I was wrong about
+the complexity when I started my investigation. The complexity comes from the
+two-step payment system that we&rsquo;re going to implement to make sure the whole
+order editing work smoothly. It was actually my first time hearing the two-step
+payment words.</p><p>In case you didn&rsquo;t know: A two-step payment system is where you hold a certain
+amount of money on someone&rsquo;s credit card. Depending on the requirement, you&rsquo;ll
+charge the credit card later. We&rsquo;re using Stripe for our payment system.</p><p>A little bit of background: We don&rsquo;t want to charge the credit card until the
+cut-off date of the food delivery, which will then allow the customer to change
+their order online without contacting us. So, a customer can keep on changing
+the menu (which will affect the price) as much as he wanted without us having to
+deal with the credit card refund and charge manually.</p><p>The simplest workflow would be:</p><ul><li>Customer checkout from our websites with a date far in the future</li><li>We&rsquo;ll queue the card authorization 7 days before the cut off date</li><li>Customer didn&rsquo;t make any changes</li><li>When the time comes, we authorized the amount, queue another job for the card capture process</li><li>On the day of the cut off date, we&rsquo;ll capture the amount automatically</li><li>No order update from the web will be allowed at this point. They need to contact our customer support for this</li></ul><p>The complexity keeps on compounding as you need to think about these scenarios:</p><ul><li>During the checkout we need to know whether we should authorize, capture, or
+process the card immediately (one-step payment).</li><li>The biggest one would be the editing part. We need to think what&rsquo;s the current
+state of the order and what action that was made. Is the order in the
+authorized state? Capture state? When is the cut off date? Do we need to
+refund everything? Do we need to do a partial refund? Do we need to refund and
+charge a new amount?</li></ul><p>So, I was given this task alone (we don&rsquo;t have many devs last time). There were
+too many things that need to be done, so I had to break it up by phases:</p><ul><li>Update existing checkout to support two-step payment system (this is when the
+order was created)</li><li>I need to update/add the code to handle cancel, refund, authorize and capture
+the card. Each action has its own complexity, but that&rsquo;s the high overview.</li><li>Alter the database to support the new payment state</li><li>Figure out the best time to capture the payment (e.g: cut off date - weekend).
+I also need to give some buffer for the customer support to handle if there&rsquo;s
+an error during any of the processes above.</li></ul><p>At the end of the project, I got helps from my awesome team for things like
+mailers and other kinds of updates. So, I still need to work on the core parts.
+I don&rsquo;t think I can meet the deadline without those helps lol.</p><p>I&rsquo;d love to tell you more about the whole process, but it was pretty long. But
+you can see the branch conditions that I&rsquo;ve drawn here:</p><p><img src=/images/posts/2020-05-09-two-step-payment.jpg alt=diagram></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt>P = Pending Authorization
+A = Authorized
+C = Capture
+R = Refund
+H = Amount higher
+L = Amount lower
+</code></pre></div><p>But the biggest thing I learned with this project is that visualization will
+help a lot. It doesn&rsquo;t have to be in a standard format like when you study in
+the university. Just draw however you want as long it can help you see the
+problem and possible blockers.</p><p>In terms of the code itself, I had to dive into React and Redux to implement the
+whole update (we have complex menu selections). Of course, testing is very
+important. With lots of new and updated code, I need to make sure none were
+broken every time I added/updated new ones. At first, I mocked a lot of API
+requests, but it doesn&rsquo;t feel safe, so I used VCR library to record the
+interactions and the result feels more accurate and safe. For the front end
+part, I used Capybara/Chrome for the feature tests.</p><p>Together with a feature flag in place, I can safely deploy the changes every day
+without having to do one big rollout. In terms of the backend code, I used a lot
+of service objects to keep the classes small. It&rsquo;s also easier to read and find,
+e.g: ChargeProcessor, AuthorizeProcessor, etc. Everything was also namespaced to
+ensure I don&rsquo;t pollute the main service directory.</p><p>With this feature implemented, we improved further with other features as well
+such as the ability to save and delete credit cards. The checkout is also easier
+as the customer can just select from the previous credit card. The support
+couldn&rsquo;t be happier as well as they don&rsquo;t have to handle manual order updates.</p><p>I think I better stop here lol</p></div></div><div class=pagination><div class=pagination__title><span class=pagination__title-h>Read other posts</span><hr></div><div class=pagination__buttons><span class="button previous"><a href=https://amree.github.io/2020/10/05/exporting-data-from-rds-to-s3-using-aws-glue/><span class=button__icon>←</span>
+<span class=button__text>Exporting data from RDS to S3 using AWS Glue</span></a></span>
+<span class="button next"><a href=https://amree.github.io/2020/02/02/rails-6-with-bootstrap-webpacker-for-js-asset-pipeline-for-css/><span class=button__text>Rails 6 with Bootstrap (Webpacker for JS, Asset Pipeline for CSS)</span>
+<span class=button__icon>→</span></a></span></div></div></div></div><footer class=footer><div class=footer__inner><div class=copyright><span>© 2021 Powered by <a href=http://gohugo.io>Hugo</a></span>
+<span>:: Theme made by <a href=https://twitter.com/panr>panr</a></span></div></div></footer><script src=https://amree.github.io/assets/main.js></script><script src=https://amree.github.io/assets/prism.js></script></div></body></html>

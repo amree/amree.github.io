@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>ruby on Amree Zaid</title><link>https://amree.github.io/tags/ruby/</link><description>Recent content in ruby on Amree Zaid</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 09 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://amree.github.io/tags/ruby/index.xml" rel="self" type="application/rss+xml"/><item><title>Speed Up Ruby on Rails Development Environment</title><link>https://amree.github.io/posts/speed-up-your-ruby-on-rails-development/</link><pubDate>Sun, 09 May 2021 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/speed-up-your-ruby-on-rails-development/</guid><description>&lt;p>There will be a time when your Rails development environment started to become
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>ruby on Amree Zaid</title><link>https://amree.github.io/tags/ruby/</link><description>Recent content in ruby on Amree Zaid</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 09 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://amree.github.io/tags/ruby/index.xml" rel="self" type="application/rss+xml"/><item><title>Speed Up Ruby on Rails Development Environment</title><link>https://amree.github.io/2021/05/09/speed-up-ruby-on-rails-development-environment/</link><pubDate>Sun, 09 May 2021 00:00:00 +0000</pubDate><guid>https://amree.github.io/2021/05/09/speed-up-ruby-on-rails-development-environment/</guid><description>&lt;p>There will be a time when your Rails development environment started to become
 very slow due to multiple reasons, but mostly because your codebase is very big
 and the monolith architecture is just too sweet for you to pass on.&lt;/p></description><content>&lt;p>There will be a time when your Rails development environment started to become
 very slow due to multiple reasons, but mostly because your codebase is very big
@@ -51,7 +51,7 @@ being used. Sometimes we just forgot that we don&amp;rsquo;t need it anymore.&lt
 &lt;li>Reduce the number of routes by 91%&lt;/li>
 &lt;li>Reduce rake time by 55%&lt;/li>
 &lt;/ul>
-&lt;p>Thanks for reading&lt;/p></content></item><item><title>How to Integrate TradingView's HTML5 Charting Library with Ruby on Rails v6</title><link>https://amree.github.io/posts/how-to-integrate-tradingview-s-html5-charting-library-with-ruby-on-rails-v6/</link><pubDate>Mon, 23 Nov 2020 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/how-to-integrate-tradingview-s-html5-charting-library-with-ruby-on-rails-v6/</guid><description>&lt;p>As you probably know, the charting library is not accessible publicly. You need
+&lt;p>Thanks for reading&lt;/p></content></item><item><title>How to Integrate TradingView's HTML5 Charting Library with Ruby on Rails v6</title><link>https://amree.github.io/2020/11/23/how-to-integrate-tradingviews-html5-charting-library-with-ruby-on-rails-v6/</link><pubDate>Mon, 23 Nov 2020 00:00:00 +0000</pubDate><guid>https://amree.github.io/2020/11/23/how-to-integrate-tradingviews-html5-charting-library-with-ruby-on-rails-v6/</guid><description>&lt;p>As you probably know, the charting library is not accessible publicly. You need
 to request access from them. So, I can&amp;rsquo;t really give a complete repo as an
 example. I did however open a PR at
 &lt;a href="https://github.com/tradingview/charting-library-examples/pull/197,">https://github.com/tradingview/charting-library-examples/pull/197,&lt;/a> but I&amp;rsquo;m not
@@ -132,7 +132,7 @@ window.&lt;span style="color:#a6e22e">addEventListener&lt;/span>(&lt;span style=
 &amp;lt;/&lt;span style="color:#f92672">div&lt;/span>&amp;gt;
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>TradingView will use that ID to load the chart.&lt;/p>
 &lt;p>Just start your server and that&amp;rsquo;s it. You should have a working TradingView
-chart by now 👍&lt;/p></content></item><item><title>Rails 6 with Bootstrap (Webpacker for JS, Asset Pipeline for CSS)</title><link>https://amree.github.io/posts/rails-6-with-bootstrap-webpacker-for-js-asset-pipeline-for-css/</link><pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/rails-6-with-bootstrap-webpacker-for-js-asset-pipeline-for-css/</guid><description>&lt;p>I haven&amp;rsquo;t really worked on Rails for a while so I decided to take a sneak peek
+chart by now 👍&lt;/p></content></item><item><title>Rails 6 with Bootstrap (Webpacker for JS, Asset Pipeline for CSS)</title><link>https://amree.github.io/2020/02/02/rails-6-with-bootstrap-webpacker-for-js-asset-pipeline-for-css/</link><pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate><guid>https://amree.github.io/2020/02/02/rails-6-with-bootstrap-webpacker-for-js-asset-pipeline-for-css/</guid><description>&lt;p>I haven&amp;rsquo;t really worked on Rails for a while so I decided to take a sneak peek
 on what&amp;rsquo;s going in Ruby on Rails land.&lt;/p>
 &lt;p>The first thing I want to try is to integrate Rails with Bootstrap. It seems
 like a lot of tutorials are focusing on how to use webpack for CSS and JS.&lt;/p></description><content>&lt;p>I haven&amp;rsquo;t really worked on Rails for a while so I decided to take a sneak peek
@@ -328,7 +328,7 @@ $secondary&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9
 &lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#34;bootstrap&amp;#34;&lt;/span>;
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Checkout this &lt;a href="https://github.com/twbs/bootstrap/blob/master/scss/_variables.scss">variables list&lt;/a> and
 you can find more info at &lt;a href="https://getbootstrap.com/docs/4.1/getting-started/theming/#theme-colors">Bootstrap&amp;rsquo;s Documentation&lt;/a>.
-There&amp;rsquo;re lots more that you can actually do.&lt;/p></content></item><item><title>Trick to Make Telegram Bot Private</title><link>https://amree.github.io/posts/make-telegram-bot-private/</link><pubDate>Thu, 19 Dec 2019 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/make-telegram-bot-private/</guid><description>&lt;p>Recently, I learned a trick to make my Telegram bot private to certain users.&lt;/p>
+There&amp;rsquo;re lots more that you can actually do.&lt;/p></content></item><item><title>Trick to Make Telegram Bot Private</title><link>https://amree.github.io/2019/12/19/trick-to-make-telegram-bot-private/</link><pubDate>Thu, 19 Dec 2019 00:00:00 +0000</pubDate><guid>https://amree.github.io/2019/12/19/trick-to-make-telegram-bot-private/</guid><description>&lt;p>Recently, I learned a trick to make my Telegram bot private to certain users.&lt;/p>
 &lt;p>I tried not to create the whole CRUD thingy for the membership and after
 Googling I found out about one of the API provided.&lt;/p></description><content>&lt;p>Recently, I learned a trick to make my Telegram bot private to certain users.&lt;/p>
 &lt;p>I tried not to create the whole CRUD thingy for the membership and after
@@ -369,7 +369,7 @@ admin, compared to a group that can be added as a normal user.&lt;/p>
 exist.&lt;/p>
 &lt;p>As a summary, with this trick, you don&amp;rsquo;t have to build the whole CRUD and can
 reuse the group/channel that you already have (assuming you have one).&lt;/p>
-&lt;p>That&amp;rsquo;s it, folks, thanks for reading&lt;/p></content></item><item><title>How Bcrypt Compares Password</title><link>https://amree.github.io/posts/how-bcrypt-compares-password/</link><pubDate>Sat, 19 Jan 2019 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/how-bcrypt-compares-password/</guid><description>&lt;p>I&amp;rsquo;ve always wondered about this.&lt;/p></description><content>&lt;p>I&amp;rsquo;ve always wondered about this.&lt;/p>
+&lt;p>That&amp;rsquo;s it, folks, thanks for reading&lt;/p></content></item><item><title>How Bcrypt Compares Password</title><link>https://amree.github.io/2019/01/19/how-bcrypt-compares-password/</link><pubDate>Sat, 19 Jan 2019 00:00:00 +0000</pubDate><guid>https://amree.github.io/2019/01/19/how-bcrypt-compares-password/</guid><description>&lt;p>I&amp;rsquo;ve always wondered about this.&lt;/p></description><content>&lt;p>I&amp;rsquo;ve always wondered about this.&lt;/p>
 &lt;p>Creating password in database:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">&lt;span style="color:#f92672">&amp;gt;&lt;/span> password &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;secret&amp;#39;&lt;/span>
 &lt;span style="color:#f92672">&amp;gt;&lt;/span> encrypted_password_in_database &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">BCrypt&lt;/span>&lt;span style="color:#f92672">::&lt;/span>&lt;span style="color:#66d9ef">Password&lt;/span>&lt;span style="color:#f92672">.&lt;/span>create(password)
@@ -383,7 +383,7 @@ bcrypt-ruby project decided not to go with that. Read more about it here:&lt;/p>
 &lt;li>&lt;a href="https://github.com/codahale/bcrypt-ruby/issues/42">https://github.com/codahale/bcrypt-ruby/issues/42&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://github.com/codahale/bcrypt-ruby/pull/43">https://github.com/codahale/bcrypt-ruby/pull/43&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://github.com/codahale/bcrypt-ruby/pull/119">https://github.com/codahale/bcrypt-ruby/pull/119&lt;/a>&lt;/li>
-&lt;/ul></content></item><item><title>About Proc, Lambda and Block</title><link>https://amree.github.io/posts/about-proc-lambda-and-block/</link><pubDate>Sat, 08 Apr 2017 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/about-proc-lambda-and-block/</guid><description>&lt;p>I keep on searching for this topic, so I guess it&amp;rsquo;s time I put it on my blog.&lt;/p></description><content>&lt;p>I keep on searching for this topic, so I guess it&amp;rsquo;s time I put it on my blog.&lt;/p>
+&lt;/ul></content></item><item><title>About Proc, Lambda and Block</title><link>https://amree.github.io/2017/04/08/about-proc-lambda-and-block/</link><pubDate>Sat, 08 Apr 2017 00:00:00 +0000</pubDate><guid>https://amree.github.io/2017/04/08/about-proc-lambda-and-block/</guid><description>&lt;p>I keep on searching for this topic, so I guess it&amp;rsquo;s time I put it on my blog.&lt;/p></description><content>&lt;p>I keep on searching for this topic, so I guess it&amp;rsquo;s time I put it on my blog.&lt;/p>
 &lt;p>This is an example of a &lt;code>proc&lt;/code>:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">the_proc &lt;span style="color:#f92672">=&lt;/span> proc { puts &lt;span style="color:#e6db74">&amp;#34;I&amp;#39;m the proc&amp;#34;&lt;/span> }
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>To execute &lt;code>the_proc&lt;/code>, I need to explicityly to use:&lt;/p>
@@ -469,7 +469,7 @@ match &lt;span style="color:#e6db74">&amp;#34;/users&amp;#34;&lt;/span> &lt;span
 &lt;span style="color:#75715e"># match({ &amp;#34;/users&amp;#34; =&amp;gt; &amp;#34;users#index&amp;#34; })&lt;/span>
 match &lt;span style="color:#e6db74">&amp;#34;/login&amp;#34;&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;sessions#new&amp;#34;&lt;/span>
 &lt;span style="color:#66d9ef">end&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div></content></item><item><title>Getting Started with Rails on Windows</title><link>https://amree.github.io/posts/getting-started-with-rails-on-windows/</link><pubDate>Tue, 03 Dec 2013 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/getting-started-with-rails-on-windows/</guid><description>&lt;p>First of all, let&amp;rsquo;s get one thing straight. This is not a guide for those who
+&lt;/code>&lt;/pre>&lt;/div></content></item><item><title>Getting Started with Rails on Windows</title><link>https://amree.github.io/2013/12/03/getting-started-with-rails-on-windows/</link><pubDate>Tue, 03 Dec 2013 00:00:00 +0000</pubDate><guid>https://amree.github.io/2013/12/03/getting-started-with-rails-on-windows/</guid><description>&lt;p>First of all, let&amp;rsquo;s get one thing straight. This is not a guide for those who
 are trying their best to not use Unix like environment in develop Rails
 application. This is more like a guide to do almost everything in Linux without
 replacing your Windows.&lt;/p></description><content>&lt;p>First of all, let&amp;rsquo;s get one thing straight. This is not a guide for those who
@@ -550,7 +550,7 @@ nano Gemfile
 just use your favourite editor to load that particular directory and start
 coding. It&amp;rsquo;s as if you&amp;rsquo;re doing development directly in the server. For
 everything else, make sure you&amp;rsquo;ll do it through Putty or through &lt;code>vagrant ssh&lt;/code>.&lt;/p>
-&lt;p>I guess that&amp;rsquo;s it. Good luck !&lt;/p></content></item><item><title>Rails, Unicorn and Nginx on Slackware</title><link>https://amree.github.io/posts/rails-unicorn-and-nginx-on-slackware/</link><pubDate>Sun, 06 Jan 2013 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/rails-unicorn-and-nginx-on-slackware/</guid><description>&lt;p>I was trying to deploy a Rails application using Apache and got into some
+&lt;p>I guess that&amp;rsquo;s it. Good luck !&lt;/p></content></item><item><title>Rails, Unicorn and Nginx on Slackware</title><link>https://amree.github.io/2013/01/06/rails-unicorn-and-nginx-on-slackware/</link><pubDate>Sun, 06 Jan 2013 00:00:00 +0000</pubDate><guid>https://amree.github.io/2013/01/06/rails-unicorn-and-nginx-on-slackware/</guid><description>&lt;p>I was trying to deploy a Rails application using Apache and got into some
 problems when I tried to configure the app so that Apache will be the one that
 serves the precompiled assets (javascripts, css, images and others). Since I&amp;rsquo;m
 on tight deadline (yeah, I should&amp;rsquo;ve tested production mode much more earlier),
@@ -680,7 +680,7 @@ X-Runtime: 0.017885
 X-Rack-Cache: miss
 Content-Encoding: gzip
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>I admit, this is a very simple config, but it&amp;rsquo;s good enough for a beginner like
-me to get started. Good luck!&lt;/p></content></item><item><title>Using Sybase with Ruby on Rails on Linux</title><link>https://amree.github.io/posts/using-sybase-with-ruby-on-rails-on-linux/</link><pubDate>Fri, 01 Jul 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/using-sybase-with-ruby-on-rails-on-linux/</guid><description>&lt;p>This guide will help you (mostly will help me in the future) to configure your
+me to get started. Good luck!&lt;/p></content></item><item><title>Using Sybase with Ruby on Rails on Linux</title><link>https://amree.github.io/2011/07/01/using-sybase-with-ruby-on-rails-on-linux/</link><pubDate>Fri, 01 Jul 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/2011/07/01/using-sybase-with-ruby-on-rails-on-linux/</guid><description>&lt;p>This guide will help you (mostly will help me in the future) to configure your
 Ruby on Rails to support connection to Sybase.&lt;/p></description><content>&lt;p>This guide will help you (mostly will help me in the future) to configure your
 Ruby on Rails to support connection to Sybase.&lt;/p>
 &lt;p>I wrote this tutorial after everything’s good, so, I might miss a few steps that
