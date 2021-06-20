@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>tradingview on Amree Zaid</title><link>https://amree.github.io/tags/tradingview/</link><description>Recent content in tradingview on Amree Zaid</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 23 Nov 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://amree.github.io/tags/tradingview/index.xml" rel="self" type="application/rss+xml"/><item><title>How to Integrate TradingView's HTML5 Charting Library with Ruby on Rails v6</title><link>https://amree.github.io/posts/how-to-integrate-tradingview-s-html5-charting-library-with-ruby-on-rails-v6/</link><pubDate>Mon, 23 Nov 2020 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/how-to-integrate-tradingview-s-html5-charting-library-with-ruby-on-rails-v6/</guid><description>&lt;p>As you probably know, the charting library is not accessible publicly. You need
+to request access from them. So, I can&amp;rsquo;t really give a complete repo as an
+example. I did however open a PR at
+&lt;a href="https://github.com/tradingview/charting-library-examples/pull/197,">https://github.com/tradingview/charting-library-examples/pull/197,&lt;/a> but I&amp;rsquo;m not
+sure if it&amp;rsquo;s going to be accepted.&lt;/p></description><content>&lt;p>As you probably know, the charting library is not accessible publicly. You need
+to request access from them. So, I can&amp;rsquo;t really give a complete repo as an
+example. I did however open a PR at
+&lt;a href="https://github.com/tradingview/charting-library-examples/pull/197,">https://github.com/tradingview/charting-library-examples/pull/197,&lt;/a> but I&amp;rsquo;m not
+sure if it&amp;rsquo;s going to be accepted.&lt;/p>
+&lt;p>Anyway, the given example is using asset pipeline and the modern Ruby on Rails
+application is using webpacker. So after trying out a few times, I figured a
+working way to load the sample chart.&lt;/p>
+&lt;p>It&amp;rsquo;s not straight forward for me, so maybe this will help someone else in the
+future. However, I&amp;rsquo;m not sure if it&amp;rsquo;s the best way to load it, however, it works
+😁&lt;/p>
+&lt;p>I&amp;rsquo;m going to assume you&amp;rsquo;re using the Ruby on Rails v6.0.3.4. Once you&amp;rsquo;ve cloned
+the library into &lt;code>charting_library&lt;/code> directory, you can do these steps:&lt;/p>
+&lt;ul>
+&lt;li>Copy &lt;code>charting_library/charting_library.js&lt;/code> into &lt;code>app/javascript/packs/charting_library/charting_library.js&lt;/code>&lt;/li>
+&lt;li>Copy &lt;code>datafeeds/udf/dist/*.js&lt;/code> into &lt;code>app/javascript/packs/datafeeds/&lt;/code>&lt;/li>
+&lt;li>Copy &lt;code>charting_library/*.html&lt;/code> into &lt;code>public/charting_library/&lt;/code>&lt;/li>
+&lt;li>Copy &lt;code>charting_library/bundles&lt;/code> into &lt;code>public/charting_library/bundles&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;p>Don&amp;rsquo;t worry about serving outdated files just because you put it in the public
+directory as the charting library will use a new hash on the files every time
+there&amp;rsquo;s a new update.&lt;/p>
+&lt;p>Once we got the files in the correct places, we can use this code to load the
+sample:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#75715e">// app/javascript/packs/application.js
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">require&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;@rails/ujs&amp;#34;&lt;/span>).&lt;span style="color:#a6e22e">start&lt;/span>()
+&lt;span style="color:#a6e22e">require&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;turbolinks&amp;#34;&lt;/span>).&lt;span style="color:#a6e22e">start&lt;/span>()
+&lt;span style="color:#a6e22e">require&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;channels&amp;#34;&lt;/span>)
+&lt;span style="color:#a6e22e">require&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;packs/datafeeds/polyfills&amp;#34;&lt;/span>)
+&lt;span style="color:#66d9ef">const&lt;/span> &lt;span style="color:#a6e22e">Datafeeds&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">require&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;packs/datafeeds/bundle&amp;#34;&lt;/span>)
+&lt;span style="color:#66d9ef">const&lt;/span> &lt;span style="color:#a6e22e">TradingView&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">require&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;packs/charting_library/charting_library&amp;#34;&lt;/span>)
+&lt;span style="color:#66d9ef">function&lt;/span> &lt;span style="color:#a6e22e">getLanguageFromURL&lt;/span>() {
+&lt;span style="color:#66d9ef">const&lt;/span> &lt;span style="color:#a6e22e">regex&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> RegExp(&lt;span style="color:#e6db74">&amp;#39;[\\?&amp;amp;]lang=([^&amp;amp;#]*)&amp;#39;&lt;/span>);
+&lt;span style="color:#66d9ef">const&lt;/span> &lt;span style="color:#a6e22e">results&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">regex&lt;/span>.&lt;span style="color:#a6e22e">exec&lt;/span>(&lt;span style="color:#a6e22e">location&lt;/span>.&lt;span style="color:#a6e22e">search&lt;/span>);
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">results&lt;/span> &lt;span style="color:#f92672">===&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span> &lt;span style="color:#f92672">?&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span> &lt;span style="color:#f92672">:&lt;/span> decodeURIComponent(&lt;span style="color:#a6e22e">results&lt;/span>[&lt;span style="color:#ae81ff">1&lt;/span>].&lt;span style="color:#a6e22e">replace&lt;/span>(&lt;span style="color:#e6db74">/\+/g&lt;/span>, &lt;span style="color:#e6db74">&amp;#39; &amp;#39;&lt;/span>));
+}
+&lt;span style="color:#66d9ef">function&lt;/span> &lt;span style="color:#a6e22e">initOnReady&lt;/span>() {
+&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">widget&lt;/span> &lt;span style="color:#f92672">=&lt;/span> window.&lt;span style="color:#a6e22e">tvWidget&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> &lt;span style="color:#a6e22e">TradingView&lt;/span>.&lt;span style="color:#a6e22e">widget&lt;/span>({
+&lt;span style="color:#a6e22e">symbol&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#39;AAPL&amp;#39;&lt;/span>,
+&lt;span style="color:#a6e22e">datafeed&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> &lt;span style="color:#a6e22e">Datafeeds&lt;/span>.&lt;span style="color:#a6e22e">UDFCompatibleDatafeed&lt;/span>(&lt;span style="color:#e6db74">&amp;#39;https://demo_feed.tradingview.com&amp;#39;&lt;/span>),
+&lt;span style="color:#a6e22e">interval&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#39;D&amp;#39;&lt;/span>,
+&lt;span style="color:#a6e22e">container_id&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#39;tv_chart_container&amp;#39;&lt;/span>,
+&lt;span style="color:#a6e22e">library_path&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#39;/charting_library/&amp;#39;&lt;/span>,
+&lt;span style="color:#a6e22e">locale&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#a6e22e">getLanguageFromURL&lt;/span>() &lt;span style="color:#f92672">||&lt;/span> &lt;span style="color:#e6db74">&amp;#39;en&amp;#39;&lt;/span>,
+&lt;span style="color:#a6e22e">disabled_features&lt;/span>&lt;span style="color:#f92672">:&lt;/span> [&lt;span style="color:#e6db74">&amp;#39;use_localstorage_for_settings&amp;#39;&lt;/span>],
+&lt;span style="color:#a6e22e">enabled_features&lt;/span>&lt;span style="color:#f92672">:&lt;/span> [&lt;span style="color:#e6db74">&amp;#39;study_templates&amp;#39;&lt;/span>],
+&lt;span style="color:#a6e22e">charts_storage_url&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#39;https://saveload.tradingview.com&amp;#39;&lt;/span>,
+&lt;span style="color:#a6e22e">charts_storage_api_version&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#39;1.1&amp;#39;&lt;/span>,
+&lt;span style="color:#a6e22e">client_id&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#39;tradingview.com&amp;#39;&lt;/span>,
+&lt;span style="color:#a6e22e">user_id&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#39;public_user_id&amp;#39;&lt;/span>,
+&lt;span style="color:#a6e22e">fullscreen&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">false&lt;/span>,
+&lt;span style="color:#a6e22e">autosize&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">true&lt;/span>,
+&lt;span style="color:#a6e22e">studies_overrides&lt;/span>&lt;span style="color:#f92672">:&lt;/span> {},
+});
+&lt;span style="color:#a6e22e">widget&lt;/span>.&lt;span style="color:#a6e22e">onChartReady&lt;/span>(() =&amp;gt; {
+&lt;span style="color:#a6e22e">widget&lt;/span>.&lt;span style="color:#a6e22e">headerReady&lt;/span>().&lt;span style="color:#a6e22e">then&lt;/span>(() =&amp;gt; {
+&lt;span style="color:#66d9ef">const&lt;/span> &lt;span style="color:#a6e22e">button&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">widget&lt;/span>.&lt;span style="color:#a6e22e">createButton&lt;/span>();
+&lt;span style="color:#a6e22e">button&lt;/span>.&lt;span style="color:#a6e22e">setAttribute&lt;/span>(&lt;span style="color:#e6db74">&amp;#39;title&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;Click to show a notification popup&amp;#39;&lt;/span>);
+&lt;span style="color:#a6e22e">button&lt;/span>.&lt;span style="color:#a6e22e">classList&lt;/span>.&lt;span style="color:#a6e22e">add&lt;/span>(&lt;span style="color:#e6db74">&amp;#39;apply-common-tooltip&amp;#39;&lt;/span>);
+&lt;span style="color:#a6e22e">button&lt;/span>.&lt;span style="color:#a6e22e">addEventListener&lt;/span>(&lt;span style="color:#e6db74">&amp;#39;click&amp;#39;&lt;/span>, () =&amp;gt; &lt;span style="color:#a6e22e">widget&lt;/span>.&lt;span style="color:#a6e22e">showNoticeDialog&lt;/span>({
+&lt;span style="color:#a6e22e">title&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#39;Notification&amp;#39;&lt;/span>,
+&lt;span style="color:#a6e22e">body&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#39;TradingView Charting Library API works correctly&amp;#39;&lt;/span>,
+&lt;span style="color:#a6e22e">callback&lt;/span>&lt;span style="color:#f92672">:&lt;/span> () =&amp;gt; {
+&lt;span style="color:#a6e22e">console&lt;/span>.&lt;span style="color:#a6e22e">log&lt;/span>(&lt;span style="color:#e6db74">&amp;#39;Noticed!&amp;#39;&lt;/span>);
+},
+}));
+&lt;span style="color:#a6e22e">button&lt;/span>.&lt;span style="color:#a6e22e">innerHTML&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;Check API&amp;#39;&lt;/span>;
+});
+});
+};
+window.&lt;span style="color:#a6e22e">addEventListener&lt;/span>(&lt;span style="color:#e6db74">&amp;#39;DOMContentLoaded&amp;#39;&lt;/span>, &lt;span style="color:#a6e22e">initOnReady&lt;/span>, &lt;span style="color:#66d9ef">false&lt;/span>);
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The code is actually coming from the sample with slight modifications.&lt;/p>
+&lt;p>Create a view and put this HTML in:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-html" data-lang="html">&amp;lt;&lt;span style="color:#f92672">div&lt;/span> &lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;page-tv-chart-container&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">id&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;tv_chart_container&amp;#34;&lt;/span>&amp;gt;
+&amp;lt;/&lt;span style="color:#f92672">div&lt;/span>&amp;gt;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>TradingView will use that ID to load the chart.&lt;/p>
+&lt;p>Just start your server and that&amp;rsquo;s it. You should have a working TradingView
+chart by now 👍&lt;/p></content></item></channel></rss>

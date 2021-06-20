@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>aws on Amree Zaid</title><link>https://amree.github.io/tags/aws/</link><description>Recent content in aws on Amree Zaid</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 05 Oct 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://amree.github.io/tags/aws/index.xml" rel="self" type="application/rss+xml"/><item><title>Exporting data from RDS to S3 using AWS Glue</title><link>https://amree.github.io/posts/exporting-data-from-rds-to-s3-using-aws-glue/</link><pubDate>Mon, 05 Oct 2020 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/exporting-data-from-rds-to-s3-using-aws-glue/</guid><description>&lt;h2 id="overview">Overview&lt;/h2>
+&lt;p>Why would we even want to do this? Just imagine if you have data that are
+infrequently accessed. Keeping it in your RDS might costs you more than it
+should. Besides, having big table is gonna cause you a bigger headache with your
+database maintenance (indexing, auto vacuum, etc).&lt;/p></description><content>&lt;h2 id="overview">Overview&lt;/h2>
+&lt;p>Why would we even want to do this? Just imagine if you have data that are
+infrequently accessed. Keeping it in your RDS might costs you more than it
+should. Besides, having big table is gonna cause you a bigger headache with your
+database maintenance (indexing, auto vacuum, etc).&lt;/p>
+&lt;p>What if we can store those data somewhere where it&amp;rsquo;s gonna cost less and it&amp;rsquo;s in
+an even smaller size? You can read more about the cost-saving part
+&lt;a href="https://dev.to/cloudforecast/using-parquet-on-athena-to-save-money-on-aws-3fac">here&lt;/a>.
+I&amp;rsquo;ll be focusing on the how and not the why in this post.&lt;/p>
+&lt;p>Exporting data from RDS to S3 through AWS Glue and viewing it through AWS Athena
+requires a lot of steps. But it’s important to understand the process from the
+higher level.&lt;/p>
+&lt;p>IMHO, I think we can visualize the whole process as two parts, which are:&lt;/p>
+&lt;ul>
+&lt;li>Input: This is the process where we’ll get the data from RDS into S3 using AWS
+Glue&lt;/li>
+&lt;li>Output: This is where we’ll use AWS Athena to view the data in S3&lt;/li>
+&lt;/ul>
+&lt;p>It’s important to note both processes require almost similar steps. We need to
+specify the database and table for both of them.&lt;/p>
+&lt;p>Database and table don’t exactly carry the same meaning as our normal
+PostgreSQL. The database in this context is more like containers for the tables
+and doesn’t really have any extra configurations.&lt;/p>
+&lt;p>The table is a little bit different as it has a schema attached to it. The table
+in AWS Glue is just the metadata definition that represents your data and it
+doesn’t have data inside it. The data is available somewhere else. It can be in
+RDS/S3/other places.&lt;/p>
+&lt;p>How do we create a table? We can either create it manually or use Crawlers in
+AWS Glue for that. We can also create a table from AWS Athena itself.&lt;/p>
+&lt;p>The database and tables that you see in AWS Glue will also be available in AWS
+Athena.&lt;/p>
+&lt;h2 id="recommendations">Recommendations&lt;/h2>
+&lt;ul>
+&lt;li>In order not to confuse ourselves, I think it’d better if we use different
+database names for the input and output. We need to differentiate between
+what’s the input and output for easier reference when we set up the AWS Glue
+Job.&lt;/li>
+&lt;li>More will be added&lt;/li>
+&lt;/ul>
+&lt;h2 id="steps">Steps&lt;/h2>
+&lt;h3 id="prerequisite">Prerequisite&lt;/h3>
+&lt;h4 id="security">Security&lt;/h4>
+&lt;blockquote>
+&lt;p>These security configurations are required to prevent errors when we ran AWS
+Glue&lt;/p>
+&lt;/blockquote>
+&lt;p>Amazon VPC Endpoints for Amazon S3:&lt;/p>
+&lt;ul>
+&lt;li>Go to VPC &amp;gt; Endpoints&lt;/li>
+&lt;li>Create Endpoint&lt;/li>
+&lt;li>Search by Services: S3 (com.amazonaws.ap-southeast-1.s3)&lt;/li>
+&lt;li>Select your VPC&lt;/li>
+&lt;li>Tick a Route Table ID&lt;/li>
+&lt;li>Choose Full Access&lt;/li>
+&lt;li>Create Endpoint&lt;/li>
+&lt;/ul>
+&lt;p>The result will be shown in the “Route Tables &amp;gt; Routes” page. There’ll be a new
+route added with VPC as the target and S3 service as the destination&lt;/p>
+&lt;p>Reference: &lt;a href="https://docs.aws.amazon.com/glue/latest/dg/vpc-endpoints-s3.html">https://docs.aws.amazon.com/glue/latest/dg/vpc-endpoints-s3.html&lt;/a>&lt;/p>
+&lt;p>RDS Security Group:&lt;/p>
+&lt;ul>
+&lt;li>Select the security group of the database that you want to use&lt;/li>
+&lt;li>Edit inbound rules&lt;/li>
+&lt;li>Add rule&lt;/li>
+&lt;li>Type: All TCP&lt;/li>
+&lt;li>Source: Custom and search for the security group name itself&lt;/li>
+&lt;li>Save rules&lt;/li>
+&lt;/ul>
+&lt;h4 id="roles">Roles&lt;/h4>
+&lt;p>This will allow Glue to call AWS service on our behalf&lt;/p>
+&lt;ul>
+&lt;li>Go to IAM &amp;gt; Roles &amp;gt; Create role&lt;/li>
+&lt;li>Type of trusted identity: AWS Service&lt;/li>
+&lt;li>Service: Glue&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Search and select AWSGlueServiceRole&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>We can skip adding tags&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Roles: AWSGlueServiceDefault (can be anything)&lt;/li>
+&lt;li>Create Role&lt;/li>
+&lt;/ul>
+&lt;h4 id="add-database-connections-for-input">Add Database Connections (for Input)&lt;/h4>
+&lt;ul>
+&lt;li>Go to AWS Glue &amp;gt; Databases &amp;gt; Connections&lt;/li>
+&lt;li>Click “Add Connection”&lt;/li>
+&lt;li>Connection type: Amazon RDS&lt;/li>
+&lt;li>Database Engine: PostgreSQL&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Instance: Choose an RDS&lt;/li>
+&lt;li>Put the database details: name, username, and password&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Review and click Finish&lt;/li>
+&lt;li>Use “Test Connection” in the “Connections” page to test it out (this might
+take a while)&lt;/li>
+&lt;/ul>
+&lt;h4 id="setup-s3-access-for-output">Setup S3 access (for Output)&lt;/h4>
+&lt;ul>
+&lt;li>Go to AWS Glue &amp;gt; Databases &amp;gt; Connections&lt;/li>
+&lt;li>Click “Add Connection”&lt;/li>
+&lt;li>Connection type: Network&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>VPC: Select the same one as the RDS*&lt;/li>
+&lt;li>Subnet: Select the same one as the RDS*&lt;/li>
+&lt;li>Security Group: default*&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Review and click Finish&lt;/li>
+&lt;/ul>
+&lt;p>(*) Other options might work too, but I didn’t try them out.&lt;/p>
+&lt;h3 id="add-databases">Add Databases&lt;/h3>
+&lt;p>This will be the parent/container for the table. A table might come from the
+input and output.&lt;/p>
+&lt;ul>
+&lt;li>Go to AWS Glue &amp;gt; Databases &amp;gt; Add database&lt;/li>
+&lt;li>Database name: anything will do&lt;/li>
+&lt;/ul>
+&lt;p>I created for both. E.g: &lt;code>myapp_input&lt;/code> and &lt;code>myapp_output&lt;/code>&lt;/p>
+&lt;h3 id="add-crawlers">Add Crawlers&lt;/h3>
+&lt;p>Before we create a job to import the data, we need to set up our input table’s
+schema. This schema will be used for the data input in the Job later.&lt;/p>
+&lt;p>Naming is hard. I decided to go with this format:
+&lt;code>rds_db_name_env_table_name_crawler&lt;/code>. It’s easier if we can grasp what the
+crawler does from the name even though we can have a shorter name and put the
+details in the description.&lt;/p>
+&lt;ul>
+&lt;li>Go to AWS Glue &amp;gt; Tables &amp;gt; Add tables &amp;gt; Add tables using a crawler&lt;/li>
+&lt;li>Crawler name: Anything&lt;/li>
+&lt;li>Crawler source type: Data stores&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Choose a data store: JDBC&lt;/li>
+&lt;li>Connection: Choose the one we created above&lt;/li>
+&lt;li>Include path: &lt;code>db_name/public/table_name&lt;/code> (assuming we want to take data from
+table table_nameas we can use % as the wild card)&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Add another data store: No&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>IAM role: Choose the one we created above (AWSGlueServiceDefault)&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Frequency&lt;/li>
+&lt;li>Use Run on demand&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Configure the crawler’s output&lt;/li>
+&lt;li>Database: Choose database for the crawler output (this will be the source for
+our Job later)&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Review and click Finish&lt;/li>
+&lt;/ul>
+&lt;p>The crawler that we’ve just defined is just to create a table with a schema
+based on the RDS’s table that we just specified.&lt;/p>
+&lt;p>Let’s run it to see the output. Just go to the Crawlers page and select “Run
+crawler”. It’ll take a moment before it starts and there’s no log when it’s
+running (or at least I can’t find it yet). However, there’ll be a log once it’s
+done. The only thing you can do to monitor its progress is to keep clicking the
+Refresh icon on the Crawlers page.&lt;/p>
+&lt;p>Once it’s done, you’ll see the table created automatically in the Tables
+section. You can filter out the list of the tables by going through Databases
+first. You should see a table with defined schema similar to what you have in
+RDS.&lt;/p>
+&lt;p>We need to add another crawler that will define the schema of our output. But
+this time it’ll be for our S3 (which is the output)&lt;/p>
+&lt;ul>
+&lt;li>Go to AWS Glue &amp;gt; Tables &amp;gt; Add tables &amp;gt; Add tables using a crawler&lt;/li>
+&lt;li>Crawler name: Anything (I chose &lt;code>s3_db_name_env_table_name_crawler&lt;/code>)&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Crawler source type: Data stores&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Choose a data store: S3&lt;/li>
+&lt;li>Connection: Use connection declared before for S3 access&lt;/li>
+&lt;li>Crawl data in: Specified path in my account&lt;/li>
+&lt;li>Include path: &lt;code>s3://you-data-path/&lt;/code>. This will be the path where you’ll store
+the output from Job that you’ll create later. The output here means the Apache
+Parquet files. I chose: &lt;code>s3://glue-dir/env/database_name/table_name/&lt;/code>&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Add another data store: No&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Choose IAM role&lt;/li>
+&lt;li>Choose an existing IAM role&lt;/li>
+&lt;li>IAM role: AWSGlueServiceRoleDefault&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Create a schedule for this crawler:&lt;/li>
+&lt;li>Frequency: Run on demand&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Configure the crawler’s output:&lt;/li>
+&lt;li>Database: A database where you’ll store the output from S3&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Review and click Finish&lt;/li>
+&lt;/ul>
+&lt;p>We’re not going to run this crawler yet as the S3 directory is empty. We’ll run
+it once we’ve exported RDS data to S3.&lt;/p>
+&lt;h3 id="add-a-job">Add a job&lt;/h3>
+&lt;p>For some unknown reason, I couldn’t get this to work without using AWS Glue
+Studio. Maybe I’ll figure it out once I have more time. But I’ll just use AWS
+Glue Studio for now:&lt;/p>
+&lt;ul>
+&lt;li>Open AWS Glue Studio in ETL section&lt;/li>
+&lt;li>Choose &amp;ldquo;Create and manage jobs&amp;rdquo;&lt;/li>
+&lt;li>Source: RDS&lt;/li>
+&lt;li>Target: S3&lt;/li>
+&lt;li>Click Create&lt;/li>
+&lt;li>Click on the “Data source - JDBC” node&lt;/li>
+&lt;li>Database: Use the database that we defined earlier for the input&lt;/li>
+&lt;li>Table: Choose the input table (should be coming from the same database)&lt;/li>
+&lt;li>You’ll notice that the node will now have a green check&lt;/li>
+&lt;li>Click on the “Data target - S3 bucket” node&lt;/li>
+&lt;li>Format: Glue Parquet&lt;/li>
+&lt;li>Compression type: Snappy&lt;/li>
+&lt;li>S3 Target location: This will the place where the parquet files will be
+generated. This path should also be the same as what we defined in our crawler
+for the output before. Remember, this is for the data, not for the schema. The
+crawler is responsible for the schema. I chose to use
+&lt;code>s3://glue-dir/env/database_name/table_name&lt;/code>&lt;/li>
+&lt;li>You’ll notice that the node will now have a green check&lt;/li>
+&lt;li>Now go to “Job details” tab&lt;/li>
+&lt;li>Name: Can be anything, I chose &lt;code>rds_to_s3_db_name_env_table_name&lt;/code>&lt;/li>
+&lt;li>IAM Role: Choose the role that we created before - AWSGlueServiceRoleDefault&lt;/li>
+&lt;li>Expand “Advanced Properties”&lt;/li>
+&lt;li>We’re going to specify some paths so that it won’t litter our top-level s3&lt;/li>
+&lt;li>Script path: &lt;code>s3://glue-dir/scripts/&lt;/code>&lt;/li>
+&lt;li>Spark UI logs path: &lt;code>s3://glue-dir/sparkHistoryLogs/&lt;/code>&lt;/li>
+&lt;li>Temporary path: &lt;code>s3://glue-dir/temporary/&lt;/code>&lt;/li>
+&lt;li>Click Save&lt;/li>
+&lt;li>Click “Run” to run the script. You can see the log in “Run details” tab. If
+everything is working as expected, you should files generated in
+&lt;code>s3://glue-dir/env/database_name/table_name&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;h3 id="viewing-the-record-using-aws-athena">Viewing the record using AWS Athena&lt;/h3>
+&lt;p>Before we can view the output, we need to create a table/schema for those
+parquet files. This is the job for the crawler (you can also create the table
+manually if you want to). That’s what the second crawler does. Just run the
+crawler and you’ll get a new table created if it’s new. Refer to previous steps
+on how we run the first crawler.&lt;/p>
+&lt;p>To confirm the table has been created, just go to the database for the output
+and then click on the “Tables ..” link. You should see it there. There’s also an
+alert at the top of the Crawler index page once it has finished the job.&lt;/p>
+&lt;p>To view the record:&lt;/p>
+&lt;ul>
+&lt;li>Go to AWS Athena&lt;/li>
+&lt;li>Select your database and table.&lt;/li>
+&lt;li>Click on the three dots on the right side of the table name and choose Preview
+Table&lt;/li>
+&lt;li>You’ll see some data in the Results&lt;/li>
+&lt;/ul>
+&lt;h2 id="references">References&lt;/h2>
+&lt;ul>
+&lt;li>&lt;a href="https://github.com/aws-samples/aws-glue-samples/blob/master/FAQ_and_How_to.md">https://github.com/aws-samples/aws-glue-samples/blob/master/FAQ_and_How_to.md&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://spark.apache.org/docs/2.1.0/sql-programming-guide.html">https://spark.apache.org/docs/2.1.0/sql-programming-guide.html&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://aws.amazon.com/blogs/big-data/how-to-access-and-analyze-on-premises-data-stores-using-aws-glue/">https://aws.amazon.com/blogs/big-data/how-to-access-and-analyze-on-premises-data-stores-using-aws-glue/&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://stackoverflow.com/questions/34948296/using-pyspark-to-connect-to-postgresql">https://stackoverflow.com/questions/34948296/using-pyspark-to-connect-to-postgresql&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://dev.to/cloudforecast/watch-out-for-unexpected-s3-cost-when-using-athena-5hdm">https://dev.to/cloudforecast/watch-out-for-unexpected-s3-cost-when-using-athena-5hdm&lt;/a>&lt;/li>
+&lt;/ul></content></item></channel></rss>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>telegram on Amree Zaid</title><link>https://amree.github.io/tags/telegram/</link><description>Recent content in telegram on Amree Zaid</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Thu, 19 Dec 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://amree.github.io/tags/telegram/index.xml" rel="self" type="application/rss+xml"/><item><title>Trick to Make Telegram Bot Private</title><link>https://amree.github.io/posts/make-telegram-bot-private/</link><pubDate>Thu, 19 Dec 2019 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/make-telegram-bot-private/</guid><description>&lt;p>Recently, I learned a trick to make my Telegram bot private to certain users.&lt;/p>
+&lt;p>I tried not to create the whole CRUD thingy for the membership and after
+Googling I found out about one of the API provided.&lt;/p></description><content>&lt;p>Recently, I learned a trick to make my Telegram bot private to certain users.&lt;/p>
+&lt;p>I tried not to create the whole CRUD thingy for the membership and after
+Googling I found out about one of the API provided.&lt;/p>
+&lt;p>&lt;a href="https://core.telegram.org/bots/api#getchatmember">https://core.telegram.org/bots/api#getchatmember&lt;/a>&lt;/p>
+&lt;p>This would allow us to get info of a user with a given &lt;code>chat_id&lt;/code>. It can be a
+channel or a group.&lt;/p>
+&lt;p>Basically your membership for your bot will be based on the group of your bot
+and the allowed users are in. So, both of them need to be in the same
+group/channel.&lt;/p>
+&lt;p>The code would look like the screenshot.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">bot&lt;span style="color:#f92672">.&lt;/span>api&lt;span style="color:#f92672">.&lt;/span>get_chat_member(&lt;span style="color:#e6db74">chat_id&lt;/span>: &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">10012345678&lt;/span>, &lt;span style="color:#e6db74">user_id&lt;/span>: message&lt;span style="color:#f92672">.&lt;/span>from_id)
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>There&amp;rsquo;re a few things to note:&lt;/p>
+&lt;p>&lt;strong>We need to get the channel and id of the group&lt;/strong>&lt;/p>
+&lt;p>For group:&lt;/p>
+&lt;p>Invite &lt;a href="https://t.me/RawDataBot">https://t.me/RawDataBot&lt;/a> and on the first entry, it&amp;rsquo;ll output some JSON.
+You can get the group&amp;rsquo;s ID from &lt;code>message.chat.id&lt;/code>.&lt;/p>
+&lt;p>It should look like &lt;code>-10012345678&lt;/code>. Remove the bot after that. But if you don&amp;rsquo;t
+trust the bot, you probably need to cook up some new code to get the group ID.&lt;/p>
+&lt;p>For channel:&lt;/p>
+&lt;p>Channel is a little bit different, you can use one of the methods mentioned
+here:&lt;/p>
+&lt;p>&lt;a href="https://stackoverflow.com/questions/33858927/how-to-obtain-the-chat-id-of-a-private-telegram-channel/56546442#56546442">https://stackoverflow.com/questions/33858927/how-to-obtain-the-chat-id-of-a-private-telegram-channel/56546442#56546442&lt;/a>&lt;/p>
+&lt;p>&lt;strong>Output&lt;/strong>&lt;/p>
+&lt;p>So, what&amp;rsquo;s the output can we expect? Well for Ruby, we&amp;rsquo;re expecting hash from
+the output and &lt;code>var[&amp;quot;result&amp;quot;][&amp;quot;status&amp;quot;]&lt;/code> will give you the status of the user.&lt;/p>
+&lt;p>It can be many things, but if it&amp;rsquo;s &lt;code>left&lt;/code> then the user is not a member of the
+group and that&amp;rsquo;s what we want to know.&lt;/p>
+&lt;p>&lt;strong>Add the bot to a group/channel&lt;/strong>&lt;/p>
+&lt;p>This also means you need to add the bot that&amp;rsquo;s executing the code to be in the
+same group as those users that you want to give access to.&lt;/p>
+&lt;p>So, any users who are in the same group/channel will be allowed to chat with the
+bot based on the previous output.&lt;/p>
+&lt;p>Again, a channel is a little bit different, you need to add your bot as the
+admin, compared to a group that can be added as a normal user.&lt;/p>
+&lt;p>&lt;strong>Exception&lt;/strong>&lt;/p>
+&lt;p>Another note, the code will raise an exception if the given &lt;code>chat_id&lt;/code> doesn&amp;rsquo;t
+exist.&lt;/p>
+&lt;p>As a summary, with this trick, you don&amp;rsquo;t have to build the whole CRUD and can
+reuse the group/channel that you already have (assuming you have one).&lt;/p>
+&lt;p>That&amp;rsquo;s it, folks, thanks for reading&lt;/p></content></item></channel></rss>

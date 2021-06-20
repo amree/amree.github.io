@@ -1,4 +1,715 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Amree Zaid</title><link>https://amree.github.io/</link><description>Recent content on Amree Zaid</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sat, 19 Jan 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://amree.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>How Bcrypt Compares Password</title><link>https://amree.github.io/posts/how-bcrypt-compares-password/</link><pubDate>Sat, 19 Jan 2019 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/how-bcrypt-compares-password/</guid><description>&lt;p>I&amp;rsquo;ve always wondered about this.&lt;/p></description><content>&lt;p>I&amp;rsquo;ve always wondered about this.&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Amree Zaid</title><link>https://amree.github.io/</link><description>Recent content on Amree Zaid</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 09 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://amree.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Speed Up Ruby on Rails Development Environment</title><link>https://amree.github.io/posts/speed-up-your-ruby-on-rails-development/</link><pubDate>Sun, 09 May 2021 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/speed-up-your-ruby-on-rails-development/</guid><description>&lt;p>There will be a time when your Rails development environment started to become
+very slow due to multiple reasons, but mostly because your codebase is very big
+and the monolith architecture is just too sweet for you to pass on.&lt;/p></description><content>&lt;p>There will be a time when your Rails development environment started to become
+very slow due to multiple reasons, but mostly because your codebase is very big
+and the monolith architecture is just too sweet for you to pass on.&lt;/p>
+&lt;p>An example of this is you have to wait like 10 seconds (or worse) when you
+change something in your Rails code and hit that refresh button. Normally,
+starting Rails console/server also can be affected.&lt;/p>
+&lt;p>What works for me might not work for you, but it should help you to get started.
+BTW, I&amp;rsquo;m optimizing 7 years old codebase. So here are some tips for speed
+improvements.&lt;/p>
+&lt;p>Get a baseline first on how slow it is so that you know you are actually
+improving it instead of just using your feeling:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">time bundle exec rake environment
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>This should show you the load time without spring. Any changes we make should
+make the numbers better than before. Alright, now we need to identify what&amp;rsquo;s
+causing the slowness. We can use
+&lt;a href="https://github.com/nevir/Bumbler">https://github.com/nevir/Bumbler&lt;/a> gem for
+this. Just run this command first:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">bumbler
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>It will show you gems that are taking time to be loaded/require.&lt;/p>
+&lt;p>But what can you do with that output? Start from the bottom and see if you put
+your gem in the right development. You don&amp;rsquo;t have to put your server monitoring
+gem in the development environment, right?&lt;/p>
+&lt;p>You can also do &lt;code>require: false&lt;/code> in your Gemfile for certain gems that are being
+used rarely, but you need to &lt;code>require&lt;/code> it manually when you want to use it.&lt;/p>
+&lt;p>Use your judgment wisely. Check out how
+&lt;a href="https://github.com/discourse/discourse/blob/master/Gemfile">https://github.com/discourse/discourse/blob/master/Gemfile&lt;/a>
+is doing it&lt;/p>
+&lt;p>Next, run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">bumbler --initializers
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>This will show you the load time of initializers.&lt;/p>
+&lt;p>In my case, it was the routes (we have thousands of routes due to our support of
+multiple languages). So, reducing the routes will help but we can&amp;rsquo;t remove the
+routes, it&amp;rsquo;s one of our best features.&lt;/p>
+&lt;p>Since you won&amp;rsquo;t always be using ALL of them in the development, so you can do
+this:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">config&lt;span style="color:#f92672">.&lt;/span>i8n&lt;span style="color:#f92672">.&lt;/span>available_locales &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#f92672">[&lt;/span>&lt;span style="color:#e6db74">:en&lt;/span>&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#66d9ef">ENV&lt;/span>&lt;span style="color:#f92672">.&lt;/span>fetch(&lt;span style="color:#e6db74">&amp;#34;MIN_LOCALE&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;0&amp;#34;&lt;/span>) &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#34;1&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>What does it do? By default, it will use all of the languages except when you
+have that &lt;code>MIN_LOCALE&lt;/code> environment variable which you would only put in your
+local development.&lt;/p>
+&lt;p>Another place to check would be your Admin routes. Again, you are not accessing
+your Admin routes all the time, so, you can use the same trick in your
+&lt;code>routes.rb&lt;/code>. Try optimizing your codebase based on what bumbler told you.&lt;/p>
+&lt;p>One last tip would be to do some cleanup on your gems. Remove gems that are not
+being used. Sometimes we just forgot that we don&amp;rsquo;t need it anymore.&lt;/p>
+&lt;p>That&amp;rsquo;s it, folks. Here is my result from this exercise:&lt;/p>
+&lt;ul>
+&lt;li>Reduce slow requires by 41%&lt;/li>
+&lt;li>Reduce Initialize require by 72%&lt;/li>
+&lt;li>Reduce the number of routes by 91%&lt;/li>
+&lt;li>Reduce rake time by 55%&lt;/li>
+&lt;/ul>
+&lt;p>Thanks for reading&lt;/p></content></item><item><title>How to Integrate TradingView's HTML5 Charting Library with Ruby on Rails v6</title><link>https://amree.github.io/posts/how-to-integrate-tradingview-s-html5-charting-library-with-ruby-on-rails-v6/</link><pubDate>Mon, 23 Nov 2020 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/how-to-integrate-tradingview-s-html5-charting-library-with-ruby-on-rails-v6/</guid><description>&lt;p>As you probably know, the charting library is not accessible publicly. You need
+to request access from them. So, I can&amp;rsquo;t really give a complete repo as an
+example. I did however open a PR at
+&lt;a href="https://github.com/tradingview/charting-library-examples/pull/197,">https://github.com/tradingview/charting-library-examples/pull/197,&lt;/a> but I&amp;rsquo;m not
+sure if it&amp;rsquo;s going to be accepted.&lt;/p></description><content>&lt;p>As you probably know, the charting library is not accessible publicly. You need
+to request access from them. So, I can&amp;rsquo;t really give a complete repo as an
+example. I did however open a PR at
+&lt;a href="https://github.com/tradingview/charting-library-examples/pull/197,">https://github.com/tradingview/charting-library-examples/pull/197,&lt;/a> but I&amp;rsquo;m not
+sure if it&amp;rsquo;s going to be accepted.&lt;/p>
+&lt;p>Anyway, the given example is using asset pipeline and the modern Ruby on Rails
+application is using webpacker. So after trying out a few times, I figured a
+working way to load the sample chart.&lt;/p>
+&lt;p>It&amp;rsquo;s not straight forward for me, so maybe this will help someone else in the
+future. However, I&amp;rsquo;m not sure if it&amp;rsquo;s the best way to load it, however, it works
+😁&lt;/p>
+&lt;p>I&amp;rsquo;m going to assume you&amp;rsquo;re using the Ruby on Rails v6.0.3.4. Once you&amp;rsquo;ve cloned
+the library into &lt;code>charting_library&lt;/code> directory, you can do these steps:&lt;/p>
+&lt;ul>
+&lt;li>Copy &lt;code>charting_library/charting_library.js&lt;/code> into &lt;code>app/javascript/packs/charting_library/charting_library.js&lt;/code>&lt;/li>
+&lt;li>Copy &lt;code>datafeeds/udf/dist/*.js&lt;/code> into &lt;code>app/javascript/packs/datafeeds/&lt;/code>&lt;/li>
+&lt;li>Copy &lt;code>charting_library/*.html&lt;/code> into &lt;code>public/charting_library/&lt;/code>&lt;/li>
+&lt;li>Copy &lt;code>charting_library/bundles&lt;/code> into &lt;code>public/charting_library/bundles&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;p>Don&amp;rsquo;t worry about serving outdated files just because you put it in the public
+directory as the charting library will use a new hash on the files every time
+there&amp;rsquo;s a new update.&lt;/p>
+&lt;p>Once we got the files in the correct places, we can use this code to load the
+sample:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#75715e">// app/javascript/packs/application.js
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">require&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;@rails/ujs&amp;#34;&lt;/span>).&lt;span style="color:#a6e22e">start&lt;/span>()
+&lt;span style="color:#a6e22e">require&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;turbolinks&amp;#34;&lt;/span>).&lt;span style="color:#a6e22e">start&lt;/span>()
+&lt;span style="color:#a6e22e">require&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;channels&amp;#34;&lt;/span>)
+&lt;span style="color:#a6e22e">require&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;packs/datafeeds/polyfills&amp;#34;&lt;/span>)
+&lt;span style="color:#66d9ef">const&lt;/span> &lt;span style="color:#a6e22e">Datafeeds&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">require&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;packs/datafeeds/bundle&amp;#34;&lt;/span>)
+&lt;span style="color:#66d9ef">const&lt;/span> &lt;span style="color:#a6e22e">TradingView&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">require&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;packs/charting_library/charting_library&amp;#34;&lt;/span>)
+&lt;span style="color:#66d9ef">function&lt;/span> &lt;span style="color:#a6e22e">getLanguageFromURL&lt;/span>() {
+&lt;span style="color:#66d9ef">const&lt;/span> &lt;span style="color:#a6e22e">regex&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> RegExp(&lt;span style="color:#e6db74">&amp;#39;[\\?&amp;amp;]lang=([^&amp;amp;#]*)&amp;#39;&lt;/span>);
+&lt;span style="color:#66d9ef">const&lt;/span> &lt;span style="color:#a6e22e">results&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">regex&lt;/span>.&lt;span style="color:#a6e22e">exec&lt;/span>(&lt;span style="color:#a6e22e">location&lt;/span>.&lt;span style="color:#a6e22e">search&lt;/span>);
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">results&lt;/span> &lt;span style="color:#f92672">===&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span> &lt;span style="color:#f92672">?&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span> &lt;span style="color:#f92672">:&lt;/span> decodeURIComponent(&lt;span style="color:#a6e22e">results&lt;/span>[&lt;span style="color:#ae81ff">1&lt;/span>].&lt;span style="color:#a6e22e">replace&lt;/span>(&lt;span style="color:#e6db74">/\+/g&lt;/span>, &lt;span style="color:#e6db74">&amp;#39; &amp;#39;&lt;/span>));
+}
+&lt;span style="color:#66d9ef">function&lt;/span> &lt;span style="color:#a6e22e">initOnReady&lt;/span>() {
+&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">widget&lt;/span> &lt;span style="color:#f92672">=&lt;/span> window.&lt;span style="color:#a6e22e">tvWidget&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> &lt;span style="color:#a6e22e">TradingView&lt;/span>.&lt;span style="color:#a6e22e">widget&lt;/span>({
+&lt;span style="color:#a6e22e">symbol&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#39;AAPL&amp;#39;&lt;/span>,
+&lt;span style="color:#a6e22e">datafeed&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> &lt;span style="color:#a6e22e">Datafeeds&lt;/span>.&lt;span style="color:#a6e22e">UDFCompatibleDatafeed&lt;/span>(&lt;span style="color:#e6db74">&amp;#39;https://demo_feed.tradingview.com&amp;#39;&lt;/span>),
+&lt;span style="color:#a6e22e">interval&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#39;D&amp;#39;&lt;/span>,
+&lt;span style="color:#a6e22e">container_id&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#39;tv_chart_container&amp;#39;&lt;/span>,
+&lt;span style="color:#a6e22e">library_path&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#39;/charting_library/&amp;#39;&lt;/span>,
+&lt;span style="color:#a6e22e">locale&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#a6e22e">getLanguageFromURL&lt;/span>() &lt;span style="color:#f92672">||&lt;/span> &lt;span style="color:#e6db74">&amp;#39;en&amp;#39;&lt;/span>,
+&lt;span style="color:#a6e22e">disabled_features&lt;/span>&lt;span style="color:#f92672">:&lt;/span> [&lt;span style="color:#e6db74">&amp;#39;use_localstorage_for_settings&amp;#39;&lt;/span>],
+&lt;span style="color:#a6e22e">enabled_features&lt;/span>&lt;span style="color:#f92672">:&lt;/span> [&lt;span style="color:#e6db74">&amp;#39;study_templates&amp;#39;&lt;/span>],
+&lt;span style="color:#a6e22e">charts_storage_url&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#39;https://saveload.tradingview.com&amp;#39;&lt;/span>,
+&lt;span style="color:#a6e22e">charts_storage_api_version&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#39;1.1&amp;#39;&lt;/span>,
+&lt;span style="color:#a6e22e">client_id&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#39;tradingview.com&amp;#39;&lt;/span>,
+&lt;span style="color:#a6e22e">user_id&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#39;public_user_id&amp;#39;&lt;/span>,
+&lt;span style="color:#a6e22e">fullscreen&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">false&lt;/span>,
+&lt;span style="color:#a6e22e">autosize&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">true&lt;/span>,
+&lt;span style="color:#a6e22e">studies_overrides&lt;/span>&lt;span style="color:#f92672">:&lt;/span> {},
+});
+&lt;span style="color:#a6e22e">widget&lt;/span>.&lt;span style="color:#a6e22e">onChartReady&lt;/span>(() =&amp;gt; {
+&lt;span style="color:#a6e22e">widget&lt;/span>.&lt;span style="color:#a6e22e">headerReady&lt;/span>().&lt;span style="color:#a6e22e">then&lt;/span>(() =&amp;gt; {
+&lt;span style="color:#66d9ef">const&lt;/span> &lt;span style="color:#a6e22e">button&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">widget&lt;/span>.&lt;span style="color:#a6e22e">createButton&lt;/span>();
+&lt;span style="color:#a6e22e">button&lt;/span>.&lt;span style="color:#a6e22e">setAttribute&lt;/span>(&lt;span style="color:#e6db74">&amp;#39;title&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;Click to show a notification popup&amp;#39;&lt;/span>);
+&lt;span style="color:#a6e22e">button&lt;/span>.&lt;span style="color:#a6e22e">classList&lt;/span>.&lt;span style="color:#a6e22e">add&lt;/span>(&lt;span style="color:#e6db74">&amp;#39;apply-common-tooltip&amp;#39;&lt;/span>);
+&lt;span style="color:#a6e22e">button&lt;/span>.&lt;span style="color:#a6e22e">addEventListener&lt;/span>(&lt;span style="color:#e6db74">&amp;#39;click&amp;#39;&lt;/span>, () =&amp;gt; &lt;span style="color:#a6e22e">widget&lt;/span>.&lt;span style="color:#a6e22e">showNoticeDialog&lt;/span>({
+&lt;span style="color:#a6e22e">title&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#39;Notification&amp;#39;&lt;/span>,
+&lt;span style="color:#a6e22e">body&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#39;TradingView Charting Library API works correctly&amp;#39;&lt;/span>,
+&lt;span style="color:#a6e22e">callback&lt;/span>&lt;span style="color:#f92672">:&lt;/span> () =&amp;gt; {
+&lt;span style="color:#a6e22e">console&lt;/span>.&lt;span style="color:#a6e22e">log&lt;/span>(&lt;span style="color:#e6db74">&amp;#39;Noticed!&amp;#39;&lt;/span>);
+},
+}));
+&lt;span style="color:#a6e22e">button&lt;/span>.&lt;span style="color:#a6e22e">innerHTML&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;Check API&amp;#39;&lt;/span>;
+});
+});
+};
+window.&lt;span style="color:#a6e22e">addEventListener&lt;/span>(&lt;span style="color:#e6db74">&amp;#39;DOMContentLoaded&amp;#39;&lt;/span>, &lt;span style="color:#a6e22e">initOnReady&lt;/span>, &lt;span style="color:#66d9ef">false&lt;/span>);
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The code is actually coming from the sample with slight modifications.&lt;/p>
+&lt;p>Create a view and put this HTML in:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-html" data-lang="html">&amp;lt;&lt;span style="color:#f92672">div&lt;/span> &lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;page-tv-chart-container&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">id&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;tv_chart_container&amp;#34;&lt;/span>&amp;gt;
+&amp;lt;/&lt;span style="color:#f92672">div&lt;/span>&amp;gt;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>TradingView will use that ID to load the chart.&lt;/p>
+&lt;p>Just start your server and that&amp;rsquo;s it. You should have a working TradingView
+chart by now 👍&lt;/p></content></item><item><title>Exporting data from RDS to S3 using AWS Glue</title><link>https://amree.github.io/posts/exporting-data-from-rds-to-s3-using-aws-glue/</link><pubDate>Mon, 05 Oct 2020 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/exporting-data-from-rds-to-s3-using-aws-glue/</guid><description>&lt;h2 id="overview">Overview&lt;/h2>
+&lt;p>Why would we even want to do this? Just imagine if you have data that are
+infrequently accessed. Keeping it in your RDS might costs you more than it
+should. Besides, having big table is gonna cause you a bigger headache with your
+database maintenance (indexing, auto vacuum, etc).&lt;/p></description><content>&lt;h2 id="overview">Overview&lt;/h2>
+&lt;p>Why would we even want to do this? Just imagine if you have data that are
+infrequently accessed. Keeping it in your RDS might costs you more than it
+should. Besides, having big table is gonna cause you a bigger headache with your
+database maintenance (indexing, auto vacuum, etc).&lt;/p>
+&lt;p>What if we can store those data somewhere where it&amp;rsquo;s gonna cost less and it&amp;rsquo;s in
+an even smaller size? You can read more about the cost-saving part
+&lt;a href="https://dev.to/cloudforecast/using-parquet-on-athena-to-save-money-on-aws-3fac">here&lt;/a>.
+I&amp;rsquo;ll be focusing on the how and not the why in this post.&lt;/p>
+&lt;p>Exporting data from RDS to S3 through AWS Glue and viewing it through AWS Athena
+requires a lot of steps. But it’s important to understand the process from the
+higher level.&lt;/p>
+&lt;p>IMHO, I think we can visualize the whole process as two parts, which are:&lt;/p>
+&lt;ul>
+&lt;li>Input: This is the process where we’ll get the data from RDS into S3 using AWS
+Glue&lt;/li>
+&lt;li>Output: This is where we’ll use AWS Athena to view the data in S3&lt;/li>
+&lt;/ul>
+&lt;p>It’s important to note both processes require almost similar steps. We need to
+specify the database and table for both of them.&lt;/p>
+&lt;p>Database and table don’t exactly carry the same meaning as our normal
+PostgreSQL. The database in this context is more like containers for the tables
+and doesn’t really have any extra configurations.&lt;/p>
+&lt;p>The table is a little bit different as it has a schema attached to it. The table
+in AWS Glue is just the metadata definition that represents your data and it
+doesn’t have data inside it. The data is available somewhere else. It can be in
+RDS/S3/other places.&lt;/p>
+&lt;p>How do we create a table? We can either create it manually or use Crawlers in
+AWS Glue for that. We can also create a table from AWS Athena itself.&lt;/p>
+&lt;p>The database and tables that you see in AWS Glue will also be available in AWS
+Athena.&lt;/p>
+&lt;h2 id="recommendations">Recommendations&lt;/h2>
+&lt;ul>
+&lt;li>In order not to confuse ourselves, I think it’d better if we use different
+database names for the input and output. We need to differentiate between
+what’s the input and output for easier reference when we set up the AWS Glue
+Job.&lt;/li>
+&lt;li>More will be added&lt;/li>
+&lt;/ul>
+&lt;h2 id="steps">Steps&lt;/h2>
+&lt;h3 id="prerequisite">Prerequisite&lt;/h3>
+&lt;h4 id="security">Security&lt;/h4>
+&lt;blockquote>
+&lt;p>These security configurations are required to prevent errors when we ran AWS
+Glue&lt;/p>
+&lt;/blockquote>
+&lt;p>Amazon VPC Endpoints for Amazon S3:&lt;/p>
+&lt;ul>
+&lt;li>Go to VPC &amp;gt; Endpoints&lt;/li>
+&lt;li>Create Endpoint&lt;/li>
+&lt;li>Search by Services: S3 (com.amazonaws.ap-southeast-1.s3)&lt;/li>
+&lt;li>Select your VPC&lt;/li>
+&lt;li>Tick a Route Table ID&lt;/li>
+&lt;li>Choose Full Access&lt;/li>
+&lt;li>Create Endpoint&lt;/li>
+&lt;/ul>
+&lt;p>The result will be shown in the “Route Tables &amp;gt; Routes” page. There’ll be a new
+route added with VPC as the target and S3 service as the destination&lt;/p>
+&lt;p>Reference: &lt;a href="https://docs.aws.amazon.com/glue/latest/dg/vpc-endpoints-s3.html">https://docs.aws.amazon.com/glue/latest/dg/vpc-endpoints-s3.html&lt;/a>&lt;/p>
+&lt;p>RDS Security Group:&lt;/p>
+&lt;ul>
+&lt;li>Select the security group of the database that you want to use&lt;/li>
+&lt;li>Edit inbound rules&lt;/li>
+&lt;li>Add rule&lt;/li>
+&lt;li>Type: All TCP&lt;/li>
+&lt;li>Source: Custom and search for the security group name itself&lt;/li>
+&lt;li>Save rules&lt;/li>
+&lt;/ul>
+&lt;h4 id="roles">Roles&lt;/h4>
+&lt;p>This will allow Glue to call AWS service on our behalf&lt;/p>
+&lt;ul>
+&lt;li>Go to IAM &amp;gt; Roles &amp;gt; Create role&lt;/li>
+&lt;li>Type of trusted identity: AWS Service&lt;/li>
+&lt;li>Service: Glue&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Search and select AWSGlueServiceRole&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>We can skip adding tags&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Roles: AWSGlueServiceDefault (can be anything)&lt;/li>
+&lt;li>Create Role&lt;/li>
+&lt;/ul>
+&lt;h4 id="add-database-connections-for-input">Add Database Connections (for Input)&lt;/h4>
+&lt;ul>
+&lt;li>Go to AWS Glue &amp;gt; Databases &amp;gt; Connections&lt;/li>
+&lt;li>Click “Add Connection”&lt;/li>
+&lt;li>Connection type: Amazon RDS&lt;/li>
+&lt;li>Database Engine: PostgreSQL&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Instance: Choose an RDS&lt;/li>
+&lt;li>Put the database details: name, username, and password&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Review and click Finish&lt;/li>
+&lt;li>Use “Test Connection” in the “Connections” page to test it out (this might
+take a while)&lt;/li>
+&lt;/ul>
+&lt;h4 id="setup-s3-access-for-output">Setup S3 access (for Output)&lt;/h4>
+&lt;ul>
+&lt;li>Go to AWS Glue &amp;gt; Databases &amp;gt; Connections&lt;/li>
+&lt;li>Click “Add Connection”&lt;/li>
+&lt;li>Connection type: Network&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>VPC: Select the same one as the RDS*&lt;/li>
+&lt;li>Subnet: Select the same one as the RDS*&lt;/li>
+&lt;li>Security Group: default*&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Review and click Finish&lt;/li>
+&lt;/ul>
+&lt;p>(*) Other options might work too, but I didn’t try them out.&lt;/p>
+&lt;h3 id="add-databases">Add Databases&lt;/h3>
+&lt;p>This will be the parent/container for the table. A table might come from the
+input and output.&lt;/p>
+&lt;ul>
+&lt;li>Go to AWS Glue &amp;gt; Databases &amp;gt; Add database&lt;/li>
+&lt;li>Database name: anything will do&lt;/li>
+&lt;/ul>
+&lt;p>I created for both. E.g: &lt;code>myapp_input&lt;/code> and &lt;code>myapp_output&lt;/code>&lt;/p>
+&lt;h3 id="add-crawlers">Add Crawlers&lt;/h3>
+&lt;p>Before we create a job to import the data, we need to set up our input table’s
+schema. This schema will be used for the data input in the Job later.&lt;/p>
+&lt;p>Naming is hard. I decided to go with this format:
+&lt;code>rds_db_name_env_table_name_crawler&lt;/code>. It’s easier if we can grasp what the
+crawler does from the name even though we can have a shorter name and put the
+details in the description.&lt;/p>
+&lt;ul>
+&lt;li>Go to AWS Glue &amp;gt; Tables &amp;gt; Add tables &amp;gt; Add tables using a crawler&lt;/li>
+&lt;li>Crawler name: Anything&lt;/li>
+&lt;li>Crawler source type: Data stores&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Choose a data store: JDBC&lt;/li>
+&lt;li>Connection: Choose the one we created above&lt;/li>
+&lt;li>Include path: &lt;code>db_name/public/table_name&lt;/code> (assuming we want to take data from
+table table_nameas we can use % as the wild card)&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Add another data store: No&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>IAM role: Choose the one we created above (AWSGlueServiceDefault)&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Frequency&lt;/li>
+&lt;li>Use Run on demand&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Configure the crawler’s output&lt;/li>
+&lt;li>Database: Choose database for the crawler output (this will be the source for
+our Job later)&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Review and click Finish&lt;/li>
+&lt;/ul>
+&lt;p>The crawler that we’ve just defined is just to create a table with a schema
+based on the RDS’s table that we just specified.&lt;/p>
+&lt;p>Let’s run it to see the output. Just go to the Crawlers page and select “Run
+crawler”. It’ll take a moment before it starts and there’s no log when it’s
+running (or at least I can’t find it yet). However, there’ll be a log once it’s
+done. The only thing you can do to monitor its progress is to keep clicking the
+Refresh icon on the Crawlers page.&lt;/p>
+&lt;p>Once it’s done, you’ll see the table created automatically in the Tables
+section. You can filter out the list of the tables by going through Databases
+first. You should see a table with defined schema similar to what you have in
+RDS.&lt;/p>
+&lt;p>We need to add another crawler that will define the schema of our output. But
+this time it’ll be for our S3 (which is the output)&lt;/p>
+&lt;ul>
+&lt;li>Go to AWS Glue &amp;gt; Tables &amp;gt; Add tables &amp;gt; Add tables using a crawler&lt;/li>
+&lt;li>Crawler name: Anything (I chose &lt;code>s3_db_name_env_table_name_crawler&lt;/code>)&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Crawler source type: Data stores&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Choose a data store: S3&lt;/li>
+&lt;li>Connection: Use connection declared before for S3 access&lt;/li>
+&lt;li>Crawl data in: Specified path in my account&lt;/li>
+&lt;li>Include path: &lt;code>s3://you-data-path/&lt;/code>. This will be the path where you’ll store
+the output from Job that you’ll create later. The output here means the Apache
+Parquet files. I chose: &lt;code>s3://glue-dir/env/database_name/table_name/&lt;/code>&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Add another data store: No&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Choose IAM role&lt;/li>
+&lt;li>Choose an existing IAM role&lt;/li>
+&lt;li>IAM role: AWSGlueServiceRoleDefault&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Create a schedule for this crawler:&lt;/li>
+&lt;li>Frequency: Run on demand&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Configure the crawler’s output:&lt;/li>
+&lt;li>Database: A database where you’ll store the output from S3&lt;/li>
+&lt;li>Next&lt;/li>
+&lt;li>Review and click Finish&lt;/li>
+&lt;/ul>
+&lt;p>We’re not going to run this crawler yet as the S3 directory is empty. We’ll run
+it once we’ve exported RDS data to S3.&lt;/p>
+&lt;h3 id="add-a-job">Add a job&lt;/h3>
+&lt;p>For some unknown reason, I couldn’t get this to work without using AWS Glue
+Studio. Maybe I’ll figure it out once I have more time. But I’ll just use AWS
+Glue Studio for now:&lt;/p>
+&lt;ul>
+&lt;li>Open AWS Glue Studio in ETL section&lt;/li>
+&lt;li>Choose &amp;ldquo;Create and manage jobs&amp;rdquo;&lt;/li>
+&lt;li>Source: RDS&lt;/li>
+&lt;li>Target: S3&lt;/li>
+&lt;li>Click Create&lt;/li>
+&lt;li>Click on the “Data source - JDBC” node&lt;/li>
+&lt;li>Database: Use the database that we defined earlier for the input&lt;/li>
+&lt;li>Table: Choose the input table (should be coming from the same database)&lt;/li>
+&lt;li>You’ll notice that the node will now have a green check&lt;/li>
+&lt;li>Click on the “Data target - S3 bucket” node&lt;/li>
+&lt;li>Format: Glue Parquet&lt;/li>
+&lt;li>Compression type: Snappy&lt;/li>
+&lt;li>S3 Target location: This will the place where the parquet files will be
+generated. This path should also be the same as what we defined in our crawler
+for the output before. Remember, this is for the data, not for the schema. The
+crawler is responsible for the schema. I chose to use
+&lt;code>s3://glue-dir/env/database_name/table_name&lt;/code>&lt;/li>
+&lt;li>You’ll notice that the node will now have a green check&lt;/li>
+&lt;li>Now go to “Job details” tab&lt;/li>
+&lt;li>Name: Can be anything, I chose &lt;code>rds_to_s3_db_name_env_table_name&lt;/code>&lt;/li>
+&lt;li>IAM Role: Choose the role that we created before - AWSGlueServiceRoleDefault&lt;/li>
+&lt;li>Expand “Advanced Properties”&lt;/li>
+&lt;li>We’re going to specify some paths so that it won’t litter our top-level s3&lt;/li>
+&lt;li>Script path: &lt;code>s3://glue-dir/scripts/&lt;/code>&lt;/li>
+&lt;li>Spark UI logs path: &lt;code>s3://glue-dir/sparkHistoryLogs/&lt;/code>&lt;/li>
+&lt;li>Temporary path: &lt;code>s3://glue-dir/temporary/&lt;/code>&lt;/li>
+&lt;li>Click Save&lt;/li>
+&lt;li>Click “Run” to run the script. You can see the log in “Run details” tab. If
+everything is working as expected, you should files generated in
+&lt;code>s3://glue-dir/env/database_name/table_name&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;h3 id="viewing-the-record-using-aws-athena">Viewing the record using AWS Athena&lt;/h3>
+&lt;p>Before we can view the output, we need to create a table/schema for those
+parquet files. This is the job for the crawler (you can also create the table
+manually if you want to). That’s what the second crawler does. Just run the
+crawler and you’ll get a new table created if it’s new. Refer to previous steps
+on how we run the first crawler.&lt;/p>
+&lt;p>To confirm the table has been created, just go to the database for the output
+and then click on the “Tables ..” link. You should see it there. There’s also an
+alert at the top of the Crawler index page once it has finished the job.&lt;/p>
+&lt;p>To view the record:&lt;/p>
+&lt;ul>
+&lt;li>Go to AWS Athena&lt;/li>
+&lt;li>Select your database and table.&lt;/li>
+&lt;li>Click on the three dots on the right side of the table name and choose Preview
+Table&lt;/li>
+&lt;li>You’ll see some data in the Results&lt;/li>
+&lt;/ul>
+&lt;h2 id="references">References&lt;/h2>
+&lt;ul>
+&lt;li>&lt;a href="https://github.com/aws-samples/aws-glue-samples/blob/master/FAQ_and_How_to.md">https://github.com/aws-samples/aws-glue-samples/blob/master/FAQ_and_How_to.md&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://spark.apache.org/docs/2.1.0/sql-programming-guide.html">https://spark.apache.org/docs/2.1.0/sql-programming-guide.html&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://aws.amazon.com/blogs/big-data/how-to-access-and-analyze-on-premises-data-stores-using-aws-glue/">https://aws.amazon.com/blogs/big-data/how-to-access-and-analyze-on-premises-data-stores-using-aws-glue/&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://stackoverflow.com/questions/34948296/using-pyspark-to-connect-to-postgresql">https://stackoverflow.com/questions/34948296/using-pyspark-to-connect-to-postgresql&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://dev.to/cloudforecast/watch-out-for-unexpected-s3-cost-when-using-athena-5hdm">https://dev.to/cloudforecast/watch-out-for-unexpected-s3-cost-when-using-athena-5hdm&lt;/a>&lt;/li>
+&lt;/ul></content></item><item><title>Order Update with Two-Step Payment</title><link>https://amree.github.io/posts/order-update-with-two-step-payment/</link><pubDate>Sat, 09 May 2020 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/order-update-with-two-step-payment/</guid><description>&lt;p>I was asked about this from my latest job application. Didn&amp;rsquo;t realize it&amp;rsquo;s going
+to be this long so I thought I should share it publicly, easier for me to show
+it to the next interviewer. The exact question was:&lt;/p></description><content>&lt;p>I was asked about this from my latest job application. Didn&amp;rsquo;t realize it&amp;rsquo;s going
+to be this long so I thought I should share it publicly, easier for me to show
+it to the next interviewer. The exact question was:&lt;/p>
+&lt;blockquote>
+&lt;p>Describe a recent technical solution or achievement that you are proud of.
+Anything goes, from a tiny one hour ticket to a large system, we are just
+interested in how you think.&lt;/p>
+&lt;/blockquote>
+&lt;p>The answer:&lt;/p>
+&lt;p>It&amp;rsquo;s just order updating, how complex can it be? I realized I was wrong about
+the complexity when I started my investigation. The complexity comes from the
+two-step payment system that we&amp;rsquo;re going to implement to make sure the whole
+order editing work smoothly. It was actually my first time hearing the two-step
+payment words.&lt;/p>
+&lt;p>In case you didn&amp;rsquo;t know: A two-step payment system is where you hold a certain
+amount of money on someone&amp;rsquo;s credit card. Depending on the requirement, you&amp;rsquo;ll
+charge the credit card later. We&amp;rsquo;re using Stripe for our payment system.&lt;/p>
+&lt;p>A little bit of background: We don&amp;rsquo;t want to charge the credit card until the
+cut-off date of the food delivery, which will then allow the customer to change
+their order online without contacting us. So, a customer can keep on changing
+the menu (which will affect the price) as much as he wanted without us having to
+deal with the credit card refund and charge manually.&lt;/p>
+&lt;p>The simplest workflow would be:&lt;/p>
+&lt;ul>
+&lt;li>Customer checkout from our websites with a date far in the future&lt;/li>
+&lt;li>We&amp;rsquo;ll queue the card authorization 7 days before the cut off date&lt;/li>
+&lt;li>Customer didn&amp;rsquo;t make any changes&lt;/li>
+&lt;li>When the time comes, we authorized the amount, queue another job for the card capture process&lt;/li>
+&lt;li>On the day of the cut off date, we&amp;rsquo;ll capture the amount automatically&lt;/li>
+&lt;li>No order update from the web will be allowed at this point. They need to contact our customer support for this&lt;/li>
+&lt;/ul>
+&lt;p>The complexity keeps on compounding as you need to think about these scenarios:&lt;/p>
+&lt;ul>
+&lt;li>During the checkout we need to know whether we should authorize, capture, or
+process the card immediately (one-step payment).&lt;/li>
+&lt;li>The biggest one would be the editing part. We need to think what&amp;rsquo;s the current
+state of the order and what action that was made. Is the order in the
+authorized state? Capture state? When is the cut off date? Do we need to
+refund everything? Do we need to do a partial refund? Do we need to refund and
+charge a new amount?&lt;/li>
+&lt;/ul>
+&lt;p>So, I was given this task alone (we don&amp;rsquo;t have many devs last time). There were
+too many things that need to be done, so I had to break it up by phases:&lt;/p>
+&lt;ul>
+&lt;li>Update existing checkout to support two-step payment system (this is when the
+order was created)&lt;/li>
+&lt;li>I need to update/add the code to handle cancel, refund, authorize and capture
+the card. Each action has its own complexity, but that&amp;rsquo;s the high overview.&lt;/li>
+&lt;li>Alter the database to support the new payment state&lt;/li>
+&lt;li>Figure out the best time to capture the payment (e.g: cut off date - weekend).
+I also need to give some buffer for the customer support to handle if there&amp;rsquo;s
+an error during any of the processes above.&lt;/li>
+&lt;/ul>
+&lt;p>At the end of the project, I got helps from my awesome team for things like
+mailers and other kinds of updates. So, I still need to work on the core parts.
+I don&amp;rsquo;t think I can meet the deadline without those helps lol.&lt;/p>
+&lt;p>I&amp;rsquo;d love to tell you more about the whole process, but it was pretty long. But
+you can see the branch conditions that I&amp;rsquo;ve drawn here:&lt;/p>
+&lt;p>&lt;img src="https://amree.github.io/images/posts/2020-05-09-two-step-payment.jpg" alt="diagram">&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">P = Pending Authorization
+A = Authorized
+C = Capture
+R = Refund
+H = Amount higher
+L = Amount lower
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>But the biggest thing I learned with this project is that visualization will
+help a lot. It doesn&amp;rsquo;t have to be in a standard format like when you study in
+the university. Just draw however you want as long it can help you see the
+problem and possible blockers.&lt;/p>
+&lt;p>In terms of the code itself, I had to dive into React and Redux to implement the
+whole update (we have complex menu selections). Of course, testing is very
+important. With lots of new and updated code, I need to make sure none were
+broken every time I added/updated new ones. At first, I mocked a lot of API
+requests, but it doesn&amp;rsquo;t feel safe, so I used VCR library to record the
+interactions and the result feels more accurate and safe. For the front end
+part, I used Capybara/Chrome for the feature tests.&lt;/p>
+&lt;p>Together with a feature flag in place, I can safely deploy the changes every day
+without having to do one big rollout. In terms of the backend code, I used a lot
+of service objects to keep the classes small. It&amp;rsquo;s also easier to read and find,
+e.g: ChargeProcessor, AuthorizeProcessor, etc. Everything was also namespaced to
+ensure I don&amp;rsquo;t pollute the main service directory.&lt;/p>
+&lt;p>With this feature implemented, we improved further with other features as well
+such as the ability to save and delete credit cards. The checkout is also easier
+as the customer can just select from the previous credit card. The support
+couldn&amp;rsquo;t be happier as well as they don&amp;rsquo;t have to handle manual order updates.&lt;/p>
+&lt;p>I think I better stop here lol&lt;/p></content></item><item><title>Rails 6 with Bootstrap (Webpacker for JS, Asset Pipeline for CSS)</title><link>https://amree.github.io/posts/rails-6-with-bootstrap-webpacker-for-js-asset-pipeline-for-css/</link><pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/rails-6-with-bootstrap-webpacker-for-js-asset-pipeline-for-css/</guid><description>&lt;p>I haven&amp;rsquo;t really worked on Rails for a while so I decided to take a sneak peek
+on what&amp;rsquo;s going in Ruby on Rails land.&lt;/p>
+&lt;p>The first thing I want to try is to integrate Rails with Bootstrap. It seems
+like a lot of tutorials are focusing on how to use webpack for CSS and JS.&lt;/p></description><content>&lt;p>I haven&amp;rsquo;t really worked on Rails for a while so I decided to take a sneak peek
+on what&amp;rsquo;s going in Ruby on Rails land.&lt;/p>
+&lt;p>The first thing I want to try is to integrate Rails with Bootstrap. It seems
+like a lot of tutorials are focusing on how to use webpack for CSS and JS.&lt;/p>
+&lt;p>But for this article, I&amp;rsquo;m going to try Bootstrap&amp;rsquo;s integration with Rails with
+the asset pipeline for the CSS and webpack for the JavaScript. A snippet from
+webpacker&amp;rsquo;s README:&lt;/p>
+&lt;blockquote>
+&lt;p>Webpacker makes it easy to use the JavaScript pre-processor and bundler
+webpack 4.x.x+ to manage application-like JavaScript in Rails. It coexists with
+the asset pipeline, as the primary purpose for webpack is app-like JavaScript,
+not images, CSS, or even JavaScript Sprinkles (that all continues to live in
+app/assets).&lt;/p>
+&lt;/blockquote>
+&lt;blockquote>
+&lt;p>However, it is possible to use Webpacker for CSS, images and fonts assets as
+well, in which case you may not even need the asset pipeline. This is mostly
+relevant when exclusively using component-based JavaScript frameworks.&lt;/p>
+&lt;/blockquote>
+&lt;p>Let&amp;rsquo;s start by creating new rails app first:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">rails new random_app
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Make sure we can see the welcome page first&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">rails db:prepare
+rails s
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Open &lt;a href="https://localhost:3000">https://localhost:3000&lt;/a> and verify that you can
+see the Rails famous welcome page.&lt;/p>
+&lt;p>Add bootstrap package and its dependencies:&lt;/p>
+&lt;pre>&lt;code>yarn add bootstrap jquery popper.js
+&lt;/code>&lt;/pre>&lt;p>From the &lt;a href="https://getbootstrap.com/docs/4.4/getting-started/javascript/#dependencies">Bootstrap&amp;rsquo;s documentation&lt;/a>&lt;/p>
+&lt;blockquote>
+&lt;p>Also note that all plugins depend on jQuery (this means jQuery must be
+included before the plugin files). Consult our package.json to see which
+versions of jQuery are supported. Our dropdowns, popovers and tooltips also
+depend on Popper.js.&lt;/p>
+&lt;/blockquote>
+&lt;p>Alright, we have all of the required packages installed so the next step would
+be loading them.&lt;/p>
+&lt;p>But before we do that, we need to have a page that will confirm all the setup is
+correct once we&amp;rsquo;ve done with all of these.&lt;/p>
+&lt;p>Create a controller with a view:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">rails g controller Home index
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Let&amp;rsquo;s put some Bootstrap&amp;rsquo;s related code in there so that we can test the
+JavaScript and CSS is actually working.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-html" data-lang="html"># app/views/home/index.html.erb
+&amp;lt;&lt;span style="color:#f92672">h1&lt;/span>&amp;gt;Home#index&amp;lt;/&lt;span style="color:#f92672">h1&lt;/span>&amp;gt;
+&amp;lt;&lt;span style="color:#f92672">p&lt;/span>&amp;gt;Find me in app/views/home/index.html.erb&amp;lt;/&lt;span style="color:#f92672">p&lt;/span>&amp;gt;
+&amp;lt;&lt;span style="color:#f92672">button&lt;/span> &lt;span style="color:#a6e22e">type&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;button&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;btn btn-secondary&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">data-toggle&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;tooltip&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">data-placement&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;top&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">title&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Tooltip on top&amp;#34;&lt;/span>&amp;gt;
+Tooltip on top
+&amp;lt;/&lt;span style="color:#f92672">button&lt;/span>&amp;gt;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>It doesn&amp;rsquo;t work right now but making it works will be our target.&lt;/p>
+&lt;p>Next, we&amp;rsquo;ll take a look at &lt;code>app/assets/stylesheets/application.css&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-css" data-lang="css">&lt;span style="color:#75715e">/*
+&lt;/span>&lt;span style="color:#75715e"> * ...
+&lt;/span>&lt;span style="color:#75715e"> *
+&lt;/span>&lt;span style="color:#75715e"> *= require_tree .
+&lt;/span>&lt;span style="color:#75715e"> *= require_self
+&lt;/span>&lt;span style="color:#75715e"> */&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>require_tree&lt;/code> means it&amp;rsquo;ll load everything insider &lt;code>app/assets/stylesheets&lt;/code> and
+it sub directories as well. &lt;code>require_self&lt;/code> will load anything we defined in
+&lt;code>application.scss&lt;/code> at the bottom of the output file (as it&amp;rsquo;s declared in the
+last line).&lt;/p>
+&lt;p>From &lt;a href="https://guides.rubyonrails.org/asset_pipeline.html#manifest-files-and-directives">Ruby on Rails Guides&lt;/a>&lt;/p>
+&lt;blockquote>
+&lt;p>In this example, require_self is used. This puts the CSS contained within the
+file (if any) at the precise location of the require_self call.&lt;/p>
+&lt;/blockquote>
+&lt;blockquote>
+&lt;p>If you want to use multiple Sass files, you should generally use the Sass
+@import rule instead of these Sprockets directives. When using Sprockets
+directives, Sass files exist within their own scope, making variables or mixins
+only available within the document they were defined in.&lt;/p>
+&lt;/blockquote>
+&lt;p>Depending on what you (or your team) are comfortable with, but I prefer to
+explicitly specify my files.&lt;/p>
+&lt;p>So, I&amp;rsquo;ll change &lt;code>application.css&lt;/code> to a SCSS file so that I can use &lt;code>@import&lt;/code>
+directive:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">mv app/assets/stylesheets/application.css app/assets/stylesheets/application.scss
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Change the content to:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-scss" data-lang="scss">&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap&amp;#39;&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Create a new file at &lt;code>app/assets/stylesheets/bootstrap.scss&lt;/code> and update the file
+with:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-scss" data-lang="scss">&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/bootstrap&amp;#39;&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Reload our &lt;code>Home#index&lt;/code> and you&amp;rsquo;ll see that Bootstrap&amp;rsquo;s styles have been loaded
+correctly. However, the tooltip is not working yet. That&amp;rsquo;s the JavaScript part.&lt;/p>
+&lt;p>Optional: You might be wondering why I didn&amp;rsquo;t just do &lt;code>@import&lt;/code> in the
+&lt;code>application.scss&lt;/code> itself. Well, the main reason is that I want to customize
+which part of Bootstrap I want to use. This will help in terms of file size
+later. But current code will still load everything, so, let&amp;rsquo;s change it to:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-scss" data-lang="scss">&lt;span style="color:#75715e">// Required
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/functions&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/variables&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/mixins&amp;#39;&lt;/span>;
+&lt;span style="color:#75715e">// Optional
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/root&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/reboot&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/type&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/images&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/code&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/grid&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/tables&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/forms&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/buttons&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/transitions&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/dropdown&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/button-group&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/input-group&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/custom-forms&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/nav&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/navbar&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/card&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/breadcrumb&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/pagination&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/badge&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/jumbotron&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/alert&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/progress&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/media&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/list-group&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/close&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/toasts&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/modal&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/tooltip&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/popover&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/carousel&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/spinners&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/utilities&amp;#39;&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#39;bootstrap/scss/print&amp;#39;&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>This is based on what we have in the original
+&lt;a href="https://github.com/twbs/bootstrap/blob/v4.4.1/scss/bootstrap.scss">bootstrap.scss&lt;/a>.
+One of the downside with this approach is that you need to check if this file
+changed whenever you upgrade Bootstrap as it&amp;rsquo;s like using a private method 😁&lt;/p>
+&lt;p>Our Bootstrap&amp;rsquo;s stylesheet is working as expected so the next step would be
+getting the JavaScript to work and for this tutorial, we&amp;rsquo;re going to focus on
+the tooltip part.&lt;/p>
+&lt;p>Let&amp;rsquo;s import Bootstrap&amp;rsquo;s JS files:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#75715e">// app/javascript/packs/application.js
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#66d9ef">import&lt;/span> &lt;span style="color:#e6db74">&amp;#34;bootstrap&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>We&amp;rsquo;ll initialize tooltip by adding these code at the end of the file:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">$&lt;/span>(&lt;span style="color:#66d9ef">function&lt;/span> () {
+&lt;span style="color:#a6e22e">$&lt;/span>(&lt;span style="color:#e6db74">&amp;#39;[data-toggle=&amp;#34;tooltip&amp;#34;]&amp;#39;&lt;/span>).&lt;span style="color:#a6e22e">tooltip&lt;/span>()
+})
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>In our intialization, we&amp;rsquo;re using &lt;code>$&lt;/code> for &lt;code>jQuery&lt;/code> so we need to make it
+available globally. We can use these to automatically load the modules instead
+of &lt;code>import&lt;/code> or &lt;code>require&lt;/code> them:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#75715e">// config/webpack/environment.js
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">const&lt;/span> { &lt;span style="color:#a6e22e">environment&lt;/span> } &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">require&lt;/span>(&lt;span style="color:#e6db74">&amp;#39;@rails/webpacker&amp;#39;&lt;/span>)
+&lt;span style="color:#66d9ef">const&lt;/span> &lt;span style="color:#a6e22e">webpack&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">require&lt;/span>(&lt;span style="color:#e6db74">&amp;#39;webpack&amp;#39;&lt;/span>)
+&lt;span style="color:#a6e22e">environment&lt;/span>.&lt;span style="color:#a6e22e">plugins&lt;/span>.&lt;span style="color:#a6e22e">append&lt;/span>(&lt;span style="color:#e6db74">&amp;#39;Provide&amp;#39;&lt;/span>, &lt;span style="color:#66d9ef">new&lt;/span> &lt;span style="color:#a6e22e">webpack&lt;/span>.&lt;span style="color:#a6e22e">ProvidePlugin&lt;/span>({
+&lt;span style="color:#a6e22e">$&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#39;jquery&amp;#39;&lt;/span>,
+}))
+&lt;span style="color:#a6e22e">module&lt;/span>.&lt;span style="color:#a6e22e">exports&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">environment&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Refresh your &lt;code>Home#index&lt;/code> and you should be able to see the tooltip when you
+hover on the button.&lt;/p>
+&lt;p>Optional: If you want to specify which JS component that you want to load, you
+can use these steps:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#75715e">// app/javascript/packs/application.js
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#a6e22e">require&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;./bootstrap&amp;#34;&lt;/span>)
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>and&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#75715e">// app/javascript/packs/bootstrap/index.js
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">import&lt;/span> &lt;span style="color:#e6db74">&amp;#34;bootstrap/js/src/alert&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">import&lt;/span> &lt;span style="color:#e6db74">&amp;#34;bootstrap/js/src/button&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">import&lt;/span> &lt;span style="color:#e6db74">&amp;#34;bootstrap/js/src/carousel&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">import&lt;/span> &lt;span style="color:#e6db74">&amp;#34;bootstrap/js/src/collapse&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">import&lt;/span> &lt;span style="color:#e6db74">&amp;#34;bootstrap/js/src/dropdown&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">import&lt;/span> &lt;span style="color:#e6db74">&amp;#34;bootstrap/js/src/modal&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">import&lt;/span> &lt;span style="color:#e6db74">&amp;#34;bootstrap/js/src/popover&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">import&lt;/span> &lt;span style="color:#e6db74">&amp;#34;bootstrap/js/src/scrollspy&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">import&lt;/span> &lt;span style="color:#e6db74">&amp;#34;bootstrap/js/src/tab&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">import&lt;/span> &lt;span style="color:#e6db74">&amp;#34;bootstrap/js/src/toast&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">import&lt;/span> &lt;span style="color:#e6db74">&amp;#34;bootstrap/js/src/tooltip&amp;#34;&lt;/span>
+&lt;span style="color:#75715e">// Tooltip/Other components initialization here
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>And for our tutorial, we just use the last line which is &lt;code>tooltip&lt;/code> and comment
+out everything else. It&amp;rsquo;ll reduce the size of the final JS (not much different
+though).&lt;/p>
+&lt;p>💡 Tip: You can inspect your bundle size by running this command and then upload
+the output to &lt;a href="https://chrisbateman.github.io/webpack-visualizer/">Webpack
+Visualizer&lt;/a>&lt;/p>
+&lt;pre>&lt;code>./bin/webpack --profile --json &amp;gt; webpack-stats.json
+&lt;/code>&lt;/pre>&lt;p>💡 Tip: You&amp;rsquo;ll notice that your JS will only compile the new changes when you
+refresh the page and that might cause some delay. If we want webpack to compile
+immediately when we made some changes, we can run this command to monitor the
+changes and compile them:&lt;/p>
+&lt;pre>&lt;code>./bin/webpack-dev-server
+&lt;/code>&lt;/pre>&lt;p>💡 Tip: You can override Bootstrap&amp;rsquo;s default value or in other word, you can
+create your own theme by specifying the variable value before you import
+Bootstrap&amp;rsquo;s files. So, it can be something similar to this:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-scss" data-lang="scss">$primary&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">green&lt;/span>;
+$secondary&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">pink&lt;/span>;
+&lt;span style="color:#66d9ef">@import&lt;/span> &lt;span style="color:#e6db74">&amp;#34;bootstrap&amp;#34;&lt;/span>;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Checkout this &lt;a href="https://github.com/twbs/bootstrap/blob/master/scss/_variables.scss">variables list&lt;/a> and
+you can find more info at &lt;a href="https://getbootstrap.com/docs/4.1/getting-started/theming/#theme-colors">Bootstrap&amp;rsquo;s Documentation&lt;/a>.
+There&amp;rsquo;re lots more that you can actually do.&lt;/p></content></item><item><title>Trick to Make Telegram Bot Private</title><link>https://amree.github.io/posts/make-telegram-bot-private/</link><pubDate>Thu, 19 Dec 2019 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/make-telegram-bot-private/</guid><description>&lt;p>Recently, I learned a trick to make my Telegram bot private to certain users.&lt;/p>
+&lt;p>I tried not to create the whole CRUD thingy for the membership and after
+Googling I found out about one of the API provided.&lt;/p></description><content>&lt;p>Recently, I learned a trick to make my Telegram bot private to certain users.&lt;/p>
+&lt;p>I tried not to create the whole CRUD thingy for the membership and after
+Googling I found out about one of the API provided.&lt;/p>
+&lt;p>&lt;a href="https://core.telegram.org/bots/api#getchatmember">https://core.telegram.org/bots/api#getchatmember&lt;/a>&lt;/p>
+&lt;p>This would allow us to get info of a user with a given &lt;code>chat_id&lt;/code>. It can be a
+channel or a group.&lt;/p>
+&lt;p>Basically your membership for your bot will be based on the group of your bot
+and the allowed users are in. So, both of them need to be in the same
+group/channel.&lt;/p>
+&lt;p>The code would look like the screenshot.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">bot&lt;span style="color:#f92672">.&lt;/span>api&lt;span style="color:#f92672">.&lt;/span>get_chat_member(&lt;span style="color:#e6db74">chat_id&lt;/span>: &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">10012345678&lt;/span>, &lt;span style="color:#e6db74">user_id&lt;/span>: message&lt;span style="color:#f92672">.&lt;/span>from_id)
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>There&amp;rsquo;re a few things to note:&lt;/p>
+&lt;p>&lt;strong>We need to get the channel and id of the group&lt;/strong>&lt;/p>
+&lt;p>For group:&lt;/p>
+&lt;p>Invite &lt;a href="https://t.me/RawDataBot">https://t.me/RawDataBot&lt;/a> and on the first entry, it&amp;rsquo;ll output some JSON.
+You can get the group&amp;rsquo;s ID from &lt;code>message.chat.id&lt;/code>.&lt;/p>
+&lt;p>It should look like &lt;code>-10012345678&lt;/code>. Remove the bot after that. But if you don&amp;rsquo;t
+trust the bot, you probably need to cook up some new code to get the group ID.&lt;/p>
+&lt;p>For channel:&lt;/p>
+&lt;p>Channel is a little bit different, you can use one of the methods mentioned
+here:&lt;/p>
+&lt;p>&lt;a href="https://stackoverflow.com/questions/33858927/how-to-obtain-the-chat-id-of-a-private-telegram-channel/56546442#56546442">https://stackoverflow.com/questions/33858927/how-to-obtain-the-chat-id-of-a-private-telegram-channel/56546442#56546442&lt;/a>&lt;/p>
+&lt;p>&lt;strong>Output&lt;/strong>&lt;/p>
+&lt;p>So, what&amp;rsquo;s the output can we expect? Well for Ruby, we&amp;rsquo;re expecting hash from
+the output and &lt;code>var[&amp;quot;result&amp;quot;][&amp;quot;status&amp;quot;]&lt;/code> will give you the status of the user.&lt;/p>
+&lt;p>It can be many things, but if it&amp;rsquo;s &lt;code>left&lt;/code> then the user is not a member of the
+group and that&amp;rsquo;s what we want to know.&lt;/p>
+&lt;p>&lt;strong>Add the bot to a group/channel&lt;/strong>&lt;/p>
+&lt;p>This also means you need to add the bot that&amp;rsquo;s executing the code to be in the
+same group as those users that you want to give access to.&lt;/p>
+&lt;p>So, any users who are in the same group/channel will be allowed to chat with the
+bot based on the previous output.&lt;/p>
+&lt;p>Again, a channel is a little bit different, you need to add your bot as the
+admin, compared to a group that can be added as a normal user.&lt;/p>
+&lt;p>&lt;strong>Exception&lt;/strong>&lt;/p>
+&lt;p>Another note, the code will raise an exception if the given &lt;code>chat_id&lt;/code> doesn&amp;rsquo;t
+exist.&lt;/p>
+&lt;p>As a summary, with this trick, you don&amp;rsquo;t have to build the whole CRUD and can
+reuse the group/channel that you already have (assuming you have one).&lt;/p>
+&lt;p>That&amp;rsquo;s it, folks, thanks for reading&lt;/p></content></item><item><title>How Bcrypt Compares Password</title><link>https://amree.github.io/posts/how-bcrypt-compares-password/</link><pubDate>Sat, 19 Jan 2019 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/how-bcrypt-compares-password/</guid><description>&lt;p>I&amp;rsquo;ve always wondered about this.&lt;/p></description><content>&lt;p>I&amp;rsquo;ve always wondered about this.&lt;/p>
 &lt;p>Creating password in database:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">&lt;span style="color:#f92672">&amp;gt;&lt;/span> password &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;secret&amp;#39;&lt;/span>
 &lt;span style="color:#f92672">&amp;gt;&lt;/span> encrypted_password_in_database &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">BCrypt&lt;/span>&lt;span style="color:#f92672">::&lt;/span>&lt;span style="color:#66d9ef">Password&lt;/span>&lt;span style="color:#f92672">.&lt;/span>create(password)

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>stripe on Amree Zaid</title><link>https://amree.github.io/tags/stripe/</link><description>Recent content in stripe on Amree Zaid</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sat, 09 May 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://amree.github.io/tags/stripe/index.xml" rel="self" type="application/rss+xml"/><item><title>Order Update with Two-Step Payment</title><link>https://amree.github.io/posts/order-update-with-two-step-payment/</link><pubDate>Sat, 09 May 2020 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/order-update-with-two-step-payment/</guid><description>&lt;p>I was asked about this from my latest job application. Didn&amp;rsquo;t realize it&amp;rsquo;s going
+to be this long so I thought I should share it publicly, easier for me to show
+it to the next interviewer. The exact question was:&lt;/p></description><content>&lt;p>I was asked about this from my latest job application. Didn&amp;rsquo;t realize it&amp;rsquo;s going
+to be this long so I thought I should share it publicly, easier for me to show
+it to the next interviewer. The exact question was:&lt;/p>
+&lt;blockquote>
+&lt;p>Describe a recent technical solution or achievement that you are proud of.
+Anything goes, from a tiny one hour ticket to a large system, we are just
+interested in how you think.&lt;/p>
+&lt;/blockquote>
+&lt;p>The answer:&lt;/p>
+&lt;p>It&amp;rsquo;s just order updating, how complex can it be? I realized I was wrong about
+the complexity when I started my investigation. The complexity comes from the
+two-step payment system that we&amp;rsquo;re going to implement to make sure the whole
+order editing work smoothly. It was actually my first time hearing the two-step
+payment words.&lt;/p>
+&lt;p>In case you didn&amp;rsquo;t know: A two-step payment system is where you hold a certain
+amount of money on someone&amp;rsquo;s credit card. Depending on the requirement, you&amp;rsquo;ll
+charge the credit card later. We&amp;rsquo;re using Stripe for our payment system.&lt;/p>
+&lt;p>A little bit of background: We don&amp;rsquo;t want to charge the credit card until the
+cut-off date of the food delivery, which will then allow the customer to change
+their order online without contacting us. So, a customer can keep on changing
+the menu (which will affect the price) as much as he wanted without us having to
+deal with the credit card refund and charge manually.&lt;/p>
+&lt;p>The simplest workflow would be:&lt;/p>
+&lt;ul>
+&lt;li>Customer checkout from our websites with a date far in the future&lt;/li>
+&lt;li>We&amp;rsquo;ll queue the card authorization 7 days before the cut off date&lt;/li>
+&lt;li>Customer didn&amp;rsquo;t make any changes&lt;/li>
+&lt;li>When the time comes, we authorized the amount, queue another job for the card capture process&lt;/li>
+&lt;li>On the day of the cut off date, we&amp;rsquo;ll capture the amount automatically&lt;/li>
+&lt;li>No order update from the web will be allowed at this point. They need to contact our customer support for this&lt;/li>
+&lt;/ul>
+&lt;p>The complexity keeps on compounding as you need to think about these scenarios:&lt;/p>
+&lt;ul>
+&lt;li>During the checkout we need to know whether we should authorize, capture, or
+process the card immediately (one-step payment).&lt;/li>
+&lt;li>The biggest one would be the editing part. We need to think what&amp;rsquo;s the current
+state of the order and what action that was made. Is the order in the
+authorized state? Capture state? When is the cut off date? Do we need to
+refund everything? Do we need to do a partial refund? Do we need to refund and
+charge a new amount?&lt;/li>
+&lt;/ul>
+&lt;p>So, I was given this task alone (we don&amp;rsquo;t have many devs last time). There were
+too many things that need to be done, so I had to break it up by phases:&lt;/p>
+&lt;ul>
+&lt;li>Update existing checkout to support two-step payment system (this is when the
+order was created)&lt;/li>
+&lt;li>I need to update/add the code to handle cancel, refund, authorize and capture
+the card. Each action has its own complexity, but that&amp;rsquo;s the high overview.&lt;/li>
+&lt;li>Alter the database to support the new payment state&lt;/li>
+&lt;li>Figure out the best time to capture the payment (e.g: cut off date - weekend).
+I also need to give some buffer for the customer support to handle if there&amp;rsquo;s
+an error during any of the processes above.&lt;/li>
+&lt;/ul>
+&lt;p>At the end of the project, I got helps from my awesome team for things like
+mailers and other kinds of updates. So, I still need to work on the core parts.
+I don&amp;rsquo;t think I can meet the deadline without those helps lol.&lt;/p>
+&lt;p>I&amp;rsquo;d love to tell you more about the whole process, but it was pretty long. But
+you can see the branch conditions that I&amp;rsquo;ve drawn here:&lt;/p>
+&lt;p>&lt;img src="https://amree.github.io/images/posts/2020-05-09-two-step-payment.jpg" alt="diagram">&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">P = Pending Authorization
+A = Authorized
+C = Capture
+R = Refund
+H = Amount higher
+L = Amount lower
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>But the biggest thing I learned with this project is that visualization will
+help a lot. It doesn&amp;rsquo;t have to be in a standard format like when you study in
+the university. Just draw however you want as long it can help you see the
+problem and possible blockers.&lt;/p>
+&lt;p>In terms of the code itself, I had to dive into React and Redux to implement the
+whole update (we have complex menu selections). Of course, testing is very
+important. With lots of new and updated code, I need to make sure none were
+broken every time I added/updated new ones. At first, I mocked a lot of API
+requests, but it doesn&amp;rsquo;t feel safe, so I used VCR library to record the
+interactions and the result feels more accurate and safe. For the front end
+part, I used Capybara/Chrome for the feature tests.&lt;/p>
+&lt;p>Together with a feature flag in place, I can safely deploy the changes every day
+without having to do one big rollout. In terms of the backend code, I used a lot
+of service objects to keep the classes small. It&amp;rsquo;s also easier to read and find,
+e.g: ChargeProcessor, AuthorizeProcessor, etc. Everything was also namespaced to
+ensure I don&amp;rsquo;t pollute the main service directory.&lt;/p>
+&lt;p>With this feature implemented, we improved further with other features as well
+such as the ability to save and delete credit cards. The checkout is also easier
+as the customer can just select from the previous credit card. The support
+couldn&amp;rsquo;t be happier as well as they don&amp;rsquo;t have to handle manual order updates.&lt;/p>
+&lt;p>I think I better stop here lol&lt;/p></content></item></channel></rss>
