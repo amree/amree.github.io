@@ -1,0 +1,68 @@
+<!doctype html><html lang=en><head><title>Running Multiple MySQL on a Single Server :: Amree Zaid</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="I’m pretty sure I’m going to forget these steps, so, just to be safe, I’m putting it here. I’m dividing this tutorial into two sections, one for default MySQL that comes from Slackware and the other one is for new MySQL.
+"><meta name=keywords content><meta name=robots content="noodp"><link rel=canonical href=https://amree.github.io/posts/running-multiple-mysql-on-a-single-server/><link rel=stylesheet href=https://amree.github.io/assets/style.css><link rel=stylesheet href=https://amree.github.io/assets/green.css><link rel=apple-touch-icon href=https://amree.github.io/img/apple-touch-icon-192x192.png><link rel="shortcut icon" href=https://amree.github.io/img/favicon/green.png><meta name=twitter:card content="summary"><meta name=twitter:site content><meta name=twitter:creator content><meta property="og:locale" content="en"><meta property="og:type" content="article"><meta property="og:title" content="Running Multiple MySQL on a Single Server"><meta property="og:description" content="I’m pretty sure I’m going to forget these steps, so, just to be safe, I’m putting it here. I’m dividing this tutorial into two sections, one for default MySQL that comes from Slackware and the other one is for new MySQL.
+"><meta property="og:url" content="https://amree.github.io/posts/running-multiple-mysql-on-a-single-server/"><meta property="og:site_name" content="Amree Zaid"><meta property="og:image" content="https://amree.github.io/img/favicon/green.png"><meta property="og:image:width" content="2048"><meta property="og:image:height" content="1024"><meta property="article:published_time" content="2011-03-15 00:00:00 +0000 UTC"></head><body class=green><div class="container center headings--one-size"><header class=header><div class=header__inner><div class=header__logo><a href=/><div class=logo>Amree Zaid</div></a></div><div class=menu-trigger>menu</div></div><nav class=menu><ul class="menu__inner menu__inner--desktop"><li><a href=https://twitter.com/AmreeZaid>Twitter</a></li></ul><ul class="menu__inner menu__inner--mobile"><li><a href=https://twitter.com/AmreeZaid>Twitter</a></li></ul></nav></header><div class=content><div class=post><h1 class=post-title><a href=https://amree.github.io/posts/running-multiple-mysql-on-a-single-server/>Running Multiple MySQL on a Single Server</a></h1><div class=post-meta><span class=post-date>2011-03-15</span></div><span class=post-tags>#<a href=https://amree.github.io/tags/linux/>linux</a>&nbsp;
+#<a href=https://amree.github.io/tags/mysql/>mysql</a>&nbsp;</span><div class=post-content><div><p>I’m pretty sure I’m going to forget these steps, so, just to be safe, I’m
+putting it here. I’m dividing this tutorial into two sections, one for default
+MySQL that comes from Slackware and the other one is for new MySQL.</p><h2 id=using-the-default-mysql>Using the Default MySQL<a href=#using-the-default-mysql class=hanchor arialabel=Anchor>&#8983;</a></h2><p>We need to create separate (different from the default) directory for the data
+to be stored. I’m going to create a new one for it. I’m going to name the
+directory as <code>mysql-1</code>. Make sure you use full path when running
+<code>mysql_install_db</code>.</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>cd /var/lib
+mkdir mysql-1
+chown -R mysql.mysql mysql-1
+mysql_install_db --datadir<span style=color:#f92672>=</span>/var/lib/mysql-1 --user<span style=color:#f92672>=</span>mysql
+</code></pre></div><p>We also need a new configuration file so that it won’t clash with the default
+MySQL.</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>cp /etc/my-small.cnf /etc/my-1.cnf
+nano /etc/my-1.cnf
+</code></pre></div><p>These are the settings that I’ve changed from the default file (other settings
+remain unchanged).</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style=color:#66d9ef>[client]</span>
+<span style=color:#a6e22e>port</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>3307</span>
+<span style=color:#a6e22e>socket</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>/var/run/mysql/mysql-1.sock</span>
+
+<span style=color:#66d9ef>[mysqld]</span>
+<span style=color:#a6e22e>port</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>3307</span>
+<span style=color:#a6e22e>socket</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>/var/run/mysql/mysql-1.sock</span>
+<span style=color:#a6e22e>server-id</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>10</span>
+
+<span style=color:#a6e22e>innodb_data_home_dir</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>/var/lib/mysql-1/</span>
+<span style=color:#a6e22e>innodb_log_group_home_dir</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>/var/lib/mysql-1/</span>
+</code></pre></div><p>To run our newly configured MySQL instance, use this command:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>/usr/bin/mysqld_safe --defaults-file<span style=color:#f92672>=</span>/etc/my-1.cnf --datadir<span style=color:#f92672>=</span>/var/lib/mysql-1 &amp;
+</code></pre></div><p>By checking background process, you should see something like this</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ ps ax | grep mysql
+
+<span style=color:#ae81ff>23416</span> pts/1    S      0:00 /bin/sh /usr/bin/mysqld_safe --defaults-file<span style=color:#f92672>=</span>/etc/my-1.cnf --datadir<span style=color:#f92672>=</span>/var/lib/mysql-1
+<span style=color:#ae81ff>23515</span> pts/1    Sl     0:00 /usr/libexec/mysqld --defaults-file<span style=color:#f92672>=</span>/etc/my-1.cnf --basedir<span style=color:#f92672>=</span>/usr --datadir<span style=color:#f92672>=</span>/var/lib/mysql-1 --user<span style=color:#f92672>=</span>mysql --log-error<span style=color:#f92672>=</span>/var/lib/mysql-1/eebox.err --pid-file<span style=color:#f92672>=</span>/var/lib/mysql-1/eebox.pid --socket<span style=color:#f92672>=</span>/var/run/mysql/mysql-1.sock --port<span style=color:#f92672>=</span><span style=color:#ae81ff>3307</span>
+</code></pre></div><p>Time for some test, we need to make sure we’re connecting to the correct server. One way to do this is by checking the <code>server_id</code>.</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ mysql -u root -h 127.0.0.1 -P <span style=color:#ae81ff>3307</span>
+mysql&gt; SHOW VARIABLES LIKE <span style=color:#e6db74>&#34;server_id&#34;</span>;
++---------------+-------+
+| Variable_name | Value |
++---------------+-------+
+| server_id     | <span style=color:#ae81ff>10</span>    |
++---------------+-------+
+<span style=color:#ae81ff>1</span> row in set <span style=color:#f92672>(</span>0.00 sec<span style=color:#f92672>)</span>
+</code></pre></div><p>As you can see, we have the same server_id as we specified in our my-1.cnf. You can use this command to shut it down.</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>mysqladmin -h 127.0.0.1 -P <span style=color:#ae81ff>3307</span> shutdown
+</code></pre></div><h2 id=using-new-downloaded-mysql>Using new Downloaded MySQL<a href=#using-new-downloaded-mysql class=hanchor arialabel=Anchor>&#8983;</a></h2><p>Download <a href=http://dev.mysql.com/downloads/>MySQL Download</a> > MySQL Community Server > Linux Generic > Linux – Generic 2.6 (x86, 32-bit), Compressed TAR Archive</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>cp mysql-5.5.9-linux2.6-i686.tar.gz /opt
+cd opt
+tar zxvf mysql-5.5.9-linux2.6-i686.tar.gz
+mv mysql-5.5.9-linux2.6-i686 mysql
+cd mysql
+chown -R mysql.mysql .
+./scripts/mysql_install_db --user<span style=color:#f92672>=</span>mysql
+cp support-files/my-small.cnf /etc/my-2.cnf
+nano /etc/my-2.cnf
+</code></pre></div><p>/etc/my-2.cnf</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style=color:#66d9ef>[client]</span>
+<span style=color:#a6e22e>port</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>3308</span>
+<span style=color:#a6e22e>socket</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>/var/run/mysql/mysql-2.sock</span>
+
+<span style=color:#66d9ef>[mysqld]</span>
+<span style=color:#a6e22e>port</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>3308</span>
+<span style=color:#a6e22e>socket</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>/var/run/mysql/mysql-2.sock</span>
+<span style=color:#a6e22e>server-id</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>20</span>
+
+<span style=color:#a6e22e>innodb_data_home_dir</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>/var/lib/mysql-1/</span>
+<span style=color:#a6e22e>innodb_log_group_home_dir</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>/var/lib/mysql-1/</span>
+</code></pre></div><p>To run it, you need to specify some parameters</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>/opt/mysql/bin/mysqld --defaults-file<span style=color:#f92672>=</span>/etc/my-2.cnf --basedir<span style=color:#f92672>=</span>/opt/mysql --datadir<span style=color:#f92672>=</span>/opt/mysql/data --plugin-dir<span style=color:#f92672>=</span>/opt/mysql/lib/plugin --user<span style=color:#f92672>=</span>mysql --log-error<span style=color:#f92672>=</span>/opt/mysql/data/eebox.err
+</code></pre></div><p>To shut it down, you can use the following command</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>./bin/mysqladmin -h 127.0.0.1 -P <span style=color:#ae81ff>3308</span> shutdown
+</code></pre></div><p>You can test the server connection just like the method I used above.</p><p>That&rsquo;s it, good luck!</p></div></div><div class=pagination><div class=pagination__title><span class=pagination__title-h>Read other posts</span><hr></div><div class=pagination__buttons><span class="button previous"><a href=https://amree.github.io/posts/using-sybase-with-ruby-on-rails-on-linux/><span class=button__icon>←</span>
+<span class=button__text>Using Sybase with Ruby on Rails on Linux</span></a></span>
+<span class="button next"><a href=https://amree.github.io/posts/adding-memcached-support-to-php-in-slackware-13-1/><span class=button__text>Adding memcached support to PHP in Slackware 13.1</span>
+<span class=button__icon>→</span></a></span></div></div></div></div><footer class=footer><div class=footer__inner><div class=copyright><span>© 2021 Powered by <a href=http://gohugo.io>Hugo</a></span>
+<span>:: Theme made by <a href=https://twitter.com/panr>panr</a></span></div></div></footer><script src=https://amree.github.io/assets/main.js></script><script src=https://amree.github.io/assets/prism.js></script></div></body></html>

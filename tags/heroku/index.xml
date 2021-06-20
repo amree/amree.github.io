@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>heroku on Amree Zaid</title><link>https://amree.github.io/tags/heroku/</link><description>Recent content in heroku on Amree Zaid</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 28 Jun 2013 00:00:00 +0000</lastBuildDate><atom:link href="https://amree.github.io/tags/heroku/index.xml" rel="self" type="application/rss+xml"/><item><title>Setup Free Uptime Monitoring Service in Heroku</title><link>https://amree.github.io/posts/setup-free-uptime-monitoring-service-in-heroku/</link><pubDate>Fri, 28 Jun 2013 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/setup-free-uptime-monitoring-service-in-heroku/</guid><description>&lt;p>A free way for us to setup free version of uptime service.&lt;/p></description><content>&lt;p>A free way for us to setup free version of uptime service.&lt;/p>
+&lt;p>Clone the &lt;a href="https://github.com/fzaninotto/uptime.git">uptime&lt;/a> repository&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">git clone https://github.com/fzaninotto/uptime.git
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Get into the directory&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cd uptime
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Login using &lt;a href="https://devcenter.heroku.com/categories/command-line">heroku command line&lt;/a>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">heroku login
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Run this command to create the &lt;code>Procfile&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">echo &lt;span style="color:#e6db74">&amp;#34;web: node app.js&amp;#34;&lt;/span> &amp;gt; Procfile
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Commit your changes&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">git add .
+git commit -m &lt;span style="color:#e6db74">&amp;#39;Added Procfile&amp;#39;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Create your heroku app&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">heroku create yourappname
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Add MongoDB to your app&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">heroku addons:add mongolab
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Get your MongoDB connection info&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">heroku config
+=== uptimee Config Vars
+MONGOLAB_URI: mongodb://username:password@host:port/dbname
+PATH: bin:node_modules/.bin:/usr/local/bin:/usr/bin:/bin
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Use the info you just got and update &lt;code>config/default.yml&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yml" data-lang="yml">&lt;span style="color:#f92672">mongodb&lt;/span>:
+&lt;span style="color:#f92672">server&lt;/span>: &lt;span style="color:#ae81ff">host:port&lt;/span>
+&lt;span style="color:#f92672">database&lt;/span>: &lt;span style="color:#ae81ff">dbname&lt;/span>
+&lt;span style="color:#f92672">user&lt;/span>: &lt;span style="color:#ae81ff">username&lt;/span>
+&lt;span style="color:#f92672">password&lt;/span>: &lt;span style="color:#ae81ff">password&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>I&amp;rsquo;ve also updated other settings&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yml" data-lang="yml">&lt;span style="color:#f92672">monitor&lt;/span>:
+&lt;span style="color:#f92672">apiUrl&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;http://localhost/api&amp;#39;&lt;/span> &lt;span style="color:#75715e"># must be accessible without a proxy&lt;/span>
+&lt;span style="color:#75715e"># apiUrl: &amp;#39;http://localhost:8021/api&amp;#39; # must be accessible without a proxy&lt;/span>
+&lt;span style="color:#f92672">server&lt;/span>:
+&lt;span style="color:#f92672">port&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
+&lt;span style="color:#75715e"># port: 8021&lt;/span>
+&lt;span style="color:#f92672">email&lt;/span>:
+&lt;span style="color:#f92672">dashboardUrl&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;http://localhost&amp;#39;&lt;/span>
+&lt;span style="color:#75715e"># dashboardUrl: &amp;#39;http://localhost:8021&amp;#39;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Commit your changes&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">git add .
+git commit -m &lt;span style="color:#e6db74">&amp;#39;Updated the configurations&amp;#39;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Push your files&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">git push heroku master
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Make sure there&amp;rsquo;s one dyno running for the &lt;code>web&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">heroku ps:scale web&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can verify it&amp;rsquo;s running using&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">heroku ps
+&lt;span style="color:#f92672">===&lt;/span> web &lt;span style="color:#f92672">(&lt;/span>1X&lt;span style="color:#f92672">)&lt;/span>: &lt;span style="color:#e6db74">`&lt;/span>node app.js&lt;span style="color:#e6db74">`&lt;/span>
+web.1: up 2013/06/28 19:03:30 &lt;span style="color:#f92672">(&lt;/span>~ 3m ago&lt;span style="color:#f92672">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Open your app&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">git push heroku master
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>That&amp;rsquo;s it, good luck! :)&lt;/p></content></item></channel></rss>

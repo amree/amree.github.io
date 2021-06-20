@@ -1,0 +1,241 @@
+<!doctype html><html lang=en><head><title>Notes on Demystifying Contributing to Rails :: Amree Zaid</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="This is my notes for presentation by Eileen Uchitelle from RailsConf 2015. You can find the video at Confreaks. The slide can be found at Speaker Deck.
+"><meta name=keywords content><meta name=robots content="noodp"><link rel=canonical href=https://amree.github.io/posts/notes-on-demystifying-contributing-to-rails/><link rel=stylesheet href=https://amree.github.io/assets/style.css><link rel=stylesheet href=https://amree.github.io/assets/green.css><link rel=apple-touch-icon href=https://amree.github.io/img/apple-touch-icon-192x192.png><link rel="shortcut icon" href=https://amree.github.io/img/favicon/green.png><meta name=twitter:card content="summary"><meta name=twitter:site content><meta name=twitter:creator content><meta property="og:locale" content="en"><meta property="og:type" content="article"><meta property="og:title" content="Notes on Demystifying Contributing to Rails"><meta property="og:description" content="This is my notes for presentation by Eileen Uchitelle from RailsConf 2015. You can find the video at Confreaks. The slide can be found at Speaker Deck.
+"><meta property="og:url" content="https://amree.github.io/posts/notes-on-demystifying-contributing-to-rails/"><meta property="og:site_name" content="Amree Zaid"><meta property="og:image" content="https://amree.github.io/img/favicon/green.png"><meta property="og:image:width" content="2048"><meta property="og:image:height" content="1024"><meta property="article:published_time" content="2015-05-27 00:00:00 +0000 UTC"></head><body class=green><div class="container center headings--one-size"><header class=header><div class=header__inner><div class=header__logo><a href=/><div class=logo>Amree Zaid</div></a></div><div class=menu-trigger>menu</div></div><nav class=menu><ul class="menu__inner menu__inner--desktop"><li><a href=https://twitter.com/AmreeZaid>Twitter</a></li></ul><ul class="menu__inner menu__inner--mobile"><li><a href=https://twitter.com/AmreeZaid>Twitter</a></li></ul></nav></header><div class=content><div class=post><h1 class=post-title><a href=https://amree.github.io/posts/notes-on-demystifying-contributing-to-rails/>Notes on Demystifying Contributing to Rails</a></h1><div class=post-meta><span class=post-date>2015-05-27</span></div><span class=post-tags>#<a href=https://amree.github.io/tags/notes/>notes</a>&nbsp;</span><div class=post-content><div><p>This is my notes for presentation by <a href=https://twitter.com/eileencodes>Eileen
+Uchitelle</a> from RailsConf 2015. You can find
+the video at <a href=http://confreaks.tv/videos/railsconf2015-breaking-down-the-barrier-demystifying-contributing-to-rails>Confreaks</a>. The slide can be found at <a href=https://speakerdeck.com/eileencodes/breaking-down-the-barrier-demystifying-contributing-to-rails>Speaker Deck</a>.</p><p>This presentation is more about how to get yourself ready to contribute to Rails
+at GitHub.</p><p>These are the required environments:</p><ul><li>Ruby version manager (rbenv, rvm, chruby)</li><li>Ruby 2.2.2 (Rails 5 is using 2.2.2)</li><li>Databases for Active Record (MySQL, PostgreSQL, SQLite3)</li><li>Git and GitHub account</li></ul><p>You don&rsquo;t need MySQL and PostgreSQL since SQLite3 will be used by default. But
+if you want to test certain feature spesific to the database, you need to
+install them. If you do need them, you can setup the necessary databases and
+users using the following guide (taken from Eileen&rsquo;s blog[1]).</p><h3 id=mysql>MySQL<a href=#mysql class=hanchor arialabel=Anchor>&#8983;</a></h3><p>Create the user:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt>mysql&gt; CREATE USER &#39;rails&#39;@&#39;localhost&#39;;
+mysql&gt; GRANT ALL PRIVILEGES ON activerecord_unittest.*
+       to &#39;rails&#39;@&#39;localhost&#39;;
+mysql&gt; GRANT ALL PRIVILEGES ON activerecord_unittest2.*
+       to &#39;rails&#39;@&#39;localhost&#39;;
+mysql&gt; GRANT ALL PRIVILEGES ON inexistent_activerecord_unittest.*
+       to &#39;rails&#39;@&#39;localhost&#39;;
+</code></pre></div><p>Create the database:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>cd activerecord
+bundle exec rake db:mysql:build
+</code></pre></div><h3 id=postgresql>PostgreSQL<a href=#postgresql class=hanchor arialabel=Anchor>&#8983;</a></h3><p>For Linux:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>sudo -u postgres createuser --superuser $USER
+</code></pre></div><p>For OS X:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>createuser --superuser $USER
+</code></pre></div><p>Create the database:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>cd activerecord
+bundle exec rake db:postgresql:build
+</code></pre></div><p>To start over:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>cd activerecord
+bundle exec rake db:drop
+</code></pre></div><h2 id=running-the-tests>Running the tests<a href=#running-the-tests class=hanchor arialabel=Anchor>&#8983;</a></h2><p>You shouldn&rsquo;t be running the tests from Rails main source directory. Instead,
+you should go to the individual directory and run the command from there. A full
+suite of Rails test might take a long time. For an example:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>cd actionpack
+rake test
+</code></pre></div><p>For Active Record, you can run the test by specifying the adapter:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>cd activerecord
+rake test:sqlite3
+rake test:mysql2
+rake test:mysql
+rake test:postgresql
+</code></pre></div><p>Run a test file:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>ruby -Ilib:test path/to/test_file.rb
+</code></pre></div><p>Run a single test:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>ruby -Ilib:test path/to/test_file.rb -n test_name_of_test
+</code></pre></div><p>For Active Record, SQLite3 will be used by default. So, if you want to change
+the adapter (for e.g MySQL), use this command:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>ARCONN<span style=color:#f92672>=</span>mysql2 ruby -Ilib:test path/to/test_file.rb -n test_name_of_test
+</code></pre></div><p>Run single test will all adapters:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>bundle exec rake TEST<span style=color:#f92672>=</span>path/to/test_file.rb -n test_name
+</code></pre></div><h2 id=opening-issue>Opening issue<a href=#opening-issue class=hanchor arialabel=Anchor>&#8983;</a></h2><p>When opening an issue, make sure include a test script too (which can be found <a href=http://github.com/rails/rails/blob/master/guides/bug_report_templates>here</a>).</p><p>If you&rsquo;re sending a performance related pull request, use Benchmark/IPS. For an example:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ruby data-lang=ruby><span style=color:#75715e># Source: github.com/eileencodes/railsconf_scripts.git</span>
+<span style=color:#75715e># Run it with: bundle exec ruby benchmark_ips_example.rb</span>
+
+require <span style=color:#e6db74>&#39;benchmark/ips&#39;</span>
+<span style=color:#66d9ef>ARRAY</span> <span style=color:#f92672>=</span> (<span style=color:#ae81ff>1</span><span style=color:#f92672>..</span><span style=color:#ae81ff>100</span>)<span style=color:#f92672>.</span>to_a
+<span style=color:#66d9ef>def</span> <span style=color:#a6e22e>slow</span>
+  <span style=color:#66d9ef>ARRAY</span><span style=color:#f92672>.</span>shuffle<span style=color:#f92672>.</span>first
+<span style=color:#66d9ef>end</span>
+<span style=color:#66d9ef>def</span> <span style=color:#a6e22e>fast</span>
+  <span style=color:#66d9ef>ARRAY</span><span style=color:#f92672>.</span>sample
+<span style=color:#66d9ef>end</span>
+<span style=color:#66d9ef>Benchmark</span><span style=color:#f92672>.</span>ips <span style=color:#66d9ef>do</span> <span style=color:#f92672>|</span>x<span style=color:#f92672>|</span>
+  x<span style=color:#f92672>.</span>report(<span style=color:#e6db74>&#39;slow&#39;</span>) { slow }
+  x<span style=color:#f92672>.</span>report(<span style=color:#e6db74>&#39;fast&#39;</span>) { fast }
+  x<span style=color:#f92672>.</span>compare!
+<span style=color:#66d9ef>end</span>
+</code></pre></div><h2 id=traversing-unfamiliar-code>Traversing unfamiliar code<a href=#traversing-unfamiliar-code class=hanchor arialabel=Anchor>&#8983;</a></h2><h3 id=use-source-location>Use Source Location<a href=#use-source-location class=hanchor arialabel=Anchor>&#8983;</a></h3><p>Defined in <code>actionview/lib/action_view/template/error.rb</code>:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ruby data-lang=ruby><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>source_location</span>
+  <span style=color:#66d9ef>if</span> line_number
+    <span style=color:#e6db74>&#34;on line #</span><span style=color:#e6db74>#{</span>line_number<span style=color:#e6db74>}</span><span style=color:#e6db74> of &#34;</span>
+  <span style=color:#66d9ef>else</span>
+    <span style=color:#e6db74>&#39;in &#39;</span>
+  <span style=color:#66d9ef>end</span> <span style=color:#f92672>+</span> file_name
+<span style=color:#66d9ef>end</span>
+</code></pre></div><p>For an example, if we want to trace the <code>delete_all</code> method:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ruby data-lang=ruby><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>BugTest</span> <span style=color:#f92672>&lt;</span> <span style=color:#66d9ef>Minitest</span><span style=color:#f92672>::</span><span style=color:#66d9ef>Test</span>
+  <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>test_delete_all</span>
+    post <span style=color:#f92672>=</span> <span style=color:#66d9ef>Post</span><span style=color:#f92672>.</span>create!(<span style=color:#e6db74>title</span>: <span style=color:#e6db74>&#34;Post title&#34;</span>, <span style=color:#e6db74>content</span>: <span style=color:#e6db74>&#34;Lots of content&#34;</span>)
+    comment <span style=color:#f92672>=</span> <span style=color:#66d9ef>Comment</span><span style=color:#f92672>.</span>create!(<span style=color:#e6db74>content</span>: <span style=color:#e6db74>&#34;I am a comment&#34;</span>, <span style=color:#e6db74>post_id</span>: post<span style=color:#f92672>.</span>id)
+    assert <span style=color:#ae81ff>1</span>, post<span style=color:#f92672>.</span>comments<span style=color:#f92672>.</span>count
+    post<span style=color:#f92672>.</span>comments<span style=color:#f92672>.</span>delete_all
+    assert <span style=color:#ae81ff>0</span>, post<span style=color:#f92672>.</span>comments<span style=color:#f92672>.</span>count
+  <span style=color:#66d9ef>end</span>
+<span style=color:#66d9ef>end</span>
+</code></pre></div><p>Replace that line of codes with:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ruby data-lang=ruby>puts post<span style=color:#f92672>.</span>comments<span style=color:#f92672>.</span>method(<span style=color:#e6db74>:delete_all</span>)<span style=color:#f92672>.</span>source_location
+</code></pre></div><p>Example of the output:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt>(0.0ms) begin transaction
+SQL (0.1ms) INSERT INTO &#34;comments&#34; (&#34;content&#34;, &#34;post_id&#34;) VALUES (?, ?) [[&#34;content&#34;, &#34;I am a comment&#34;], [&#34;post_id&#34;, 1]]
+(0.0ms) commit transaction
+(0.1ms) SELECT COUNT(*) FROM &#34;comments&#34; WHERE &#34;comments&#34;.&#34;post_id&#34; = ? [[&#34;post_id&#34;, 1]]
+../activerecord/lib/active_record/associations/ collection_proxy.rb 442
+(0.0ms) SELECT COUNT(*) FROM &#34;comments&#34; WHERE &#34;comments&#34;.&#34;post_id&#34; = ? [[&#34;post_id&#34;, 1]]
+</code></pre></div><h3 id=use-ctags>Use Ctags<a href=#use-ctags class=hanchor arialabel=Anchor>&#8983;</a></h3><p>You can continue using source location, but you may want to use ctags:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>cd path/to/rails/
+ctags -R -f .git/tags .
+</code></pre></div><p>Config for your <code>.vimrc</code>:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt>map &lt;Leader&gt;rt :!ctags --tag-relative --extra=+f -Rf .git/tags --exclude=.git,pkg —languages=- javascript,sql&lt;CR&gt;&lt;CR&gt;
+
+# Based on the previous shell command
+set tags+=.git/tags
+</code></pre></div><p>To find method definition with vim, use <code>CTRL + ]</code> when the cursor is on that
+particular method. Use <code>:ts</code> to find similar methods in other files.</p><h3 id=use-caller>Use Caller<a href=#use-caller class=hanchor arialabel=Anchor>&#8983;</a></h3><p>To find out who&rsquo;s calling a method, we can use a Ruby method defined by Kernel
+module that will output the stack trace at the point the method is executed and
+it won&rsquo;t stop your code. For an example:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ruby data-lang=ruby><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Project</span> <span style=color:#f92672>&lt;</span> <span style=color:#66d9ef>ActiveRecord</span><span style=color:#f92672>::</span><span style=color:#66d9ef>Base</span>
+  after_create <span style=color:#e6db74>:call_me</span>
+
+  <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>call_me</span>
+    puts caller
+    puts <span style=color:#e6db74>&#34;======== i am a callback ========&#34;</span>
+  <span style=color:#66d9ef>end</span>
+<span style=color:#66d9ef>end</span>
+</code></pre></div><p>Output example:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>.../activesupport/lib/active_support/callbacks.rb:428:in <span style=color:#e6db74>`</span>block in make_lambda<span style=color:#e6db74>&#39;
+</span><span style=color:#e6db74>.../activesupport/lib/active_support/callbacks.rb:229:in `call&#39;</span>
+.../activesupport/lib/active_support/callbacks.rb:229:in <span style=color:#e6db74>`</span>block in halting_and_conditional<span style=color:#e6db74>&#39;
+</span><span style=color:#e6db74>.../activesupport/lib/active_support/callbacks.rb:502:in `call&#39;</span>
+.../activesupport/lib/active_support/callbacks.rb:502:in <span style=color:#e6db74>`</span>block in call<span style=color:#e6db74>&#39;
+</span><span style=color:#e6db74>.../activesupport/lib/active_support/callbacks.rb:502:in `each&#39;</span>
+.../activesupport/lib/active_support/callbacks.rb:502:in <span style=color:#e6db74>`</span>call<span style=color:#e6db74>&#39;
+</span><span style=color:#e6db74>.../activesupport/lib/active_support/callbacks.rb:90:in `run_callbacks&#39;</span>
+.../activerecord/lib/active_record/callbacks.rb:305:in <span style=color:#e6db74>`</span>_create_record<span style=color:#e6db74>&#39;
+</span><span style=color:#e6db74>.../activerecord/lib/active_record/timestamp.rb:57:in `_create_record&#39;</span>
+.../activerecord/lib/active_record/persistence.rb:506:in <span style=color:#e6db74>`</span>create_or_update<span style=color:#e6db74>&#39;
+</span><span style=color:#e6db74>.../activerecord/lib/active_record/callbacks.rb:301:in `block in create_or_update&#39;</span>
+.../activesupport/lib/active_support/callbacks.rb:86:in <span style=color:#e6db74>`</span>run_callbacks<span style=color:#e6db74>&#39;
+</span><span style=color:#e6db74>.../activerecord/lib/active_record/callbacks.rb:301:in `create_or_update&#39;</span>
+.../activerecord/lib/active_record/persistence.rb:151:in <span style=color:#e6db74>`</span>save!<span style=color:#960050;background-color:#1e0010>&#39;</span>
+</code></pre></div><p>Notice the first line of the output:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt>.../activesupport/lib/active_support/callbacks.rb:428:in `block in make_lambda&#39;
+</code></pre></div><h3 id=use-tracepoint>Use Tracepoint<a href=#use-tracepoint class=hanchor arialabel=Anchor>&#8983;</a></h3><p>Above methods won&rsquo;t work with dynamic method. For this purpose, we can use <a href=http://ruby-doc.org/core-2.0.0/TracePoint.html>Tracepoint</a>. For an example:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ruby data-lang=ruby><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>test_trace_point</span>
+  user <span style=color:#f92672>=</span> <span style=color:#66d9ef>User</span><span style=color:#f92672>.</span>new(name: <span style=color:#e6db74>&#34;My Name&#34;</span>)
+
+  <span style=color:#75715e># 1</span>
+  tp <span style=color:#f92672>=</span> <span style=color:#66d9ef>Tracepoint</span><span style=color:#f92672>.</span>new(<span style=color:#e6db74>:call</span>) <span style=color:#66d9ef>do</span> <span style=color:#f92672>|*</span>args<span style=color:#f92672>|</span>
+    p args
+  <span style=color:#66d9ef>end</span>
+
+  tp<span style=color:#f92672>.</span>enable <span style=color:#75715e># 2</span>
+  user<span style=color:#f92672>.</span>avatar_attributes <span style=color:#f92672>=</span> { name: <span style=color:#e6db74>&#34;I am a file name&#34;</span> }
+  tp<span style=color:#f92672>.</span>disable <span style=color:#75715e># 3</span>
+
+  user<span style=color:#f92672>.</span>save!
+<span style=color:#66d9ef>end</span>
+</code></pre></div><p>The output will be very long but we only care the top line which may look like
+this:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt>`avatar_attributes=&#39;@.../activerecord/lib/active_record/ nested_attributes.rb:347
+</code></pre></div><h2 id=git>Git<a href=#git class=hanchor arialabel=Anchor>&#8983;</a></h2><ol><li>Fork the Rails source code from the <a href=https://github.com/rails/rails>GitHub</a></li><li>Checkout the fork into your workstation</li></ol><p>Then Use these commands to add the original repo into your copy:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>cd path/to/rails/
+git remote add upstream https://github.com/rails/rails.git
+
+<span style=color:#75715e># Get changes from Rails master from GitHub</span>
+<span style=color:#75715e># and push the update to our repo</span>
+git pull --rebase upstream master
+git push origin master
+</code></pre></div><h3 id=git-bisect>Git Bisect<a href=#git-bisect class=hanchor arialabel=Anchor>&#8983;</a></h3><p>Helpful in identifying when the regression is introduced in the code. It takes
+two points, good and bad. Both are subjective but bad point can means when the
+code added and the behaviour changed. Just make sure you keep it seperated in
+your head (more like behaviour exists and behaviour doesn&rsquo;t exist).</p><p>Since Rails tag every releases, it&rsquo;s easier to start by checking out the tag and
+see if the bug exists or not.</p><p>For an example, we want to find where Eileen added documentation about <code>git bisect</code> into the README. This is based on <a href=https://github.com/eileencodes/railsconf_scripts>RailsConf
+Script</a>:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>git checkout practising-git
+git bisect start
+git bisect bad
+git bisect good master
+cat README.md
+git bisect good
+cat README.md
+git bisect bad
+cat README.md
+git bisect bad
+</code></pre></div><p>This will show the <code>git commit</code> that introduces the bisect documentations:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt>967e214ab9813767871773a90269b97f68207e5d is the first bad commit
+commit 967e214ab9813767871773a90269b97f68207e5d
+Author: eileencodes &lt;eileencodes@gmail.com&gt;
+Date:   Fri Apr 10 09:53:37 2015 -0400
+
+    Add section about bisecting
+
+    This is the commit we want to find when we practice bisecting.
+
+:100644 100644 da91fa431505406e9c354e5b232036823f6ee781 50ba68331d55df483f334c1ea767d18f17eab18f M      README.md
+</code></pre></div><p>Use <code>git show</code> for more info on the commit:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>git show 967e214ab9813767871773a90269b97f68207e5d
+
+commit 967e214ab9813767871773a90269b97f68207e5d
+Author: eileencodes &lt;eileencodes@gmail.com&gt;
+Date:   Fri Apr <span style=color:#ae81ff>10</span> 09:53:37 <span style=color:#ae81ff>2015</span> -0400
+
+    Add section about bisecting
+
+    This is the commit we want to find when we practice bisecting.
+
+diff --git a/README.md b/README.md
+index da91fa4..50ba683 <span style=color:#ae81ff>100644</span>
+--- a/README.md
++++ b/README.md
+@@ -66,3 +66,12 @@ lab on contributing to Rails. Please see that branch <span style=color:#66d9ef>for</span> git the git commands.
+ <span style=color:#75715e>#### Reflog</span>
+
+ <span style=color:#e6db74>`</span>git reflog<span style=color:#e6db74>`</span>
++
++### Using Git to Find Where Code was Introduced
++
++#### Bisect
++
++<span style=color:#e6db74>`</span>git bisect start<span style=color:#e6db74>`</span>
++<span style=color:#e6db74>`</span>git bisect bad<span style=color:#e6db74>`</span>
++<span style=color:#e6db74>`</span>git bisect good ref<span style=color:#e6db74>`</span>
++<span style=color:#e6db74>`</span>git bisect reset<span style=color:#e6db74>`</span>
+</code></pre></div><p>For Rails source codes, you can use the test scripts to check if the bug exists
+or not.</p><h3 id=amending-commits>Amending Commits<a href=#amending-commits class=hanchor arialabel=Anchor>&#8983;</a></h3><p>Change last commit message:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>git commit --amend
+</code></pre></div><p>Undo amend commit:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>git reset --soft HEAD@<span style=color:#f92672>{</span>1<span style=color:#f92672>}</span>
+</code></pre></div><p>Undo commits, changes are staged, but no longer commited:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>git reset --soft HEAD~N
+</code></pre></div><p>To unstage those changes:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>git reset HEAD
+</code></pre></div><p>Reset the current branch to the original state and discard any changes:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>git reset --hard origin/practicing-git
+</code></pre></div><p>For modifying previous commit messages, squash and others, we can use:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>git rebase -i master
+</code></pre></div><p>We might get something like this:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt>pick b7b78d1 Add README headings
+pick 059743f Fix title for undoing things in git
+pick 026e843 Add commands to each section
+pick 967e214 Add section about bisecting
+pick bc23d29 Add missing sections
+pick f644446 Fix spacing on bisect commands
+
+# Rebase 8c381e5..f644446 onto 8c381e5
+#
+# Commands:
+#  p, pick = use commit
+#  r, reword = use commit, but edit the commit message
+#  e, edit = use commit, but stop for amending
+#  s, squash = use commit, but meld into previous commit
+#  f, fixup = like &#34;squash&#34;, but discard this commit&#39;s log message
+#  x, exec = run command (the rest of the line) using shell
+#
+# These lines can be re-ordered; they are executed from top to bottom.
+#
+# If you remove a line here THAT COMMIT WILL BE LOST.
+#
+# However, if you remove everything, the rebase will be aborted.
+#
+# Note that empty commits are commented out
+</code></pre></div><p>Change the word <code>pick</code> to other things such as <code>squash</code> for squashing commits
+and edit for amending commit message.</p><p>It&rsquo;s OK to force push into your own branch. In fact it&rsquo;s recommended to force
+push instead of opening another pull request. To force push, use:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>git push -f origin your-branch
+</code></pre></div><p>Git keeps track of updates to the tip of branches using a mechanism called
+reflog. This allows you to go back to changesets even though they are not
+referenced by any branch or tag. After rewriting history, the reflog contains
+information about the old state of branches and allows you to go back to that
+state if necessary [2].</p><p>An example of <code>git reflog</code> output:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt>f644446 HEAD@{0}: rebase: aborting
+8c381e5 HEAD@{1}: rebase -i (start): checkout master
+f644446 HEAD@{2}: reset: moving to origin/practicing-git
+91979dc HEAD@{3}: rebase -i (finish): returning to refs/heads/practicing-git
+91979dc HEAD@{4}: rebase -i (start): checkout master
+91979dc HEAD@{5}: rebase -i (finish): returning to refs/heads/practicing-git
+91979dc HEAD@{6}: rebase -i (squash): Add README headings
+ab7a378 HEAD@{7}: rebase -i (squash): # This is a combination of 5 commits.
+04bb631 HEAD@{8}: rebase -i (squash): # This is a combination of 4 commits.
+4fc54ed HEAD@{9}: rebase -i (squash): # This is a combination of 3 commits.
+410319c HEAD@{10}: rebase -i (squash): # This is a combination of 2 commits.
+f521dd3 HEAD@{11}: rebase -i (start): checkout master
+c6f43a6 HEAD@{12}: rebase -i (finish): returning to refs/heads/practicing-git
+c6f43a6 HEAD@{13}: commit (amend): Fix spacing on bisect commands
+</code></pre></div><p>I guess that&rsquo;s it. Thanks for reading :)</p><h2 id=references>References<a href=#references class=hanchor arialabel=Anchor>&#8983;</a></h2><ol><li><a href=http://www.eileencodes.com/posts/getting-your-local-environment-setup-to-contribute-to-rails>http://www.eileencodes.com/posts/getting-your-local-environment-setup-to-contribute-to-rails</a></li><li><a href=https://www.atlassian.com/git/tutorials/rewriting-history/git-reflog>https://www.atlassian.com/git/tutorials/rewriting-history/git-reflog</a></li></ol></div></div><div class=pagination><div class=pagination__title><span class=pagination__title-h>Read other posts</span><hr></div><div class=pagination__buttons><span class="button previous"><a href=https://amree.github.io/posts/about-proc-lambda-and-block/><span class=button__icon>←</span>
+<span class=button__text>About Proc, Lambda and Block</span></a></span>
+<span class="button next"><a href=https://amree.github.io/posts/getting-started-with-rails-on-windows/><span class=button__text>Getting Started with Rails on Windows</span>
+<span class=button__icon>→</span></a></span></div></div></div></div><footer class=footer><div class=footer__inner><div class=copyright><span>© 2021 Powered by <a href=http://gohugo.io>Hugo</a></span>
+<span>:: Theme made by <a href=https://twitter.com/panr>panr</a></span></div></div></footer><script src=https://amree.github.io/assets/main.js></script><script src=https://amree.github.io/assets/prism.js></script></div></body></html>

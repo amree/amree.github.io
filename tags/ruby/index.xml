@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>ruby on Amree Zaid</title><link>https://amree.github.io/tags/ruby/</link><description>Recent content in ruby on Amree Zaid</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sat, 19 Jan 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://amree.github.io/tags/ruby/index.xml" rel="self" type="application/rss+xml"/><item><title>How Bcrypt Compares Password</title><link>https://amree.github.io/posts/how-bcrypt-compares-password/</link><pubDate>Sat, 19 Jan 2019 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/how-bcrypt-compares-password/</guid><description>&lt;p>I&amp;rsquo;ve always wondered about this.&lt;/p></description><content>&lt;p>I&amp;rsquo;ve always wondered about this.&lt;/p>
+&lt;p>Creating password in database:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">&lt;span style="color:#f92672">&amp;gt;&lt;/span> password &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;secret&amp;#39;&lt;/span>
+&lt;span style="color:#f92672">&amp;gt;&lt;/span> encrypted_password_in_database &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">BCrypt&lt;/span>&lt;span style="color:#f92672">::&lt;/span>&lt;span style="color:#66d9ef">Password&lt;/span>&lt;span style="color:#f92672">.&lt;/span>create(password)
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Comparing password:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">&lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#66d9ef">BCrypt&lt;/span>&lt;span style="color:#f92672">::&lt;/span>&lt;span style="color:#66d9ef">Password&lt;/span>&lt;span style="color:#f92672">.&lt;/span>new(encrypted_password_in_database) &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#39;secret&amp;#39;&lt;/span>
+&lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>==&lt;/code> is actually a method defined in &lt;a href="https://www.rubydoc.info/github/codahale/bcrypt-ruby/BCrypt%2FPassword:==">bcrypt-ruby&lt;/a>&lt;/p>
+&lt;p>Devise is comparing it using something like constant-time secure comparison but
+bcrypt-ruby project decided not to go with that. Read more about it here:&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://github.com/codahale/bcrypt-ruby/issues/42">https://github.com/codahale/bcrypt-ruby/issues/42&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://github.com/codahale/bcrypt-ruby/pull/43">https://github.com/codahale/bcrypt-ruby/pull/43&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://github.com/codahale/bcrypt-ruby/pull/119">https://github.com/codahale/bcrypt-ruby/pull/119&lt;/a>&lt;/li>
+&lt;/ul></content></item><item><title>About Proc, Lambda and Block</title><link>https://amree.github.io/posts/about-proc-lambda-and-block/</link><pubDate>Sat, 08 Apr 2017 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/about-proc-lambda-and-block/</guid><description>&lt;p>I keep on searching for this topic, so I guess it&amp;rsquo;s time I put it on my blog.&lt;/p></description><content>&lt;p>I keep on searching for this topic, so I guess it&amp;rsquo;s time I put it on my blog.&lt;/p>
+&lt;p>This is an example of a &lt;code>proc&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">the_proc &lt;span style="color:#f92672">=&lt;/span> proc { puts &lt;span style="color:#e6db74">&amp;#34;I&amp;#39;m the proc&amp;#34;&lt;/span> }
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To execute &lt;code>the_proc&lt;/code>, I need to explicityly to use:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">the_proc&lt;span style="color:#f92672">.&lt;/span>call &lt;span style="color:#75715e"># or&lt;/span>
+the_proc&lt;span style="color:#f92672">.&lt;/span>() &lt;span style="color:#75715e"># introduced in Ruby 1.9 or&lt;/span>
+the_proc&lt;span style="color:#f92672">[]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can create a lambda using this syntax:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">the_lambda &lt;span style="color:#f92672">=&lt;/span> lambda { puts &lt;span style="color:#e6db74">&amp;#34;I&amp;#39;m the lambda&amp;#34;&lt;/span> }
+the_lambda &lt;span style="color:#f92672">=&lt;/span> lambda { &lt;span style="color:#f92672">|&lt;/span>s&lt;span style="color:#f92672">|&lt;/span> puts &lt;span style="color:#e6db74">&amp;#34;I&amp;#39;m the lambda&amp;#34;&lt;/span> }
+the_lambda &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#f92672">-&amp;gt;&lt;/span> { puts &lt;span style="color:#e6db74">&amp;#34;I&amp;#39;m the lambda&amp;#34;&lt;/span> } &lt;span style="color:#75715e"># introduced in Ruby 1.9&lt;/span>
+the_lambda &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#f92672">-&amp;gt;&lt;/span> (x, y) { puts &lt;span style="color:#e6db74">&amp;#34;I&amp;#39;m the lambda&amp;#34;&lt;/span> }
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Just like with &lt;code>proc&lt;/code> you can execute it using one of these three methods:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">the_lambda&lt;span style="color:#f92672">.&lt;/span>call &lt;span style="color:#75715e"># or&lt;/span>
+the_lambda&lt;span style="color:#f92672">.&lt;/span>() &lt;span style="color:#75715e"># or&lt;/span>
+the_lambda&lt;span style="color:#f92672">[]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Differences between &lt;code>lambda&lt;/code> and &lt;code>proc&lt;/code>:&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>lambda&lt;/code> will raise an error if argument wasn&amp;rsquo;t provided during the call (if
+there&amp;rsquo;s any argument defined in the declaration). &lt;code>proc&lt;/code> will just silently
+set it to nil for this situation.&lt;/li>
+&lt;li>For &lt;code>proc&lt;/code>, if there&amp;rsquo;s a &lt;code>return&lt;/code> defined, it&amp;rsquo;ll return from the enclosing
+method. But for &lt;code>lambda&lt;/code>, it will just return from the &lt;code>lambda&lt;/code> itself.&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">the_proc &lt;span style="color:#f92672">=&lt;/span> proc { puts &lt;span style="color:#e6db74">&amp;#34;proc&amp;#34;&lt;/span>; &lt;span style="color:#66d9ef">return&lt;/span> }
+the_lambda &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#f92672">-&amp;gt;&lt;/span> { puts &lt;span style="color:#e6db74">&amp;#34;lambda&amp;#34;&lt;/span>; &lt;span style="color:#66d9ef">return&lt;/span> }
+&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">test&lt;/span>(arg)
+puts &lt;span style="color:#e6db74">&amp;#34;first&amp;#34;&lt;/span>
+arg&lt;span style="color:#f92672">.&lt;/span>call
+puts &lt;span style="color:#e6db74">&amp;#34;second&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">end&lt;/span>
+test(the_proc)
+&lt;span style="color:#75715e"># first&lt;/span>
+&lt;span style="color:#75715e"># proc&lt;/span>
+&lt;span style="color:#75715e"># LocalJumpError: unexpected return&lt;/span>
+test(the_lambda)
+&lt;span style="color:#75715e"># first&lt;/span>
+&lt;span style="color:#75715e"># lambda&lt;/span>
+&lt;span style="color:#75715e"># second&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>So, what is block in Ruby? Using the above example of &lt;code>proc&lt;/code>, a block is
+actually the piece of code that sits between those two curly braces, in this
+case that would be: &lt;code>puts &amp;quot;proc&amp;quot;; return&lt;/code>.&lt;/p>
+&lt;p>The only way to get access to the block is through the proc or lambda as block
+is not an object.&lt;/p>
+&lt;p>A basic example of block usage would be:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">output&lt;/span>
+puts &lt;span style="color:#e6db74">&amp;#34;start&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">yield&lt;/span>
+puts &lt;span style="color:#e6db74">&amp;#34;end&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">end&lt;/span>
+output { puts &lt;span style="color:#e6db74">&amp;#34;amree&amp;#34;&lt;/span> }
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>As you can see from the example, we actually don&amp;rsquo;t have direct access to the
+block. In order to get access to that block, we need to wrap it in &lt;code>proc&lt;/code> and
+this how you do it:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">output&lt;/span>(&lt;span style="color:#f92672">&amp;amp;&lt;/span>block)
+&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;span style="color:#66d9ef">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can use &lt;code>block.call&lt;/code> or just use the &lt;code>yield&lt;/code> keyword to execute the block.
+The biggest benefit of this approach is that we can control in which context
+it&amp;rsquo;s being executed. This is very useful in building DSL.&lt;/p>
+&lt;p>For e.g, let&amp;rsquo;s take a look at a simple DSL (that looks like Rails router):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">&lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Router&lt;/span>
+&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">initialize&lt;/span>
+@routes &lt;span style="color:#f92672">=&lt;/span> {}
+&lt;span style="color:#66d9ef">end&lt;/span>
+&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">match&lt;/span>(route)
+@routes&lt;span style="color:#f92672">.&lt;/span>update route
+&lt;span style="color:#66d9ef">end&lt;/span>
+&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">routes&lt;/span>(&lt;span style="color:#f92672">&amp;amp;&lt;/span>block) &lt;span style="color:#75715e"># block will be converted into a Proc&lt;/span>
+&lt;span style="color:#75715e"># block.call&lt;/span>
+&lt;span style="color:#75715e"># This will be called in the root context which will throw an error as&lt;/span>
+&lt;span style="color:#75715e"># routes method is defined in Router, not outside.&lt;/span>
+&lt;span style="color:#75715e"># instance_eval { @routes }&lt;/span>
+&lt;span style="color:#75715e"># It is expecting a block&lt;/span>
+instance_eval(&lt;span style="color:#f92672">&amp;amp;&lt;/span>block)
+&lt;span style="color:#75715e"># Will convert it to a block when it&amp;#39;s being used on method call&lt;/span>
+puts @routes
+&lt;span style="color:#66d9ef">end&lt;/span>
+&lt;span style="color:#66d9ef">end&lt;/span>
+&lt;span style="color:#66d9ef">Router&lt;/span>&lt;span style="color:#f92672">.&lt;/span>new&lt;span style="color:#f92672">.&lt;/span>routes &lt;span style="color:#66d9ef">do&lt;/span>
+match &lt;span style="color:#e6db74">&amp;#34;/users&amp;#34;&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;users#index&amp;#34;&lt;/span>
+&lt;span style="color:#75715e"># Ruby will automatically convert it to hash because it&amp;#39;s the last parameter.&lt;/span>
+&lt;span style="color:#75715e"># Basically, it&amp;#39;s the same as:&lt;/span>
+&lt;span style="color:#75715e"># match({ &amp;#34;/users&amp;#34; =&amp;gt; &amp;#34;users#index&amp;#34; })&lt;/span>
+match &lt;span style="color:#e6db74">&amp;#34;/login&amp;#34;&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;sessions#new&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">end&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div></content></item><item><title>Getting Started with Rails on Windows</title><link>https://amree.github.io/posts/getting-started-with-rails-on-windows/</link><pubDate>Tue, 03 Dec 2013 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/getting-started-with-rails-on-windows/</guid><description>&lt;p>First of all, let&amp;rsquo;s get one thing straight. This is not a guide for those who
+are trying their best to not use Unix like environment in develop Rails
+application. This is more like a guide to do almost everything in Linux without
+replacing your Windows.&lt;/p></description><content>&lt;p>First of all, let&amp;rsquo;s get one thing straight. This is not a guide for those who
+are trying their best to not use Unix like environment in develop Rails
+application. This is more like a guide to do almost everything in Linux without
+replacing your Windows.&lt;/p>
+&lt;p>So, I need to teach my colleagues in the next two weeks on Ruby on Rails
+introductionary class. Since all of the computer labs are installed with Windows
+7, I had to find a way to ensure a proper working environment for the students,
+hence, this article.&lt;/p>
+&lt;h2 id="installation">Installation&lt;/h2>
+&lt;p>After researching for a while, I decided to go with &lt;a href="http://vagrantup.com">Vagrant&lt;/a>.&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>First of all, install &lt;a href="http://virtualbox.org">Oracle VM VirtualBox&lt;/a>. Vagrant will depend on it.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Next, you need to install &lt;a href="http://git-scm.com">Git&lt;/a> for Windows. We actually
+just need &lt;code>ssh&lt;/code> executable in the Git package. After comparing available
+options, I think it is the easiest way. Besides, we&amp;rsquo;ll now have Git enabled
+in our Windows. By the way, make sure you&amp;rsquo;ll select the third option (the one
+with with the warning) during Adjusting your PATH environment section.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Download &lt;a href="http://downloads.vagrantup.com">Vagrant&lt;/a> and install it.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;h2 id="vagrant-setup">Vagrant Setup&lt;/h2>
+&lt;p>Create a working directory (use Windows prompt):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">mkdir rails
+cd rails
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Initiate Vagrant:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">vagrant init
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Install a Debian box:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">vagrant box add debian https://dl.dropboxusercontent.com/u/197673519/debian-7.2.0.box
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can select other box if you want to, but for this guide, I&amp;rsquo;ll be using a Debian based box. There are a lot more in the &lt;a href="https://github.com/mitchellh/vagrant/wiki/Available-Vagrant-Boxes">Wiki&lt;/a>.&lt;/p>
+&lt;p>Open &lt;code>Vagrantfile&lt;/code> and make sure you put these lines:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">Vagrant.configure&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#66d9ef">do&lt;/span> |config|
+&lt;span style="color:#75715e"># Specify our box&amp;#39;s name&lt;/span>
+config.vm.box &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;debian&amp;#34;&lt;/span>
+&lt;span style="color:#75715e"># Forward Rails default server port&lt;/span>
+config.vm.network :forwarded_port, guest: 3000, host: &lt;span style="color:#ae81ff">3000&lt;/span>
+end
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Boot the box:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">vagrant up
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>SSH into it to start working in the box:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">vagrant ssh
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="box-setup">Box Setup&lt;/h2>
+&lt;p>We&amp;rsquo;re going to setup the box for Rails development which includes MySQL as the database.&lt;/p>
+&lt;p>Install required packages (when asked about the password, leave it empty):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo su
+apt-get install build-essential mysql-server mysql-client libmysqlclient-dev
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Create a file at &lt;code>/etc/gemrc&lt;/code> and add this line:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">gem: --no-ri --no-rdoc
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Install all of the necessary gems:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">gem install rails
+gem install therubyracer
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="create-a-rails-application">Create a Rails Application&lt;/h2>
+&lt;p>Make sure we&amp;rsquo;re in &lt;code>/vagrant/&lt;/code> directory. Anything done here will reflect back the directory in the Windows.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cd /vagrant/
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Generate the Rails application:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">rails new myapp --database&lt;span style="color:#f92672">=&lt;/span>mysql
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Specify a &lt;code>javascript runtime&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cd myapp
+nano Gemfile
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Uncomment this line:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">gem &lt;span style="color:#e6db74">&amp;#39;therubyracer&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">platforms&lt;/span>: &lt;span style="color:#e6db74">:ruby&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Run this command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">bundle
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Create the database based on the default configuration:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">rake db:create
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Run the app:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">rails s
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Open it using this URL: &lt;a href="http://localhost:3000">http://localhost:3000&lt;/a>.&lt;/p>
+&lt;h2 id="rails-development">Rails Development&lt;/h2>
+&lt;p>If you haven&amp;rsquo;t noticed, you should see that everything that was changed in
+&lt;code>/vagrant&lt;/code> will reflect your &lt;code>rails&lt;/code> directory in Windows. This means, you can
+just use your favourite editor to load that particular directory and start
+coding. It&amp;rsquo;s as if you&amp;rsquo;re doing development directly in the server. For
+everything else, make sure you&amp;rsquo;ll do it through Putty or through &lt;code>vagrant ssh&lt;/code>.&lt;/p>
+&lt;p>I guess that&amp;rsquo;s it. Good luck !&lt;/p></content></item><item><title>Rails, Unicorn and Nginx on Slackware</title><link>https://amree.github.io/posts/rails-unicorn-and-nginx-on-slackware/</link><pubDate>Sun, 06 Jan 2013 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/rails-unicorn-and-nginx-on-slackware/</guid><description>&lt;p>I was trying to deploy a Rails application using Apache and got into some
+problems when I tried to configure the app so that Apache will be the one that
+serves the precompiled assets (javascripts, css, images and others). Since I&amp;rsquo;m
+on tight deadline (yeah, I should&amp;rsquo;ve tested production mode much more earlier),
+I tried my luck with Nginx and it worked easily without any hassle. So, this is
+how I did it.&lt;/p></description><content>&lt;p>I was trying to deploy a Rails application using Apache and got into some
+problems when I tried to configure the app so that Apache will be the one that
+serves the precompiled assets (javascripts, css, images and others). Since I&amp;rsquo;m
+on tight deadline (yeah, I should&amp;rsquo;ve tested production mode much more earlier),
+I tried my luck with Nginx and it worked easily without any hassle. So, this is
+how I did it.&lt;/p>
+&lt;h2 id="goals">Goals&lt;/h2>
+&lt;ul>
+&lt;li>Precompiled assets will be served by Nginx and not the Rails server itself.&lt;/li>
+&lt;li>Assets will be served in gzip.&lt;/li>
+&lt;/ul>
+&lt;h2 id="environments">Environments&lt;/h2>
+&lt;ul>
+&lt;li>Slackware v14&lt;/li>
+&lt;li>Rails v3.2.10&lt;/li>
+&lt;li>Ruby v1.9.3&lt;/li>
+&lt;/ul>
+&lt;h2 id="guides">Guides&lt;/h2>
+&lt;p>First of all, install &lt;a href="http://slackbuilds.org/repository/14.0/network/nginx/">nginx&lt;/a> from Slackbuild.&lt;/p>
+&lt;p>Be sure to turn off Apache&amp;rsquo;s startup script if you have it installed:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">chmod -x /etc/rc.d/rc.httpd
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>This is to ensure no conflict since both of them by default will use port 80.&lt;/p>
+&lt;p>Put &lt;code>unicorn&lt;/code> in your Gemfile and run &lt;code>bundle&lt;/code>.&lt;/p>
+&lt;p>I&amp;rsquo;m putting my Rails app in &lt;code>/opt/neuro&lt;/code>, so, adjust it accordingly.&lt;/p>
+&lt;p>Create &lt;code>nginx.conf&lt;/code> in &lt;code>/opt/neuro/config/nginx.conf&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-nginx" data-lang="nginx">&lt;span style="color:#66d9ef">upstream&lt;/span> &lt;span style="color:#e6db74">neuro&lt;/span> {
+&lt;span style="color:#f92672">server&lt;/span> &lt;span style="color:#e6db74">unix:/tmp/unicorn.neuro.sock&lt;/span> &lt;span style="color:#e6db74">fail_timeout=0&lt;/span>;
+}
+&lt;span style="color:#66d9ef">server&lt;/span> {
+&lt;span style="color:#f92672">listen&lt;/span> neuro.husmnet:&lt;span style="color:#ae81ff">80&lt;/span>;
+&lt;span style="color:#f92672">server_name&lt;/span> &lt;span style="color:#e6db74">neuro.husmnet&lt;/span>
+&lt;span style="color:#e6db74">root&lt;/span> &lt;span style="color:#e6db74">/opt/neuro/public&lt;/span>;
+&lt;span style="color:#f92672">location&lt;/span> &lt;span style="color:#e6db74">^~&lt;/span> &lt;span style="color:#e6db74">/assets/&lt;/span> {
+&lt;span style="color:#f92672">root&lt;/span> &lt;span style="color:#e6db74">/opt/neuro/public&lt;/span>;
+&lt;span style="color:#f92672">gzip_static&lt;/span> &lt;span style="color:#66d9ef">on&lt;/span>;
+&lt;span style="color:#f92672">expires&lt;/span> &lt;span style="color:#e6db74">max&lt;/span>;
+&lt;span style="color:#f92672">add_header&lt;/span> &lt;span style="color:#e6db74">Cache-Control&lt;/span> &lt;span style="color:#e6db74">public&lt;/span>;
+}
+&lt;span style="color:#f92672">try_files&lt;/span> $uri/index.html $uri &lt;span style="color:#e6db74">@unicorn&lt;/span>;
+&lt;span style="color:#f92672">location&lt;/span> &lt;span style="color:#e6db74">@unicorn&lt;/span> {
+&lt;span style="color:#f92672">proxy_set_header&lt;/span> &lt;span style="color:#e6db74">X-Forwarded-For&lt;/span> $proxy_add_x_forwarded_for;
+&lt;span style="color:#f92672">proxy_set_header&lt;/span> &lt;span style="color:#e6db74">Host&lt;/span> $http_host;
+&lt;span style="color:#f92672">proxy_redirect&lt;/span> &lt;span style="color:#66d9ef">off&lt;/span>;
+&lt;span style="color:#f92672">proxy_pass&lt;/span> &lt;span style="color:#e6db74">http://neuro&lt;/span>;
+}
+&lt;span style="color:#f92672">error_page&lt;/span> &lt;span style="color:#ae81ff">500&lt;/span> &lt;span style="color:#ae81ff">502&lt;/span> &lt;span style="color:#ae81ff">503&lt;/span> &lt;span style="color:#ae81ff">504&lt;/span> &lt;span style="color:#e6db74">/500.html&lt;/span>;
+&lt;span style="color:#f92672">client_max_body_size&lt;/span> &lt;span style="color:#e6db74">4G&lt;/span>;
+&lt;span style="color:#f92672">keepalive_timeout&lt;/span> &lt;span style="color:#ae81ff">10&lt;/span>;
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Create &lt;code>unicorn.rb&lt;/code> in &lt;code>/opt/neuro/config/unicorn.rb&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">root &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">#{&lt;/span>&lt;span style="color:#66d9ef">Dir&lt;/span>&lt;span style="color:#f92672">.&lt;/span>pwd&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;span style="color:#75715e"># Define worker directory for Unicorn&lt;/span>
+working_directory root
+&lt;span style="color:#75715e"># Location of PID file&lt;/span>
+pid &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">#{&lt;/span>root&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">/tmp/pids/unicorn.pid&amp;#34;&lt;/span>
+&lt;span style="color:#75715e"># Define Log paths&lt;/span>
+stderr_path &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">#{&lt;/span>root&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">/log/unicorn.log&amp;#34;&lt;/span>
+stdout_path &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">#{&lt;/span>root&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">/log/unicorn.log&amp;#34;&lt;/span>
+&lt;span style="color:#75715e"># Listen on a UNIX data socket&lt;/span>
+listen &lt;span style="color:#e6db74">&amp;#34;/tmp/unicorn.neuro.sock&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">:backlog&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#ae81ff">64&lt;/span>
+&lt;span style="color:#75715e"># houllisten 8080, :tcp_nopush =&amp;gt; true&lt;/span>
+worker_processes &lt;span style="color:#ae81ff">2&lt;/span>
+&lt;span style="color:#75715e"># Load rails before forking workers for better worker spawn time&lt;/span>
+preload_app &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;span style="color:#75715e"># Restart workes hangin&amp;#39; out for more than 240 secs&lt;/span>
+timeout &lt;span style="color:#ae81ff">240&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Replace &lt;code>/etc/nginx/nginx.conf&lt;/code> with this content:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-nginx" data-lang="nginx">&lt;span style="color:#75715e"># user root;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">worker_processes&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>;
+&lt;span style="color:#66d9ef">error_log&lt;/span> &lt;span style="color:#e6db74">/var/log/nginx/error.log&lt;/span>;
+&lt;span style="color:#75715e">#error_log logs/error.log notice;
+&lt;/span>&lt;span style="color:#75715e">#error_log logs/error.log info;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">#pid logs/nginx.pid;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#66d9ef">events&lt;/span> {
+&lt;span style="color:#f92672">worker_connections&lt;/span> &lt;span style="color:#ae81ff">1024&lt;/span>;
+}
+&lt;span style="color:#66d9ef">http&lt;/span> {
+&lt;span style="color:#f92672">include&lt;/span> &lt;span style="color:#e6db74">mime.types&lt;/span>;
+&lt;span style="color:#f92672">default_type&lt;/span> &lt;span style="color:#e6db74">application/octet-stream&lt;/span>;
+&lt;span style="color:#f92672">sendfile&lt;/span> &lt;span style="color:#66d9ef">on&lt;/span>;
+&lt;span style="color:#f92672">keepalive_timeout&lt;/span> &lt;span style="color:#ae81ff">65&lt;/span>;
+&lt;span style="color:#f92672">gzip&lt;/span> &lt;span style="color:#66d9ef">on&lt;/span>;
+&lt;span style="color:#f92672">include&lt;/span> &lt;span style="color:#e6db74">/etc/nginx/sites-enabled/*&lt;/span>;
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Create &lt;code>sites-enabled&lt;/code> directory in &lt;code>/etc/nginx&lt;/code> and create a softlink to the &lt;code>nginx.conf&lt;/code> in our app:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">mkdir /etc/nginx/sites-enabled
+ln -s /opt/neuro/config/nginx.conf neuro.conf
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Create a directory for the pid&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">mkdir /opt/neuro/tmp/pids
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Before starting it for the first time, let us monitor important logs (open it using different
+terminals) :&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">tail -f /var/log/nginx/error.log
+tail -f /opt/neuro/log/unicorn.log
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Make sure you&amp;rsquo;ve precompiled your assets:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">rake assets:clean
+rake assets:precompile
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Start unicorn:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cd /opt/neuro
+unicorn -c config/unicorn.rb -E production -D
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Start nginx:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">nginx
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Congratulation! Make sure there&amp;rsquo;s no error in your logs. If there&amp;rsquo;re, you can use these commands to
+stop &lt;code>nginx&lt;/code> and &lt;code>unicorn&lt;/code> to start everything back:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">nginx -s stop
+killall unicorn
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Let&amp;rsquo;s test the gzip compression using &lt;code>curl&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ curl -LI --compressed http://neuro.husmnet/
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You&amp;rsquo;ll get something like this (notice the gzip info):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">HTTP/1.1 200 OK
+Server: nginx/1.2.2
+Date: Sat, 05 Jan 2013 21:00:26 GMT
+Content-Type: text/html; charset=utf-8
+Connection: keep-alive
+Status: 200 OK
+X-UA-Compatible: IE=Edge,chrome=1
+ETag: &amp;#34;a66ac1d43d8f07ecc0737e64dd8a3366&amp;#34;
+Cache-Control: max-age=0, private, must-revalidate
+Set-Cookie: _neuro_session=BAh7B0kiD3Nlc3Npb25faWQGOgZFRkkiJTQ2YTU2NjE3MDY0Y2RkNzk0Yzk3ODhhNDJlYmQ3ODA3BjsAVEkiEF9jc3JmX3Rva2VuBjsARkkiMVNvOXVTS2I2RXJIcTljbS9WeGRDODZyTUpVZENXL2NPVnJhTGR0V2xydGM9BjsARg%3D%3D--173e9d56a5cc434eb675b6626d90aced1cc17cd6; path=/; HttpOnly
+X-Request-Id: 760e233de4980dc75169f2c68a53dc31
+X-Runtime: 0.017885
+X-Rack-Cache: miss
+Content-Encoding: gzip
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>I admit, this is a very simple config, but it&amp;rsquo;s good enough for a beginner like
+me to get started. Good luck!&lt;/p></content></item><item><title>Using Sybase with Ruby on Rails on Linux</title><link>https://amree.github.io/posts/using-sybase-with-ruby-on-rails-on-linux/</link><pubDate>Fri, 01 Jul 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/using-sybase-with-ruby-on-rails-on-linux/</guid><description>&lt;p>This guide will help you (mostly will help me in the future) to configure your
+Ruby on Rails to support connection to Sybase.&lt;/p></description><content>&lt;p>This guide will help you (mostly will help me in the future) to configure your
+Ruby on Rails to support connection to Sybase.&lt;/p>
+&lt;p>I wrote this tutorial after everything’s good, so, I might miss a few steps that
+I’ve forgotten. Feel free to comment about it. With some adjustments, this guide
+&lt;strong>will also works with Mac OS X&lt;/strong>.&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Install FreeTDS. For Slackware users, you can get Slackbuild script at
+&lt;a href="http://slackbuilds.org/repository/13.37/development/freetds/">http://slackbuilds.org/repository/13.37/development/freetds/&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Edit &lt;code>/etc/freetds/freetds.conf&lt;/code> and put your database configurations in it:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ini" data-lang="ini">&lt;span style="color:#66d9ef">[myserver]&lt;/span>
+&lt;span style="color:#a6e22e">host&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">myserver.com&lt;/span>
+&lt;span style="color:#a6e22e">port&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">5000&lt;/span>
+&lt;span style="color:#a6e22e">tds version&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">5.0&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Test the configuration, you should get something like this:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">$ tsql -S myserver -U username
+locale is &amp;#34;C&amp;#34;
+locale charset is &amp;#34;ANSI_X3.4-1968&amp;#34;
+using default charset &amp;#34;ISO-8859-1&amp;#34;
+Msg 5704 (severity 10, state 1) from ???:
+&amp;#34;Changed client character set setting to &amp;#39;iso_1&amp;#39;.
+&amp;#34;
+1&amp;gt;
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Put this gems in your &lt;code>Gemfile&lt;/code> and run &lt;code>bundle&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">gem &lt;span style="color:#e6db74">&amp;#39;arel-sybase-visitor&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">:git&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;https://github.com/ifad/arel-sybase-visitor&amp;#39;&lt;/span>
+gem &lt;span style="color:#e6db74">&amp;#39;activerecord-sybase-adapter&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">:git&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;https://github.com/ifad/activerecord-sybase-adapter&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>An example configuration for your &lt;code>database.yml&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yml" data-lang="yml">&lt;span style="color:#f92672">development&lt;/span>:
+&lt;span style="color:#f92672">adapter&lt;/span>: &lt;span style="color:#ae81ff">sybase&lt;/span>
+&lt;span style="color:#f92672">dataserver&lt;/span>: &lt;span style="color:#ae81ff">myserver&lt;/span>
+&lt;span style="color:#f92672">username&lt;/span>:
+&lt;span style="color:#f92672">password&lt;/span>:
+&lt;span style="color:#f92672">database&lt;/span>:
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>You can try some query using your &lt;code>rails console&lt;/code> to make sure everything
+works fine.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>If you&amp;rsquo;re trying to connect from your &lt;code>irb&lt;/code> directly without using
+ActiveRecord you may want to put additional parameters. This works for me:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">client &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">TinyTds&lt;/span>&lt;span style="color:#f92672">::&lt;/span>&lt;span style="color:#66d9ef">Client&lt;/span>&lt;span style="color:#f92672">.&lt;/span>new(
+&lt;span style="color:#e6db74">:username&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">:password&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">:dataserver&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;myserver&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">:tds_version&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;100&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">:encoding&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;iso_1&amp;#39;&lt;/span>
+)
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ol>
+&lt;p>That&amp;rsquo;s it, good luck!&lt;/p></content></item></channel></rss>

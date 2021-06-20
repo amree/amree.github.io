@@ -1,0 +1,50 @@
+<!doctype html><html lang=en><head><title>How to Read MyKad :: Amree Zaid</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="I&amp;rsquo;ve decided to merge posts about reading MyKad from my previous blog into a single post.
+Notes:
+  The original codes were written by Xenon from Lowyat.net. Somehow, he managed to reverse engineer MyKad&amp;rsquo;s APDU so that we can read it without buying any SDK.
+  This application only reads data from Jabatan Pendaftaran Negara (JPN).
+ "><meta name=keywords content><meta name=robots content="noodp"><link rel=canonical href=https://amree.github.io/posts/how-to-read-mykad/><link rel=stylesheet href=https://amree.github.io/assets/style.css><link rel=stylesheet href=https://amree.github.io/assets/green.css><link rel=apple-touch-icon href=https://amree.github.io/img/apple-touch-icon-192x192.png><link rel="shortcut icon" href=https://amree.github.io/img/favicon/green.png><meta name=twitter:card content="summary"><meta name=twitter:site content><meta name=twitter:creator content><meta property="og:locale" content="en"><meta property="og:type" content="article"><meta property="og:title" content="How to Read MyKad"><meta property="og:description" content="I&amp;rsquo;ve decided to merge posts about reading MyKad from my previous blog into a single post.
+Notes:
+  The original codes were written by Xenon from Lowyat.net. Somehow, he managed to reverse engineer MyKad&amp;rsquo;s APDU so that we can read it without buying any SDK.
+  This application only reads data from Jabatan Pendaftaran Negara (JPN).
+ "><meta property="og:url" content="https://amree.github.io/posts/how-to-read-mykad/"><meta property="og:site_name" content="Amree Zaid"><meta property="og:image" content="https://amree.github.io/img/favicon/green.png"><meta property="og:image:width" content="2048"><meta property="og:image:height" content="1024"><meta property="article:published_time" content="2011-12-05 00:00:00 +0000 UTC"></head><body class=green><div class="container center headings--one-size"><header class=header><div class=header__inner><div class=header__logo><a href=/><div class=logo>Amree Zaid</div></a></div><div class=menu-trigger>menu</div></div><nav class=menu><ul class="menu__inner menu__inner--desktop"><li><a href=https://twitter.com/AmreeZaid>Twitter</a></li></ul><ul class="menu__inner menu__inner--mobile"><li><a href=https://twitter.com/AmreeZaid>Twitter</a></li></ul></nav></header><div class=content><div class=post><h1 class=post-title><a href=https://amree.github.io/posts/how-to-read-mykad/>How to Read MyKad</a></h1><div class=post-meta><span class=post-date>2011-12-05</span></div><span class=post-tags>#<a href=https://amree.github.io/tags/windows/>windows</a>&nbsp;
+#<a href=https://amree.github.io/tags/linux/>linux</a>&nbsp;</span><div class=post-content><div><p>I&rsquo;ve decided to merge posts about reading MyKad from my previous blog into a
+single post.</p><p>Notes:</p><ol><li><p>The <strong>original codes were written by Xenon</strong> from
+<a href=http://forum.lowyat.net/>Lowyat.net</a>. Somehow, he managed to reverse
+engineer MyKad&rsquo;s APDU so that we can read it without buying any SDK.</p></li><li><p>This application <strong>only</strong> reads data from Jabatan Pendaftaran Negara (JPN).</p></li></ol><p>Xenon also wrote two small example applications to read MyKad. I&rsquo;ve listed them
+based on the programming language. Click on the link to download it:</p><ol><li><a href=https://github.com/amree/mykad-c>Visual C</a></li><li><a href=https://github.com/amree/mykad-vb.net>Visual Basic .NET</a></li></ol><p>Since there&rsquo;s no Java implementation of the code yet, I&rsquo;ve decided to develop
+one. You can also get the source code from my
+<a href=http://github.com/amree/mykad-java>Github</a>. It&rsquo;s written using Netbeans.</p><p>I&rsquo;m not going to give explanation about the code. Instead, I&rsquo;m going to guide
+you guys on how to setup your system (Linux and Windows) so that you can read
+the Java application to read a MyKad.</p><h1 id=windows>Windows<a href=#windows class=hanchor arialabel=Anchor>&#8983;</a></h1><ol><li><p>Download <a href=http://www.musclecard.com/middle.html>Windows binary</a> of JPC/SC Java API.</p></li><li><p>Download the application which is in Netbeans project format from my Github.</p></li><li><p>You <strong>must include</strong> <code>jpcsc.jar</code> as the library. You can get the file from Step 1.</p></li><li><p>You also <strong>must put</strong> <code>jpcsc.dll</code> into your main project folder. Furthermore,
+if you want to distribute the application, you need to put it together with
+your main jar file. You can also get the file from Step 1.</p></li><li><p>Plug in your reader (obviously).</p></li><li><p>Run the application. I&rsquo;d recommend you run it through Netbeans.</p></li><li><p>Insert a MyKad.</p></li><li><p>Wait until the application finish reading it (usually once the LED stop
+blinking).</p></li><li><p>A GUI will be displayed presenting your MyKad data.</p></li><li><p>If there&rsquo;s no data showing, there&rsquo;s a possibility that your MyKad chip is
+spoiled.</p></li></ol><h1 id=linux>Linux<a href=#linux class=hanchor arialabel=Anchor>&#8983;</a></h1><ol><li><p>Login as a <strong>root</strong>.</p></li><li><p>Download <a href=http://pcsclite.alioth.debian.org/>PCSC Lite</a> and install it. You
+need to put some parameters in your <code>./configure</code> if you want to enable
+<code>libusb</code> support. Please check the <code>README</code>.</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>tar xvjf pcsc-lite-1.8.1.tar.bz2
+cd pcsc-lite-1.8.1
+./configure --enable-libusb --disable-libudev
+make
+make install
+</code></pre></div></li><li><p>Download and install your reader&rsquo;s driver. I&rsquo;m using <a href="http://www.hidglobal.com/prod_detail.php?prod_id=171">OMNIKEY 5321 USB</a>.</p></li><li><p>Get <a href=http://www.musclecard.com/middle.html>Windows binary</a> of JPC/SC Java API. It&rsquo;s for Windows but it also has a precompiled Linux library in it.</p></li><li><p>Extract, copy and update:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>unzip jpcsc-0.8.0.zip
+cd jpcsc/bin/linux
+cp libjpcsc.so /usr/lib
+ldconfig
+</code></pre></div></li><li><p>Start the pcsc service:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>pcscd -d -f
+</code></pre></div><p>You should get something like this:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text>00000000 pcscdaemon.c:233:main() pcscd set to foreground with debug send to stdout
+00000044 configfile.l:287:DBGetReaderList() Parsing conf file: /usr/local/etc/reader.conf.d
+00000008 pcscdaemon.c:518:main() pcsc-lite 1.8.1 daemon ready.
+00001566 hotplug_libusb.c:514:HPAddHotPluggable() Adding USB device: 4:2:0
+00008631 readerfactory.c:934:RFInitializeReader() Attempting startup of OMNIKEY CardMan 5x21 (USB iClass Reader) 00 00 using /usr/local/lib/pcsc/drivers/ifdokrfid_lnx_i
+00000179 readerfactory.c:824:RFBindFunctions() Loading IFD Handler 3.0 HID HID Global OMNIKEY RFID  IA32 v2.9.1
+00300863 readerfactory.c:296:RFAddReader() Using the reader polling thread
+00001975 readerfactory.c:934:RFInitializeReader() Attempting startup of OMNIKEY CardMan 5x21 (USB iClass Reader) 00 01 using /usr/local/lib/pcsc/drivers/ifdokrfid_lnx_i
+00000012 readerfactory.c:738:RFLoadReader() Reusing already loaded driver for /usr/local/lib/pcsc/drivers/ifdokrfid_lnx_i686-2.9.1.bundle/Contents/Linux/ifdokrfid.so
+00000014 readerfactory.c:824:RFBindFunctions() Loading IFD Handler 3.0 HID HID Global OMNIKEY RFID  IA32 v2.9.1
+00424985 readerfactory.c:453:RFAddReader() Using the reader polling thread
+00444313 readerfactory.c:1301:RFWaitForReaderInit() Waiting init for reader: OMNIKEY CardMan 5x21 (USB iClass Reader) 00 01
+</code></pre></div></li><li><p>Run the Java application, it should be working right now.</p></li></ol><p>That&rsquo;s it, again, the full credit should goes to Xenon :)</p></div></div><div class=pagination><div class=pagination__title><span class=pagination__title-h>Read other posts</span><hr></div><div class=pagination__buttons><span class="button previous"><a href=https://amree.github.io/posts/git-remote-commands/><span class=button__icon>←</span>
+<span class=button__text>Git Remote Commands</span></a></span>
+<span class="button next"><a href=https://amree.github.io/posts/husm-at-malaysia-open-source-conference-2011/><span class=button__text>HUSM at Malaysia Open Source Conference 2011</span>
+<span class=button__icon>→</span></a></span></div></div></div></div><footer class=footer><div class=footer__inner><div class=copyright><span>© 2021 Powered by <a href=http://gohugo.io>Hugo</a></span>
+<span>:: Theme made by <a href=https://twitter.com/panr>panr</a></span></div></div></footer><script src=https://amree.github.io/assets/main.js></script><script src=https://amree.github.io/assets/prism.js></script></div></body></html>

@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>java on Amree Zaid</title><link>https://amree.github.io/tags/java/</link><description>Recent content in java on Amree Zaid</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 11 Feb 2009 00:00:00 +0000</lastBuildDate><atom:link href="https://amree.github.io/tags/java/index.xml" rel="self" type="application/rss+xml"/><item><title>Reading Mifare 1K Card using Java in Linux</title><link>https://amree.github.io/posts/reading-mifare-1k-card-using-java-in-linux/</link><pubDate>Wed, 11 Feb 2009 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/reading-mifare-1k-card-using-java-in-linux/</guid><description>&lt;h2 id="the-story">The Story&lt;/h2>
+&lt;p>At the end of last year, my friends and I were tasked to read our staff card.
+The main objective was pretty simple which is to create a library where we don’t
+have to depend on the vendor every time we want to read our own staff card and
+the library should also work in Linux and Windows (that means Java to us).&lt;/p></description><content>&lt;h2 id="the-story">The Story&lt;/h2>
+&lt;p>At the end of last year, my friends and I were tasked to read our staff card.
+The main objective was pretty simple which is to create a library where we don’t
+have to depend on the vendor every time we want to read our own staff card and
+the library should also work in Linux and Windows (that means Java to us).&lt;/p>
+&lt;p>Working environment:&lt;/p>
+&lt;ul>
+&lt;li>Slackware 12.2&lt;/li>
+&lt;li>JDK 6 Update 11&lt;/li>
+&lt;li>Netbeans 6.5&lt;/li>
+&lt;li>libusb 0.1.12&lt;/li>
+&lt;li>Windows Binary of JPC/SC Java API 0.8.0&lt;/li>
+&lt;li>Smartcard Reader&lt;/li>
+&lt;/ul>
+&lt;p>Let’s talk about the reader first. You need to get a reader that supports Mifare
+1K card (obviously) which to be exact a reader that supports ISO14443A/B or
+ISO15693 (contactless standard). Now, to make your life easier, you should get a
+reader that can read contactless standards compliant using the same framework as
+ISO7816 compliant contact cards. In simple terms, you can use APDU to get the
+data that you want.&lt;/p>
+&lt;p>So, for this little project, we use &lt;strong>OMNIKEY CardMan 5321&lt;/strong> RFID reader. It has
+everything that we need, Linux/Windows supports, APDU calls to the contactless
+card, it even comes a contact card’s reader too and it’s also inexpensive.&lt;/p>
+&lt;p>Make sure you choose the correct reader or you won’t be able to use this
+tutorial. Some reader requires you to read using their own specific code, which
+means you can only use the code you wrote on that particular reader, unlike
+readers that support APDU calls to contactless cards.&lt;/p>
+&lt;h2 id="the-card">The Card&lt;/h2>
+&lt;p>1024 byte memory is organised as sixteen sectors, each of which is made up of
+four blocks and each block is 16 bytes long. The first block in the memory
+(Block 0) is read-only and is set in the factory to contain the four-byte serial
+number (UID), check bytes and manufacturers data. The last block of each sector
+(Blocks 3, 7, 11, 15 … 59, 63) is the Sector Trailer Block which contains the
+&lt;strong>two security Key codes (KeyA and KeyB&lt;/strong>) and the Access bits that define how
+the sector can be accessed.&lt;/p>
+&lt;p>Taking into account the Serial Number/Manufacturers Block and the Sector Trailer
+Blocks then there are 752 bytes of free memory for user storage. For all Read
+and Write operations the Mifare card memory is addressed by Block number (in
+hexadecimal format).&lt;/p>
+&lt;h2 id="the-installation">The Installation&lt;/h2>
+&lt;p>Before you begin coding your codes, you need to make sure your environment is
+ready for you. To do that, just follow steps from my previous tutorial which is
+pretty much the same.&lt;/p>
+&lt;h2 id="general-steps-to-read-the-card">General Steps to Read the Card&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>Load Mifare key&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Authenticate&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Read&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;h2 id="code">Code&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#f92672">package&lt;/span> my.husm.mifare&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> java.nio.ByteBuffer&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> java.util.List&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> javax.smartcardio.Card&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> javax.smartcardio.CardChannel&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> javax.smartcardio.CardException&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> javax.smartcardio.CardTerminal&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> javax.smartcardio.TerminalFactory&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Read&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#a6e22e">Read&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">try&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+CardTerminal terminal &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#75715e">// show the list of available terminals
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> TerminalFactory factory &lt;span style="color:#f92672">=&lt;/span> TerminalFactory&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getDefault&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+List&lt;span style="color:#f92672">&amp;lt;&lt;/span>CardTerminal&lt;span style="color:#f92672">&amp;gt;&lt;/span> terminals &lt;span style="color:#f92672">=&lt;/span> factory&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">terminals&lt;/span>&lt;span style="color:#f92672">().&lt;/span>&lt;span style="color:#a6e22e">list&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+String readerName &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">int&lt;/span> i &lt;span style="color:#f92672">=&lt;/span> 0&lt;span style="color:#f92672">;&lt;/span> i &lt;span style="color:#f92672">&amp;lt;&lt;/span> terminals&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">size&lt;/span>&lt;span style="color:#f92672">();&lt;/span> i&lt;span style="color:#f92672">++)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+readerName &lt;span style="color:#f92672">=&lt;/span> terminals&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">get&lt;/span>&lt;span style="color:#f92672">(&lt;/span>i&lt;span style="color:#f92672">).&lt;/span>&lt;span style="color:#a6e22e">toString&lt;/span>&lt;span style="color:#f92672">().&lt;/span>&lt;span style="color:#a6e22e">substring&lt;/span>&lt;span style="color:#f92672">(&lt;/span>
+terminals&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">get&lt;/span>&lt;span style="color:#f92672">(&lt;/span>i&lt;span style="color:#f92672">).&lt;/span>&lt;span style="color:#a6e22e">toString&lt;/span>&lt;span style="color:#f92672">().&lt;/span>&lt;span style="color:#a6e22e">length&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">-&lt;/span> 2&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">(&lt;/span>readerName&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">equalsIgnoreCase&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;01&amp;#34;&lt;/span>&lt;span style="color:#f92672">))&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+terminal &lt;span style="color:#f92672">=&lt;/span> terminals&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">get&lt;/span>&lt;span style="color:#f92672">(&lt;/span>i&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#75715e">// Establish a connection with the card
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Waiting for a card..&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+terminal&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">waitForCardPresent&lt;/span>&lt;span style="color:#f92672">(&lt;/span>0&lt;span style="color:#f92672">);&lt;/span>
+Card card &lt;span style="color:#f92672">=&lt;/span> terminal&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">connect&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;T=0&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+CardChannel channel &lt;span style="color:#f92672">=&lt;/span> card&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getBasicChannel&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#75715e">// Start with something simple, read UID, kinda like Hello World!
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[]&lt;/span> baReadUID &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[&lt;/span>5&lt;span style="color:#f92672">];&lt;/span>
+baReadUID &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[]{(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0xFF&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0xCA&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x00&lt;span style="color:#f92672">,&lt;/span>
+&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x00&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x00&lt;span style="color:#f92672">};&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;UID: &amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> send&lt;span style="color:#f92672">(&lt;/span>baReadUID&lt;span style="color:#f92672">,&lt;/span> channel&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#75715e">// If successfull, the output will end with 9000
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">// OK, now, the real work
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// Get Serial Number
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// Load key
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[]&lt;/span> baLoadKey &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[&lt;/span>12&lt;span style="color:#f92672">];&lt;/span>
+baLoadKey &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[]{(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0xFF&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x82&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x20&lt;span style="color:#f92672">,&lt;/span>
+&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x1A&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x06&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0xFF&lt;span style="color:#f92672">,&lt;/span>
+&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0xFF&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0xFF&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0xFF&lt;span style="color:#f92672">,&lt;/span>
+&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0xFF&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0xFF&lt;span style="color:#f92672">};&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;LOAD KEY: &amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> send&lt;span style="color:#f92672">(&lt;/span>baLoadKey&lt;span style="color:#f92672">,&lt;/span> channel&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#75715e">// If successfull, will output 9000
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">// Authenticate
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[]&lt;/span> baAuth &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[&lt;/span>7&lt;span style="color:#f92672">];&lt;/span>
+baAuth &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[]{(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0xFF&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x88&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x00&lt;span style="color:#f92672">,&lt;/span>
+&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x09&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x60&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x00&lt;span style="color:#f92672">};&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;AUTHENTICATE: &amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> send&lt;span style="color:#f92672">(&lt;/span>baAuth&lt;span style="color:#f92672">,&lt;/span> channel&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#75715e">// If successfull, will output 9000
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">// Read Serial
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[]&lt;/span> baRead &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[&lt;/span>6&lt;span style="color:#f92672">];&lt;/span>
+baRead &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[]{(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0xFF&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0xB0&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x00&lt;span style="color:#f92672">,&lt;/span>
+&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x09&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x10&lt;span style="color:#f92672">};&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;READ: &amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> send&lt;span style="color:#f92672">(&lt;/span>baRead&lt;span style="color:#f92672">,&lt;/span> channel&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#75715e">// If successfull, the output will end with 9000
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span> &lt;span style="color:#66d9ef">catch&lt;/span> &lt;span style="color:#f92672">(&lt;/span>Exception ex&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+ex&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">printStackTrace&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> String &lt;span style="color:#a6e22e">send&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[]&lt;/span> cmd&lt;span style="color:#f92672">,&lt;/span> CardChannel channel&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+String res &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[]&lt;/span> baResp &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[&lt;/span>258&lt;span style="color:#f92672">];&lt;/span>
+ByteBuffer bufCmd &lt;span style="color:#f92672">=&lt;/span> ByteBuffer&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">wrap&lt;/span>&lt;span style="color:#f92672">(&lt;/span>cmd&lt;span style="color:#f92672">);&lt;/span>
+ByteBuffer bufResp &lt;span style="color:#f92672">=&lt;/span> ByteBuffer&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">wrap&lt;/span>&lt;span style="color:#f92672">(&lt;/span>baResp&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#75715e">// output = The length of the received response APDU
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span> output &lt;span style="color:#f92672">=&lt;/span> 0&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">try&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+output &lt;span style="color:#f92672">=&lt;/span> channel&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">transmit&lt;/span>&lt;span style="color:#f92672">(&lt;/span>bufCmd&lt;span style="color:#f92672">,&lt;/span> bufResp&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span> &lt;span style="color:#66d9ef">catch&lt;/span> &lt;span style="color:#f92672">(&lt;/span>CardException ex&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+ex&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">printStackTrace&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">int&lt;/span> i &lt;span style="color:#f92672">=&lt;/span> 0&lt;span style="color:#f92672">;&lt;/span> i &lt;span style="color:#f92672">&amp;lt;&lt;/span> output&lt;span style="color:#f92672">;&lt;/span> i&lt;span style="color:#f92672">++)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+res &lt;span style="color:#f92672">+=&lt;/span> String&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">format&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;%02X&amp;#34;&lt;/span>&lt;span style="color:#f92672">,&lt;/span> baResp&lt;span style="color:#f92672">[&lt;/span>i&lt;span style="color:#f92672">]);&lt;/span>
+&lt;span style="color:#75715e">// The result is formatted as a hexadecimal integer
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> res&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">[&lt;/span>&lt;span style="color:#66d9ef">public&lt;/span>&lt;span style="color:#f92672">](&lt;/span>&lt;span style="color:#66d9ef">public&lt;/span>&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>&lt;span style="color:#f92672">(&lt;/span>String&lt;span style="color:#f92672">[]&lt;/span> args&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">new&lt;/span> Read&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Make sure you have set the right connection protocol at line 43, as pointed out
+by Animesh (previous commentator).&lt;/p>
+&lt;p>These codes use Java API to read the smartcard, but I suggest you use the jpcsc
+library. It’s much more robust when it comes to error handling.&lt;/p>
+&lt;h2 id="the-apdu-commands">The APDU Commands&lt;/h2>
+&lt;h1 id="load-key">Load Key&lt;/h1>
+&lt;pre>&lt;code>+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
+| FF | 82 | 20 | 1A | 06 | FF | FF | FF | FF | FF | FF |
++--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
+| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 |
++--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
+1 = CLA : (Fixed)
+2 = INS : (Fixed)
+3 = P1 : (Fixed)
+4 = P2 : Key type, could be 00, 1A, 1B
+5 = LC : Key length, usually 6 for 6 byte
+6 = XX : ----+
+7 = XX : |
+8 = XX : |__ The Key (eg. FF FF FF FF FF FF)
+9 = XX : |
+10 = XX : |
+11 = XX : ----+
+# Autenthicate
++--------+--------+--------+--------+--------+--------+
+| FF | 88 | 00 | 01 | 60 | 00 |
++--------+--------+--------+--------+--------+--------+
+| 1 | 2 | 3 | 4 | 5 | 6 |
++--------+--------+--------+--------+--------+--------+
+1 = CLA : (Fixed)
+2 = INS : (Fixed)
+3 = P1 : (Fixed)
+4 = P2 : Block Number you want to authenticate in Hex
+5 = P3 : Mifare Block Number LSB
+6 = XX : Key type, could be 00, 1A, 1B
+# Read
++--------+--------+--------+--------+--------+
+| FF | B0 | 00 | 01 | 10 |
++--------+--------+--------+--------+--------+
+| 1 | 2 | 3 | 4 | 5 |
++--------+--------+--------+--------+--------+
+1 = CLA : (Fixed)
+2 = INS : (Fixed)
+3 = P1 : (Fixed)
+4 = P2 : Block Number that you want to read in Hex
+5 = Le : (Fixed)
+&lt;/code>&lt;/pre>&lt;p>That&amp;rsquo;s all, thanks for reading!&lt;/p></content></item><item><title>Java Printing Fix for Linux</title><link>https://amree.github.io/posts/java-printing-fix-for-linux-with-cups/</link><pubDate>Tue, 09 Sep 2008 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/java-printing-fix-for-linux-with-cups/</guid><description>&lt;p>Apparently, there&amp;rsquo;s a bug in Java where people using newer version of CUPS
+cannot print (can&amp;rsquo;t even display the print dialog) due to a null pointer
+exception and this is actually a known bug. So, how do we fix this? For people
+who use Gnome, you can refer to this
+&lt;a href="https://bugs.launchpad.net/ubuntu/+source/sun-java6/+bug/156191/comments/18">page&lt;/a>.&lt;/p></description><content>&lt;p>Apparently, there&amp;rsquo;s a bug in Java where people using newer version of CUPS
+cannot print (can&amp;rsquo;t even display the print dialog) due to a null pointer
+exception and this is actually a known bug. So, how do we fix this? For people
+who use Gnome, you can refer to this
+&lt;a href="https://bugs.launchpad.net/ubuntu/+source/sun-java6/+bug/156191/comments/18">page&lt;/a>.&lt;/p>
+&lt;p>However, for people who uses non desktop environment such as Fluxbox, Openbox
+and etc (Gnome and KDE user can use these steps too), you can fix it by editing
+your CUPS printers configuration file. You can get edit the file at
+&lt;code>/etc/cups/printers.conf&lt;/code>&lt;/p>
+&lt;pre>&lt;code>&amp;lt;DefaultPrinter Printer&amp;gt;
+# Printer configuration file for CUPS v1.3.7
+# Written by cupsd on 2008-09-08 11:24
+.
+.
+.
+Option orientation-requested 3
+&amp;lt;/Printer&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Make sure you &lt;code>Option orientation-requested 3&lt;/code> to every configuration for every
+printer you&amp;rsquo;ve installed. If you cannot find the file, it&amp;rsquo;s possible that you
+haven&amp;rsquo;t configured any printer yet.&lt;/p>
+&lt;p>This fix is simply to make sure CUPS will provide a page orientation setting to
+Java.&lt;/p>
+&lt;p>The exception:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">Caused by&lt;span style="color:#f92672">:&lt;/span> java&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">lang&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">NullPointerException&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span> attribute
+at sun&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">print&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">IPPPrintService&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">isAttributeValueSupported&lt;/span>&lt;span style="color:#f92672">(&lt;/span>IPPPrintService&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">java&lt;/span>&lt;span style="color:#f92672">:&lt;/span>1147&lt;span style="color:#f92672">)&lt;/span>
+at sun&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">print&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">ServiceDialog$OrientationPanel&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">updateInfo&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ServiceDialog&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">java&lt;/span>&lt;span style="color:#f92672">:&lt;/span>2121&lt;span style="color:#f92672">)&lt;/span>
+at sun&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">print&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">ServiceDialog$PageSetupPanel&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">updateInfo&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ServiceDialog&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">java&lt;/span>&lt;span style="color:#f92672">:&lt;/span>1263&lt;span style="color:#f92672">)&lt;/span>
+at sun&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">print&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">ServiceDialog&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">updatePanels&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ServiceDialog&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">java&lt;/span>&lt;span style="color:#f92672">:&lt;/span>437&lt;span style="color:#f92672">)&lt;/span>
+at sun&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">print&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">ServiceDialog&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">initPrintDialog&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ServiceDialog&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">java&lt;/span>&lt;span style="color:#f92672">:&lt;/span>195&lt;span style="color:#f92672">)&lt;/span>
+at sun&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">print&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">ServiceDialog&lt;/span>&lt;span style="color:#f92672">.(&lt;/span>ServiceDialog&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">java&lt;/span>&lt;span style="color:#f92672">:&lt;/span>124&lt;span style="color:#f92672">)&lt;/span>
+at javax&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">print&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">ServiceUI&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">printDialog&lt;/span>&lt;span style="color:#f92672">(&lt;/span>ServiceUI&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">java&lt;/span>&lt;span style="color:#f92672">:&lt;/span>188&lt;span style="color:#f92672">)&lt;/span>
+at sun&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">print&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">RasterPrinterJob&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">printDialog&lt;/span>&lt;span style="color:#f92672">(&lt;/span>RasterPrinterJob&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">java&lt;/span>&lt;span style="color:#f92672">:&lt;/span>855&lt;span style="color:#f92672">)&lt;/span>
+at sun&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">print&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">PSPrinterJob&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">printDialog&lt;/span>&lt;span style="color:#f92672">(&lt;/span>PSPrinterJob&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">java&lt;/span>&lt;span style="color:#f92672">:&lt;/span>421&lt;span style="color:#f92672">)&amp;lt;/&lt;/span>code&lt;span style="color:#f92672">&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Please refer to some of the discussions here:&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://bugs.launchpad.net/ubuntu/+source/sun-java6/+bug/156191/">Ubuntu Bugs Report&lt;/a>&lt;/li>
+&lt;li>&lt;a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6633656">Java Bugs Report&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>FYI, you need to &lt;strong>restart your CUPS&lt;/strong> after editing the configuration (Thanks to Brandon Bell).&lt;/p></content></item><item><title>Auto Resize JTable Column Width</title><link>https://amree.github.io/posts/auto-resize-jtable-column-width/</link><pubDate>Wed, 13 Aug 2008 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/auto-resize-jtable-column-width/</guid><description>&lt;p>This will resize your JTable column width based on the contents of the header and data.&lt;/p></description><content>&lt;p>This will resize your JTable column width based on the contents of the header and data.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#66d9ef">public&lt;/span> JTable &lt;span style="color:#a6e22e">autoResizeColWidth&lt;/span>&lt;span style="color:#f92672">(&lt;/span>JTable table&lt;span style="color:#f92672">,&lt;/span> DefaultTableModel model&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+table&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">setAutoResizeMode&lt;/span>&lt;span style="color:#f92672">(&lt;/span>JTable&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">AUTO_RESIZE_OFF&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+table&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">setModel&lt;/span>&lt;span style="color:#f92672">(&lt;/span>model&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#66d9ef">int&lt;/span> margin &lt;span style="color:#f92672">=&lt;/span> 5&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">int&lt;/span> i &lt;span style="color:#f92672">=&lt;/span> 0&lt;span style="color:#f92672">;&lt;/span> i &lt;span style="color:#f92672">&amp;lt;&lt;/span> table&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getColumnCount&lt;/span>&lt;span style="color:#f92672">();&lt;/span> i&lt;span style="color:#f92672">++)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">int&lt;/span> vColIndex &lt;span style="color:#f92672">=&lt;/span> i&lt;span style="color:#f92672">;&lt;/span>
+DefaultTableColumnModel colModel &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#f92672">(&lt;/span>DefaultTableColumnModel&lt;span style="color:#f92672">)&lt;/span> table&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getColumnModel&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+TableColumn col &lt;span style="color:#f92672">=&lt;/span> colModel&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getColumn&lt;/span>&lt;span style="color:#f92672">(&lt;/span>vColIndex&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#66d9ef">int&lt;/span> width &lt;span style="color:#f92672">=&lt;/span> 0&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#75715e">// Get width of column header
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> TableCellRenderer renderer &lt;span style="color:#f92672">=&lt;/span> col&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getHeaderRenderer&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">(&lt;/span>renderer &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+renderer &lt;span style="color:#f92672">=&lt;/span> table&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getTableHeader&lt;/span>&lt;span style="color:#f92672">().&lt;/span>&lt;span style="color:#a6e22e">getDefaultRenderer&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+Component comp &lt;span style="color:#f92672">=&lt;/span> renderer&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getTableCellRendererComponent&lt;/span>&lt;span style="color:#f92672">(&lt;/span>table&lt;span style="color:#f92672">,&lt;/span> col&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getHeaderValue&lt;/span>&lt;span style="color:#f92672">(),&lt;/span> &lt;span style="color:#66d9ef">false&lt;/span>&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#66d9ef">false&lt;/span>&lt;span style="color:#f92672">,&lt;/span> 0&lt;span style="color:#f92672">,&lt;/span> 0&lt;span style="color:#f92672">);&lt;/span>
+width &lt;span style="color:#f92672">=&lt;/span> comp&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getPreferredSize&lt;/span>&lt;span style="color:#f92672">().&lt;/span>&lt;span style="color:#a6e22e">width&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#75715e">// Get maximum width of column data
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">int&lt;/span> r &lt;span style="color:#f92672">=&lt;/span> 0&lt;span style="color:#f92672">;&lt;/span> r &lt;span style="color:#f92672">&amp;lt;&lt;/span> table&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getRowCount&lt;/span>&lt;span style="color:#f92672">();&lt;/span> r&lt;span style="color:#f92672">++)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+renderer &lt;span style="color:#f92672">=&lt;/span> table&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getCellRenderer&lt;/span>&lt;span style="color:#f92672">(&lt;/span>r&lt;span style="color:#f92672">,&lt;/span> vColIndex&lt;span style="color:#f92672">);&lt;/span>
+comp &lt;span style="color:#f92672">=&lt;/span> renderer&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getTableCellRendererComponent&lt;/span>&lt;span style="color:#f92672">(&lt;/span>table&lt;span style="color:#f92672">,&lt;/span> table&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getValueAt&lt;/span>&lt;span style="color:#f92672">(&lt;/span>r&lt;span style="color:#f92672">,&lt;/span> vColIndex&lt;span style="color:#f92672">),&lt;/span> &lt;span style="color:#66d9ef">false&lt;/span>&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#66d9ef">false&lt;/span>&lt;span style="color:#f92672">,&lt;/span>
+r&lt;span style="color:#f92672">,&lt;/span> vColIndex&lt;span style="color:#f92672">);&lt;/span>
+width &lt;span style="color:#f92672">=&lt;/span> Math&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">max&lt;/span>&lt;span style="color:#f92672">(&lt;/span>width&lt;span style="color:#f92672">,&lt;/span> comp&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getPreferredSize&lt;/span>&lt;span style="color:#f92672">().&lt;/span>&lt;span style="color:#a6e22e">width&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#75715e">// Add margin
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> width &lt;span style="color:#f92672">+=&lt;/span> 2 &lt;span style="color:#f92672">*&lt;/span> margin&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#75715e">// Set the width
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> col&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">setPreferredWidth&lt;/span>&lt;span style="color:#f92672">(&lt;/span>width&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">((&lt;/span>DefaultTableCellRenderer&lt;span style="color:#f92672">)&lt;/span> table&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getTableHeader&lt;/span>&lt;span style="color:#f92672">().&lt;/span>&lt;span style="color:#a6e22e">getDefaultRenderer&lt;/span>&lt;span style="color:#f92672">()).&lt;/span>&lt;span style="color:#a6e22e">setHorizontalAlignment&lt;/span>&lt;span style="color:#f92672">(&lt;/span>
+SwingConstants&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">LEFT&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#75715e">// table.setAutoCreateRowSorter(true);
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> table&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getTableHeader&lt;/span>&lt;span style="color:#f92672">().&lt;/span>&lt;span style="color:#a6e22e">setReorderingAllowed&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">false&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> table&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Example:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#75715e">// Must pass the model
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>DefaultTableModel model &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> DefaultTableModel&lt;span style="color:#f92672">();&lt;/span>
+jTable &lt;span style="color:#f92672">=&lt;/span> autoResizeColWidth&lt;span style="color:#f92672">(&lt;/span>jTable&lt;span style="color:#f92672">,&lt;/span> model&lt;span style="color:#f92672">);&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div></content></item><item><title>Printing to Zebra S4M Using Java</title><link>https://amree.github.io/posts/printing-to-zebra-s4m-using-java/</link><pubDate>Sun, 11 May 2008 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/printing-to-zebra-s4m-using-java/</guid><description>&lt;p>Apparently there&amp;rsquo;re some codes scattered on the net telling people that you can
+print to a Zebra printer by sending ZPL II codes using &lt;code>PrintService&lt;/code>. But the
+problem is, it&amp;rsquo;s not working, I don&amp;rsquo;t know why, maybe because of a different
+version of printer or model but I&amp;rsquo;m pretty sure the thing that came out from the
+printer are just ordinary texts not barcode which is what the code was supposed
+to output.&lt;/p></description><content>&lt;p>Apparently there&amp;rsquo;re some codes scattered on the net telling people that you can
+print to a Zebra printer by sending ZPL II codes using &lt;code>PrintService&lt;/code>. But the
+problem is, it&amp;rsquo;s not working, I don&amp;rsquo;t know why, maybe because of a different
+version of printer or model but I&amp;rsquo;m pretty sure the thing that came out from the
+printer are just ordinary texts not barcode which is what the code was supposed
+to output.&lt;/p>
+&lt;h2 id="new-version">New Version&lt;/h2>
+&lt;p>Thanks to Oleg (a commentator) for pointing out on how to print using Zebra S4M
+connected either via USB or network.&lt;/p>
+&lt;p>The solution is pretty simple, all you have to do is do not install Zebra S4M as
+a Zebra S4M (sounds weird, I know), instead, just install it as a local raw
+printer (Linux) or generic text printer (Windows).&lt;/p>
+&lt;p>For CUPS user in Linux, this is the example for the correct configurations:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">/etc/cups/printers.conf
+&amp;lt;Printer Zebra&amp;gt;
+Info
+Location
+DeviceURI socket://10.1.1.5:9100
+State Idle
+StateTime 1223445299
+Accepting Yes
+Shared Yes
+JobSheets none none
+QuotaPeriod 0
+PageLimit 0
+KLimit 0
+OpPolicy default
+ErrorPolicy stop-printer
+Option orientation-requested 3
+&amp;lt;/Printer&amp;gt;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can always add the printer using the web interface, just make sure you
+choose RAW as the Make/Manufacturer and Model/Driver.&lt;/p>
+&lt;p>Test this Java code, it should print out a barcode:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#f92672">import&lt;/span> javax.print.Doc&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> javax.print.DocFlavor&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> javax.print.DocPrintJob&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> javax.print.PrintException&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> javax.print.PrintService&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> javax.print.PrintServiceLookup&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> javax.print.SimpleDoc&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> javax.print.attribute.PrintServiceAttribute&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> javax.print.attribute.standard.PrinterName&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">SimplePrint&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>&lt;span style="color:#f92672">(&lt;/span>String&lt;span style="color:#f92672">[]&lt;/span> args&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">try&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+PrintService psZebra &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+String sPrinterName &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+PrintService&lt;span style="color:#f92672">[]&lt;/span> services &lt;span style="color:#f92672">=&lt;/span> PrintServiceLookup&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">lookupPrintServices&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">int&lt;/span> i &lt;span style="color:#f92672">=&lt;/span> 0&lt;span style="color:#f92672">;&lt;/span> i &lt;span style="color:#f92672">&amp;lt;&lt;/span> services&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">length&lt;/span>&lt;span style="color:#f92672">;&lt;/span> i&lt;span style="color:#f92672">++)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+PrintServiceAttribute attr &lt;span style="color:#f92672">=&lt;/span> services&lt;span style="color:#f92672">[&lt;/span>i&lt;span style="color:#f92672">].&lt;/span>&lt;span style="color:#a6e22e">getAttribute&lt;/span>&lt;span style="color:#f92672">(&lt;/span>PrinterName&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+sPrinterName &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#f92672">((&lt;/span>PrinterName&lt;span style="color:#f92672">)&lt;/span> attr&lt;span style="color:#f92672">).&lt;/span>&lt;span style="color:#a6e22e">getValue&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">(&lt;/span>sPrinterName&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">toLowerCase&lt;/span>&lt;span style="color:#f92672">().&lt;/span>&lt;span style="color:#a6e22e">indexOf&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;zebra&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">&amp;gt;=&lt;/span> 0&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+psZebra &lt;span style="color:#f92672">=&lt;/span> services&lt;span style="color:#f92672">[&lt;/span>i&lt;span style="color:#f92672">];&lt;/span>
+&lt;span style="color:#66d9ef">break&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">(&lt;/span>psZebra &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Zebra printer is not found.&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+DocPrintJob job &lt;span style="color:#f92672">=&lt;/span> psZebra&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">createPrintJob&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+String s &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;^XA^FO100,40^BY3^B3,,30^FD123ABC^XZ&amp;#34;&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[]&lt;/span> by &lt;span style="color:#f92672">=&lt;/span> s&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getBytes&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+DocFlavor flavor &lt;span style="color:#f92672">=&lt;/span> DocFlavor&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">BYTE_ARRAY&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">AUTOSENSE&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+Doc doc &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> SimpleDoc&lt;span style="color:#f92672">(&lt;/span>by&lt;span style="color:#f92672">,&lt;/span> flavor&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+job&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">print&lt;/span>&lt;span style="color:#f92672">(&lt;/span>doc&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span> &lt;span style="color:#66d9ef">catch&lt;/span> &lt;span style="color:#f92672">(&lt;/span>PrintException e&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+e&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">printStackTrace&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Print using FTP:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#f92672">import&lt;/span> java.io.FileInputStream&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> org.apache.commons.net.ftp.FTP&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> org.apache.commons.net.ftp.FTPClient&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">FtpPrint&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>&lt;span style="color:#f92672">(&lt;/span>String&lt;span style="color:#f92672">[]&lt;/span> args&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">try&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+FTPClient f &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> FTPClient&lt;span style="color:#f92672">();&lt;/span>
+f&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">connect&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;10.1.127.3&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+f&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">login&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;anonymous&amp;#34;&lt;/span>&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+f&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">setFileType&lt;/span>&lt;span style="color:#f92672">(&lt;/span>FTP&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">ASCII_FILE_TYPE&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+FileInputStream in &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> FileInputStream&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;/path/to/file&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">(&lt;/span>f&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">storeFile&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;filename&amp;#34;&lt;/span>&lt;span style="color:#f92672">,&lt;/span> in&lt;span style="color:#f92672">))&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Upload ok&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+f&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">logout&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+f&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">disconnect&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span> &lt;span style="color:#66d9ef">catch&lt;/span> &lt;span style="color:#f92672">(&lt;/span>Exception e&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+e&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">printStackTrace&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Print using socket:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#f92672">import&lt;/span> java.io.DataOutputStream&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> java.net.Socket&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">SocketPrint&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>&lt;span style="color:#f92672">(&lt;/span>String argv&lt;span style="color:#f92672">[])&lt;/span> &lt;span style="color:#66d9ef">throws&lt;/span> Exception &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">int&lt;/span> i &lt;span style="color:#f92672">=&lt;/span> 0&lt;span style="color:#f92672">;&lt;/span> i &lt;span style="color:#f92672">&amp;amp;&lt;/span>lt&lt;span style="color:#f92672">;&lt;/span> 10&lt;span style="color:#f92672">;&lt;/span> i&lt;span style="color:#f92672">++)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+Socket clientSocket &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> Socket&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;10.1.127.3&amp;#34;&lt;/span>&lt;span style="color:#f92672">,&lt;/span> 9100&lt;span style="color:#f92672">);&lt;/span>
+DataOutputStream outToServer &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> DataOutputStream&lt;span style="color:#f92672">(&lt;/span>clientSocket&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getOutputStream&lt;/span>&lt;span style="color:#f92672">());&lt;/span>
+outToServer&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">writeBytes&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;^XA^FO100,40^BY3^B3,,30^FD123ABC^XZ&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+clientSocket&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">close&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>(I got it from &lt;a href="https://support.zebra.com">Zebra&amp;rsquo;s website&lt;/a>)&lt;/p>
+&lt;p>&lt;a href="http://www.zebra.com/id/zebra/na/en/index/products/printers/industrial_commercial/s4m.4.tabs.html">Download guide to ZPL II&lt;/a>&lt;/p></content></item><item><title>Automatically Sign JARs Using Ant and Bash</title><link>https://amree.github.io/posts/automatically-sign-jars-using-ant-and-bash/</link><pubDate>Mon, 14 Apr 2008 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/automatically-sign-jars-using-ant-and-bash/</guid><description>&lt;p>This guide is more towards Netbeans project, but it can be used as a reference
+for you to customize the script to suit your needs.&lt;/p></description><content>&lt;p>This guide is more towards Netbeans project, but it can be used as a reference
+for you to customize the script to suit your needs.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#75715e">#!/bin/bash
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#75715e"># signer.bash&lt;/span>
+find . -name &lt;span style="color:#e6db74">&amp;#34;*.jar&amp;#34;&lt;/span> -exec jarsigner -keystore /path/to/your/key -storepass yourpassword &lt;span style="color:#e6db74">&amp;#39;{}&amp;#39;&lt;/span> yourkeystorename &lt;span style="color:#ae81ff">\;&lt;/span>
+echo &lt;span style="color:#e6db74">&amp;#39;JARs signed&amp;#39;&lt;/span>;
+exit &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>This script &lt;strong>will search all files ending with .jar&lt;/strong> from the current
+directory recursively and &lt;strong>then sign it&lt;/strong>. This means, it can be used
+separately without ant script. Just make it executable and run it.&lt;/p>
+&lt;p>Put this in the last line of your &lt;code>build.xml&lt;/code> but it must before the closing tag
+of the &amp;ldquo;project&amp;rdquo; (&lt;code>build.xml&lt;/code> can be found in your main project directory)&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#75715e">&amp;lt;!-- build.xml --&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;project&amp;gt;&lt;/span>
+.
+.
+.
+&lt;span style="color:#f92672">&amp;lt;target&lt;/span> &lt;span style="color:#a6e22e">name=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;-post-jar&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;exec&lt;/span> &lt;span style="color:#a6e22e">dir=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;${dist.dir}&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">executable=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;/path/to/your/signer.bash&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">os=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Linux&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/target&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/project&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>This script will basically sign the jars after all the jars has been build.
+Please note that it&amp;rsquo;d better if you set all the path using absolute path.&lt;/p>
+&lt;p>After this, you just have to use &lt;strong>Clean and Build&lt;/strong> to generate the jars and
+also automatically sign it. This script will also sign all of your included
+libraries.&lt;/p></content></item></channel></rss>

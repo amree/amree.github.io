@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>git on Amree Zaid</title><link>https://amree.github.io/tags/git/</link><description>Recent content in git on Amree Zaid</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 11 Apr 2012 00:00:00 +0000</lastBuildDate><atom:link href="https://amree.github.io/tags/git/index.xml" rel="self" type="application/rss+xml"/><item><title>Redmine with Git and Subversion in HUSM</title><link>https://amree.github.io/posts/redmine-with-git-and-subversion-in-husm/</link><pubDate>Wed, 11 Apr 2012 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/redmine-with-git-and-subversion-in-husm/</guid><description>&lt;p>It&amp;rsquo;s official, almost every piece of our codes in Hospital Universiti Sains
+Malaysia (HUSM) has been versioned in either Git or Subversion (mostly the
+latter). We&amp;rsquo;ve also linked all of the repositories into Redmine for easier
+project management. It&amp;rsquo;s not really a walk in the park for us since this is the
+first time we tried to do it this big.&lt;/p></description><content>&lt;p>It&amp;rsquo;s official, almost every piece of our codes in Hospital Universiti Sains
+Malaysia (HUSM) has been versioned in either Git or Subversion (mostly the
+latter). We&amp;rsquo;ve also linked all of the repositories into Redmine for easier
+project management. It&amp;rsquo;s not really a walk in the park for us since this is the
+first time we tried to do it this big.&lt;/p>
+&lt;p>We&amp;rsquo;re hoping we can document our workloads using issues feature in Redmine.
+Maybe we&amp;rsquo;re a few years late (most of our projects are already matured where no
+big features added every week), but IMHO this is the perfect time since we&amp;rsquo;re in
+the process of upgrading our core application in the hospital which is Lifeline.&lt;/p>
+&lt;p>So, here are some fun facts about our Redmine + (Git/Subversion):&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>We&amp;rsquo;re using the latest Redmine v1.3.2 (through its Git&amp;rsquo;s distribution).&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>It&amp;rsquo;s being served through Apache on our Slackware v13.37 box.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>The Ruby and the gems are being managed with RVM for easier installation.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>It&amp;rsquo;s using an old desktop PC model Acer M460 (2.4 GHz).&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>With advance Git and Subversion integrations, the repositories authentication
+are using the usernames and passwords from the Redmine itself.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Our Git repositories are being served using Smart HTTP Git protocol.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>There are about 56 repositories in it which comprises different type of code
+languages such as Java, C++, Ruby, HTML, JavaScript, CSS and Pascal.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>For backups, we&amp;rsquo;re using RAID 1 for the hardisks. &lt;code>rsync&lt;/code> and &lt;code>mysqldump&lt;/code> are
+being ran three times a day. There&amp;rsquo;s no offsite backup yet.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>There&amp;rsquo;re about 40++ projects in the Redmine right now (still increasing).&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>The repositories are hosting codes from different programming languages such
+as Pascal, Java, C++, Ruby and PHP. So, we need to be extra careful about
+the &lt;code>.gitigore&lt;/code> and &lt;code>svn:ignore&lt;/code> configurations.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Tutorials has been written for newcomers on how to use version control for
+Netbeans, Delphi and also Qt Creator. For the time being, everyone is
+encourage to use their IDE to do all the commits and not doing it through
+command line unless they know what they are doing.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Most developers chose Subversion due to its low lurning curve.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>In the next few days (or weeks), I&amp;rsquo;m going to post the configuration that I used
+to make the intergration between Git/Subversion with Redmine. It seems that the
+wiki from Redmine itself is not complete enough and I had to dig deeper into
+other websites. So, hopefully it will help anyone who&amp;rsquo;s lost just like me
+before.&lt;/p>
+&lt;p>By the way, you can view a screenshot from the Redmine&amp;rsquo;s projects page
+&lt;a href="https://twitter.com/#!/AmreeZaid/status/187829585759580160">here&lt;/a>.&lt;/p></content></item><item><title>A Not So Simple Introduction to Git</title><link>https://amree.github.io/posts/a-not-so-simple-introduction-to-git/</link><pubDate>Sat, 07 Jan 2012 02:00:00 +0000</pubDate><guid>https://amree.github.io/posts/a-not-so-simple-introduction-to-git/</guid><description>&lt;p>Found another presentation from Speaker Deck about Git.&lt;/p></description><content>&lt;p>Found another presentation from Speaker Deck about Git.&lt;/p>
+&lt;script src="http://speakerdeck.com/embed/4ecfc649eee53a005000b88b.js">&lt;/script></content></item><item><title>Renaming Author in Git</title><link>https://amree.github.io/posts/renaming-author-in-git/</link><pubDate>Thu, 05 Jan 2012 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/renaming-author-in-git/</guid><description>&lt;p>Recently, I noticed that there are other authors with a different name in my
+Git&amp;rsquo;s history. Apparently, I&amp;rsquo;ve accidentally committed into the repository using
+a different author&amp;rsquo;s name and email. This is mainly due to the way Netbeans
+stores author&amp;rsquo;s information history.&lt;/p></description><content>&lt;p>Recently, I noticed that there are other authors with a different name in my
+Git&amp;rsquo;s history. Apparently, I&amp;rsquo;ve accidentally committed into the repository using
+a different author&amp;rsquo;s name and email. This is mainly due to the way Netbeans
+stores author&amp;rsquo;s information history.&lt;/p>
+&lt;p>&lt;img src="https://amree.github.io/images/posts/2011-01-05-diff.png" alt="image">&lt;/p>
+&lt;p>So, in order to fix it, I ran this little script from Github in my master
+branch.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#75715e">#!/bin/sh
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+git filter-branch --env-filter &lt;span style="color:#e6db74">&amp;#39;
+&lt;/span>&lt;span style="color:#e6db74">
+&lt;/span>&lt;span style="color:#e6db74">an=&amp;#34;$GIT_AUTHOR_NAME&amp;#34;
+&lt;/span>&lt;span style="color:#e6db74">am=&amp;#34;$GIT_AUTHOR_EMAIL&amp;#34;
+&lt;/span>&lt;span style="color:#e6db74">cn=&amp;#34;$GIT_COMMITTER_NAME&amp;#34;
+&lt;/span>&lt;span style="color:#e6db74">cm=&amp;#34;$GIT_COMMITTER_EMAIL&amp;#34;
+&lt;/span>&lt;span style="color:#e6db74">
+&lt;/span>&lt;span style="color:#e6db74">if [ &amp;#34;$GIT_COMMITTER_EMAIL&amp;#34; = &amp;#34;your@email.to.match&amp;#34; ]
+&lt;/span>&lt;span style="color:#e6db74">then
+&lt;/span>&lt;span style="color:#e6db74"> cn=&amp;#34;Your New Committer Name&amp;#34;
+&lt;/span>&lt;span style="color:#e6db74"> cm=&amp;#34;Your New Committer Email&amp;#34;
+&lt;/span>&lt;span style="color:#e6db74">fi
+&lt;/span>&lt;span style="color:#e6db74">if [ &amp;#34;$GIT_AUTHOR_EMAIL&amp;#34; = &amp;#34;your@email.to.match&amp;#34; ]
+&lt;/span>&lt;span style="color:#e6db74">then
+&lt;/span>&lt;span style="color:#e6db74"> an=&amp;#34;Your New Author Name&amp;#34;
+&lt;/span>&lt;span style="color:#e6db74"> am=&amp;#34;Your New Author Email&amp;#34;
+&lt;/span>&lt;span style="color:#e6db74">fi
+&lt;/span>&lt;span style="color:#e6db74">
+&lt;/span>&lt;span style="color:#e6db74">export GIT_AUTHOR_NAME=&amp;#34;$an&amp;#34;
+&lt;/span>&lt;span style="color:#e6db74">export GIT_AUTHOR_EMAIL=&amp;#34;$am&amp;#34;
+&lt;/span>&lt;span style="color:#e6db74">export GIT_COMMITTER_NAME=&amp;#34;$cn&amp;#34;
+&lt;/span>&lt;span style="color:#e6db74">export GIT_COMMITTER_EMAIL=&amp;#34;$cm&amp;#34;
+&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To push it into the server, I need to use &lt;code>git push -f&lt;/code> instead of &lt;code>git push&lt;/code>.
+If you use the latter command, you&amp;rsquo;ll end up with a merged history (every commit
+will have another one identical to it).&lt;/p>
+&lt;p>If you use Redmine, you may need to fetch change set. Just run this command in your Redmine&amp;rsquo;s directory:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-text" data-lang="text">script/runner &amp;#34;Repository.fetch_changesets&amp;#34; -e production
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Netbeans committer&amp;rsquo;s info are stored in (change the path based on your version):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-text" data-lang="text">~/.netbeans/7.0/config/Preferences/org/netbeans/modules/git.properties
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="references">References:&lt;/h2>
+&lt;ul>
+&lt;li>&lt;a href="http://theelitist.net/git-change-revision-author">http://theelitist.net/git-change-revision-author&lt;/a>&lt;/li>
+&lt;li>&lt;a href="http://help.github.com/change-author-info/">http://help.github.com/change-author-info/&lt;/a>&lt;/li>
+&lt;/ul></content></item><item><title>Git Remote Commands</title><link>https://amree.github.io/posts/git-remote-commands/</link><pubDate>Sun, 11 Dec 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/git-remote-commands/</guid><description>&lt;p>These are some of the &lt;code>git&lt;/code> commands that I usually use.&lt;/p></description><content>&lt;p>These are some of the &lt;code>git&lt;/code> commands that I usually use.&lt;/p>
+&lt;p>View some remote &lt;strong>information&lt;/strong>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">git remote show origin
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>List&lt;/strong> all remote branch:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">git branch -r
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Pushing&lt;/strong> a branch to the remote:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">git push origin newfeature
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Or when you want to &lt;strong>push in the checkout branch&lt;/strong>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">git push origin HEAD
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>And use &lt;code>-u&lt;/code> to &lt;strong>push and track&lt;/strong> the remote branch:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">git push -u origin newfeature
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Make an existing git branch to &lt;strong>track a remote&lt;/strong> branch:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">git branch --set-upstream newfeature1 origin/newfeature1
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Deleting&lt;/strong> a remote branch:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">git push origin :newfeature
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Refresh&lt;/strong> remote branch list:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">git remote prune origin
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Checkout&lt;/strong> a remote branch and &lt;strong>track&lt;/strong> it:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">git checkout -t origin/newfeature
+&lt;/code>&lt;/pre>&lt;/div></content></item></channel></rss>

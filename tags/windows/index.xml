@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>windows on Amree Zaid</title><link>https://amree.github.io/tags/windows/</link><description>Recent content in windows on Amree Zaid</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Tue, 03 Dec 2013 00:00:00 +0000</lastBuildDate><atom:link href="https://amree.github.io/tags/windows/index.xml" rel="self" type="application/rss+xml"/><item><title>Getting Started with Rails on Windows</title><link>https://amree.github.io/posts/getting-started-with-rails-on-windows/</link><pubDate>Tue, 03 Dec 2013 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/getting-started-with-rails-on-windows/</guid><description>&lt;p>First of all, let&amp;rsquo;s get one thing straight. This is not a guide for those who
+are trying their best to not use Unix like environment in develop Rails
+application. This is more like a guide to do almost everything in Linux without
+replacing your Windows.&lt;/p></description><content>&lt;p>First of all, let&amp;rsquo;s get one thing straight. This is not a guide for those who
+are trying their best to not use Unix like environment in develop Rails
+application. This is more like a guide to do almost everything in Linux without
+replacing your Windows.&lt;/p>
+&lt;p>So, I need to teach my colleagues in the next two weeks on Ruby on Rails
+introductionary class. Since all of the computer labs are installed with Windows
+7, I had to find a way to ensure a proper working environment for the students,
+hence, this article.&lt;/p>
+&lt;h2 id="installation">Installation&lt;/h2>
+&lt;p>After researching for a while, I decided to go with &lt;a href="http://vagrantup.com">Vagrant&lt;/a>.&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>First of all, install &lt;a href="http://virtualbox.org">Oracle VM VirtualBox&lt;/a>. Vagrant will depend on it.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Next, you need to install &lt;a href="http://git-scm.com">Git&lt;/a> for Windows. We actually
+just need &lt;code>ssh&lt;/code> executable in the Git package. After comparing available
+options, I think it is the easiest way. Besides, we&amp;rsquo;ll now have Git enabled
+in our Windows. By the way, make sure you&amp;rsquo;ll select the third option (the one
+with with the warning) during Adjusting your PATH environment section.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Download &lt;a href="http://downloads.vagrantup.com">Vagrant&lt;/a> and install it.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;h2 id="vagrant-setup">Vagrant Setup&lt;/h2>
+&lt;p>Create a working directory (use Windows prompt):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">mkdir rails
+cd rails
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Initiate Vagrant:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">vagrant init
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Install a Debian box:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">vagrant box add debian https://dl.dropboxusercontent.com/u/197673519/debian-7.2.0.box
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can select other box if you want to, but for this guide, I&amp;rsquo;ll be using a Debian based box. There are a lot more in the &lt;a href="https://github.com/mitchellh/vagrant/wiki/Available-Vagrant-Boxes">Wiki&lt;/a>.&lt;/p>
+&lt;p>Open &lt;code>Vagrantfile&lt;/code> and make sure you put these lines:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">Vagrant.configure&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#66d9ef">do&lt;/span> |config|
+&lt;span style="color:#75715e"># Specify our box&amp;#39;s name&lt;/span>
+config.vm.box &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;debian&amp;#34;&lt;/span>
+&lt;span style="color:#75715e"># Forward Rails default server port&lt;/span>
+config.vm.network :forwarded_port, guest: 3000, host: &lt;span style="color:#ae81ff">3000&lt;/span>
+end
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Boot the box:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">vagrant up
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>SSH into it to start working in the box:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">vagrant ssh
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="box-setup">Box Setup&lt;/h2>
+&lt;p>We&amp;rsquo;re going to setup the box for Rails development which includes MySQL as the database.&lt;/p>
+&lt;p>Install required packages (when asked about the password, leave it empty):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo su
+apt-get install build-essential mysql-server mysql-client libmysqlclient-dev
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Create a file at &lt;code>/etc/gemrc&lt;/code> and add this line:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">gem: --no-ri --no-rdoc
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Install all of the necessary gems:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">gem install rails
+gem install therubyracer
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="create-a-rails-application">Create a Rails Application&lt;/h2>
+&lt;p>Make sure we&amp;rsquo;re in &lt;code>/vagrant/&lt;/code> directory. Anything done here will reflect back the directory in the Windows.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cd /vagrant/
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Generate the Rails application:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">rails new myapp --database&lt;span style="color:#f92672">=&lt;/span>mysql
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Specify a &lt;code>javascript runtime&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cd myapp
+nano Gemfile
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Uncomment this line:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">gem &lt;span style="color:#e6db74">&amp;#39;therubyracer&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">platforms&lt;/span>: &lt;span style="color:#e6db74">:ruby&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Run this command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">bundle
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Create the database based on the default configuration:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">rake db:create
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Run the app:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">rails s
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Open it using this URL: &lt;a href="http://localhost:3000">http://localhost:3000&lt;/a>.&lt;/p>
+&lt;h2 id="rails-development">Rails Development&lt;/h2>
+&lt;p>If you haven&amp;rsquo;t noticed, you should see that everything that was changed in
+&lt;code>/vagrant&lt;/code> will reflect your &lt;code>rails&lt;/code> directory in Windows. This means, you can
+just use your favourite editor to load that particular directory and start
+coding. It&amp;rsquo;s as if you&amp;rsquo;re doing development directly in the server. For
+everything else, make sure you&amp;rsquo;ll do it through Putty or through &lt;code>vagrant ssh&lt;/code>.&lt;/p>
+&lt;p>I guess that&amp;rsquo;s it. Good luck !&lt;/p></content></item><item><title>How to Read MyKad</title><link>https://amree.github.io/posts/how-to-read-mykad/</link><pubDate>Mon, 05 Dec 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/how-to-read-mykad/</guid><description>&lt;p>I&amp;rsquo;ve decided to merge posts about reading MyKad from my previous blog into a
+single post.&lt;/p>
+&lt;p>Notes:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>The &lt;strong>original codes were written by Xenon&lt;/strong> from
+&lt;a href="http://forum.lowyat.net/">Lowyat.net&lt;/a>. Somehow, he managed to reverse
+engineer MyKad&amp;rsquo;s APDU so that we can read it without buying any SDK.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>This application &lt;strong>only&lt;/strong> reads data from Jabatan Pendaftaran Negara (JPN).&lt;/p>
+&lt;/li>
+&lt;/ol></description><content>&lt;p>I&amp;rsquo;ve decided to merge posts about reading MyKad from my previous blog into a
+single post.&lt;/p>
+&lt;p>Notes:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>The &lt;strong>original codes were written by Xenon&lt;/strong> from
+&lt;a href="http://forum.lowyat.net/">Lowyat.net&lt;/a>. Somehow, he managed to reverse
+engineer MyKad&amp;rsquo;s APDU so that we can read it without buying any SDK.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>This application &lt;strong>only&lt;/strong> reads data from Jabatan Pendaftaran Negara (JPN).&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>Xenon also wrote two small example applications to read MyKad. I&amp;rsquo;ve listed them
+based on the programming language. Click on the link to download it:&lt;/p>
+&lt;ol>
+&lt;li>&lt;a href="https://github.com/amree/mykad-c">Visual C&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://github.com/amree/mykad-vb.net">Visual Basic .NET&lt;/a>&lt;/li>
+&lt;/ol>
+&lt;p>Since there&amp;rsquo;s no Java implementation of the code yet, I&amp;rsquo;ve decided to develop
+one. You can also get the source code from my
+&lt;a href="http://github.com/amree/mykad-java">Github&lt;/a>. It&amp;rsquo;s written using Netbeans.&lt;/p>
+&lt;p>I&amp;rsquo;m not going to give explanation about the code. Instead, I&amp;rsquo;m going to guide
+you guys on how to setup your system (Linux and Windows) so that you can read
+the Java application to read a MyKad.&lt;/p>
+&lt;h1 id="windows">Windows&lt;/h1>
+&lt;ol>
+&lt;li>
+&lt;p>Download &lt;a href="http://www.musclecard.com/middle.html">Windows binary&lt;/a> of JPC/SC Java API.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Download the application which is in Netbeans project format from my Github.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>You &lt;strong>must include&lt;/strong> &lt;code>jpcsc.jar&lt;/code> as the library. You can get the file from Step 1.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>You also &lt;strong>must put&lt;/strong> &lt;code>jpcsc.dll&lt;/code> into your main project folder. Furthermore,
+if you want to distribute the application, you need to put it together with
+your main jar file. You can also get the file from Step 1.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Plug in your reader (obviously).&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Run the application. I&amp;rsquo;d recommend you run it through Netbeans.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Insert a MyKad.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Wait until the application finish reading it (usually once the LED stop
+blinking).&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>A GUI will be displayed presenting your MyKad data.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>If there&amp;rsquo;s no data showing, there&amp;rsquo;s a possibility that your MyKad chip is
+spoiled.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;h1 id="linux">Linux&lt;/h1>
+&lt;ol>
+&lt;li>
+&lt;p>Login as a &lt;strong>root&lt;/strong>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Download &lt;a href="http://pcsclite.alioth.debian.org/">PCSC Lite&lt;/a> and install it. You
+need to put some parameters in your &lt;code>./configure&lt;/code> if you want to enable
+&lt;code>libusb&lt;/code> support. Please check the &lt;code>README&lt;/code>.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">tar xvjf pcsc-lite-1.8.1.tar.bz2
+cd pcsc-lite-1.8.1
+./configure --enable-libusb --disable-libudev
+make
+make install
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Download and install your reader&amp;rsquo;s driver. I&amp;rsquo;m using &lt;a href="http://www.hidglobal.com/prod_detail.php?prod_id=171">OMNIKEY 5321 USB&lt;/a>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Get &lt;a href="http://www.musclecard.com/middle.html">Windows binary&lt;/a> of JPC/SC Java API. It&amp;rsquo;s for Windows but it also has a precompiled Linux library in it.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Extract, copy and update:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">unzip jpcsc-0.8.0.zip
+cd jpcsc/bin/linux
+cp libjpcsc.so /usr/lib
+ldconfig
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Start the pcsc service:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">pcscd -d -f
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You should get something like this:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-text" data-lang="text">00000000 pcscdaemon.c:233:main() pcscd set to foreground with debug send to stdout
+00000044 configfile.l:287:DBGetReaderList() Parsing conf file: /usr/local/etc/reader.conf.d
+00000008 pcscdaemon.c:518:main() pcsc-lite 1.8.1 daemon ready.
+00001566 hotplug_libusb.c:514:HPAddHotPluggable() Adding USB device: 4:2:0
+00008631 readerfactory.c:934:RFInitializeReader() Attempting startup of OMNIKEY CardMan 5x21 (USB iClass Reader) 00 00 using /usr/local/lib/pcsc/drivers/ifdokrfid_lnx_i
+00000179 readerfactory.c:824:RFBindFunctions() Loading IFD Handler 3.0 HID HID Global OMNIKEY RFID IA32 v2.9.1
+00300863 readerfactory.c:296:RFAddReader() Using the reader polling thread
+00001975 readerfactory.c:934:RFInitializeReader() Attempting startup of OMNIKEY CardMan 5x21 (USB iClass Reader) 00 01 using /usr/local/lib/pcsc/drivers/ifdokrfid_lnx_i
+00000012 readerfactory.c:738:RFLoadReader() Reusing already loaded driver for /usr/local/lib/pcsc/drivers/ifdokrfid_lnx_i686-2.9.1.bundle/Contents/Linux/ifdokrfid.so
+00000014 readerfactory.c:824:RFBindFunctions() Loading IFD Handler 3.0 HID HID Global OMNIKEY RFID IA32 v2.9.1
+00424985 readerfactory.c:453:RFAddReader() Using the reader polling thread
+00444313 readerfactory.c:1301:RFWaitForReaderInit() Waiting init for reader: OMNIKEY CardMan 5x21 (USB iClass Reader) 00 01
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Run the Java application, it should be working right now.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>That&amp;rsquo;s it, again, the full credit should goes to Xenon :)&lt;/p></content></item><item><title>How to enable MySQL Support in Qt SDK for Windows</title><link>https://amree.github.io/posts/how-to-enable-mysql-support-in-qt-sdk-for-windows/</link><pubDate>Mon, 11 Jul 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/how-to-enable-mysql-support-in-qt-sdk-for-windows/</guid><description>&lt;p>It has been quite a while since I wrote the previous guide. Since that
+particular post gained a lot of visitors, I decided to write a new guide based
+on the new Qt SDK and MySQL so that it will help people with new version for
+both softwares.&lt;/p></description><content>&lt;p>It has been quite a while since I wrote the previous guide. Since that
+particular post gained a lot of visitors, I decided to write a new guide based
+on the new Qt SDK and MySQL so that it will help people with new version for
+both softwares.&lt;/p>
+&lt;p>Download Qt SDK and install it. In my case, I installed it at &lt;code>C:\QtSDK&lt;/code>. You
+must make sure that you’ve chosen to install Qt Sources. If you have Qt SDK
+installed but you haven’t install Qt sources, just go to this path to install
+it.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">Start &amp;gt; All Programs &amp;gt; Qt SDK &amp;gt; Maintain Qt SDK
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://amree.github.io/images/posts/2011-07-11-qt.png" alt="image">&lt;/p>
+&lt;p>Download MySQL and install it. In my case, I choose to install it at:&lt;/p>
+&lt;p>C:\Program Files (x86)\MySQL\MySQL Server 5.5.&lt;/p>
+&lt;p>You don’t need to install everything if you want to compile the plugin. Make
+sure you will at least choose to install Client C API Library.&lt;/p>
+&lt;p>&lt;img src="https://amree.github.io/images/posts/2011-07-11-mysql.png" alt="image">&lt;/p>
+&lt;p>Open:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">Start &amp;gt; All Programs &amp;gt; Qt SDK &amp;gt; Desktop &amp;gt; Qt 4.7.3 for Desktop (MingW)**
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Run these commands (change according to your environment):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bat" data-lang="bat">&lt;span style="color:#66d9ef">set&lt;/span> mysql=C:\PROGRA~2\MySQL\MYSQLS~1.5
+&lt;span style="color:#66d9ef">cd&lt;/span> \
+&lt;span style="color:#66d9ef">cd&lt;/span> QtSDK\QtSources\4.7.3\src\plugins\sqldrivers\mysql\
+qmake &lt;span style="color:#e6db74">&amp;#34;INCLUDEPATH+=&lt;/span>%mysql%&lt;span style="color:#e6db74">\include&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;LIBS+=&lt;/span>%mysql%&lt;span style="color:#e6db74">\lib\libmysql.lib&amp;#34;&lt;/span> -o Makefile mysql.pro
+mingw32-make
+qmake &lt;span style="color:#e6db74">&amp;#34;INCLUDEPATH+=&lt;/span>%mysql%&lt;span style="color:#e6db74">\include&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;LIBS+=&lt;/span>%mysql%&lt;span style="color:#e6db74">\lib\libmysql.lib&amp;#34;&lt;/span> -o Makefile mysql.pro &lt;span style="color:#e6db74">&amp;#34;CONFIG+=release&amp;#34;&lt;/span>
+mingw32-make
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You should be able to run these commands &lt;strong>without any error&lt;/strong>.&lt;/p>
+&lt;p>You’ll find two directories (&lt;strong>debug&lt;/strong> and &lt;strong>release&lt;/strong>) created in the current
+directory.&lt;/p>
+&lt;p>In &lt;strong>debug&lt;/strong> directory, you’ll find &lt;code>libqsqlmysqld4.a&lt;/code> and &lt;code>qsqlmysqld4.dll&lt;/code>.&lt;/p>
+&lt;p>Meanwhile, in &lt;strong>release&lt;/strong> directory, you’ll find &lt;code>libqsqlmysql4.a&lt;/code> and
+&lt;code>qsqlmysql4.dll&lt;/code>.&lt;/p>
+&lt;p>&lt;strong>Copy all these 4 files into&lt;/strong>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">C:\QtSDK\Desktop\Qt\4.7.3\mingw\plugins\sqldrivers
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Copy &lt;code>libmysql.dll&lt;/code> (found in your MySQL installation directory) into C:\Windows.&lt;/p>
+&lt;p>Create new project and put these codes to test your new plugin&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="color:#75715e">#include&lt;/span> &lt;span style="color:#75715e">&amp;lt;QApplication&amp;gt;&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e">#include&lt;/span> &lt;span style="color:#75715e">&amp;lt;QtSql&amp;gt;&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#66d9ef">int&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>(&lt;span style="color:#66d9ef">int&lt;/span> argc, &lt;span style="color:#66d9ef">char&lt;/span> &lt;span style="color:#f92672">*&lt;/span>argv[])
+{
+QCoreApplication a(argc, argv);
+qDebug() &lt;span style="color:#f92672">&amp;lt;&amp;lt;&lt;/span> QSqlDatabase&lt;span style="color:#f92672">::&lt;/span>drivers();
+&lt;span style="color:#66d9ef">return&lt;/span> a.exec();
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Make sure you have QtSql Module in your project configuration file (.pro file)&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">QT += sql
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You’ll get these outputs showing that your Qt has supports for MySQL:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">(&amp;#34;QSQLITE&amp;#34;, &amp;#34;QMYSQL3&amp;#34;, &amp;#34;QMYSQL&amp;#34;, &amp;#34;QODBC3&amp;#34;, &amp;#34;QODBC&amp;#34;)
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Things to watch out for:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>You can’t use MySQL 64 Bit (at the moment)&lt;/strong> to compile the plugin.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Make sure you’ll &lt;strong>use short path&lt;/strong> type if you’ve installed MySQL into directory’s name containing spaces.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Load sql module&lt;/strong> in your .pro file.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>Tested on:&lt;/p>
+&lt;ul>
+&lt;li>11/7/2011 – Windows 64 Bit, MySQL Server 5.5.1 32 Bit (Community Version) and Qt 4.7.3.&lt;/li>
+&lt;/ul></content></item><item><title>A Simple Working Example for Qt NCReport</title><link>https://amree.github.io/posts/a-simple-working-example-for-qt-ncreport/</link><pubDate>Sat, 09 Jul 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/a-simple-working-example-for-qt-ncreport/</guid><description>&lt;p>This should help you with NCReport in Qt.&lt;/p></description><content>&lt;p>This should help you with NCReport in Qt.&lt;/p>
+&lt;h2 id="windows">Windows&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>Download NCReport with MingW for Windows.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Install NCReport at&lt;/p>
+&lt;pre>&lt;code>C:\NCReport\2.6.1.mingw.eval
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Get the full &lt;a href="https://github.com/amree/ncreport-example">source code&lt;/a> of the project at my Github.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Go to Projects (bar at the left) &amp;gt; Run Settings &amp;gt; Click Details on the Run
+Environment &amp;gt; Edit PATH’s variable and append the following line at the end
+of the string.&lt;/p>
+&lt;pre>&lt;code>;C:\NCReport\2.6.1.mingw.eval\bin
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Run the project in &lt;strong>Debug&lt;/strong> and &lt;strong>Release&lt;/strong> mode. You should be able to run the report by clicking the button.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>Tested on:&lt;/p>
+&lt;ul>
+&lt;li>Windows 7 (64 bit)&lt;/li>
+&lt;li>NCReport 2.6.1 with MingW for Windows&lt;/li>
+&lt;li>QtSDK 1.1.2&lt;/li>
+&lt;li>Qt 4.7.3&lt;/li>
+&lt;li>Qt Creator 2.2.1&lt;/li>
+&lt;/ul>
+&lt;h2 id="linux">Linux&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>Download NCReport for Linux.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Install NCReport at &lt;code>/opt/ncreport&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Get the full &lt;a href="https://github.com/amree/ncreport-example">source code&lt;/a> of the project at my Github.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Run the project in &lt;strong>Debug&lt;/strong> and &lt;strong>Release&lt;/strong> mode. You should be able to run the report by clicking the button.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>Tested on:&lt;/p>
+&lt;ul>
+&lt;li>Slackware 13.37 (32 Bit)&lt;/li>
+&lt;li>NCReport 2.6.1 for Linux&lt;/li>
+&lt;li>QtSDK 1.1.2&lt;/li>
+&lt;li>Qt 4.7.3&lt;/li>
+&lt;li>Qt Creator 2.2.1&lt;/li>
+&lt;/ul></content></item></channel></rss>

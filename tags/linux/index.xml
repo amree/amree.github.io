@@ -1,0 +1,1615 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>linux on Amree Zaid</title><link>https://amree.github.io/tags/linux/</link><description>Recent content in linux on Amree Zaid</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 06 Jan 2013 00:00:00 +0000</lastBuildDate><atom:link href="https://amree.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml"/><item><title>Rails, Unicorn and Nginx on Slackware</title><link>https://amree.github.io/posts/rails-unicorn-and-nginx-on-slackware/</link><pubDate>Sun, 06 Jan 2013 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/rails-unicorn-and-nginx-on-slackware/</guid><description>&lt;p>I was trying to deploy a Rails application using Apache and got into some
+problems when I tried to configure the app so that Apache will be the one that
+serves the precompiled assets (javascripts, css, images and others). Since I&amp;rsquo;m
+on tight deadline (yeah, I should&amp;rsquo;ve tested production mode much more earlier),
+I tried my luck with Nginx and it worked easily without any hassle. So, this is
+how I did it.&lt;/p></description><content>&lt;p>I was trying to deploy a Rails application using Apache and got into some
+problems when I tried to configure the app so that Apache will be the one that
+serves the precompiled assets (javascripts, css, images and others). Since I&amp;rsquo;m
+on tight deadline (yeah, I should&amp;rsquo;ve tested production mode much more earlier),
+I tried my luck with Nginx and it worked easily without any hassle. So, this is
+how I did it.&lt;/p>
+&lt;h2 id="goals">Goals&lt;/h2>
+&lt;ul>
+&lt;li>Precompiled assets will be served by Nginx and not the Rails server itself.&lt;/li>
+&lt;li>Assets will be served in gzip.&lt;/li>
+&lt;/ul>
+&lt;h2 id="environments">Environments&lt;/h2>
+&lt;ul>
+&lt;li>Slackware v14&lt;/li>
+&lt;li>Rails v3.2.10&lt;/li>
+&lt;li>Ruby v1.9.3&lt;/li>
+&lt;/ul>
+&lt;h2 id="guides">Guides&lt;/h2>
+&lt;p>First of all, install &lt;a href="http://slackbuilds.org/repository/14.0/network/nginx/">nginx&lt;/a> from Slackbuild.&lt;/p>
+&lt;p>Be sure to turn off Apache&amp;rsquo;s startup script if you have it installed:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">chmod -x /etc/rc.d/rc.httpd
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>This is to ensure no conflict since both of them by default will use port 80.&lt;/p>
+&lt;p>Put &lt;code>unicorn&lt;/code> in your Gemfile and run &lt;code>bundle&lt;/code>.&lt;/p>
+&lt;p>I&amp;rsquo;m putting my Rails app in &lt;code>/opt/neuro&lt;/code>, so, adjust it accordingly.&lt;/p>
+&lt;p>Create &lt;code>nginx.conf&lt;/code> in &lt;code>/opt/neuro/config/nginx.conf&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-nginx" data-lang="nginx">&lt;span style="color:#66d9ef">upstream&lt;/span> &lt;span style="color:#e6db74">neuro&lt;/span> {
+&lt;span style="color:#f92672">server&lt;/span> &lt;span style="color:#e6db74">unix:/tmp/unicorn.neuro.sock&lt;/span> &lt;span style="color:#e6db74">fail_timeout=0&lt;/span>;
+}
+&lt;span style="color:#66d9ef">server&lt;/span> {
+&lt;span style="color:#f92672">listen&lt;/span> neuro.husmnet:&lt;span style="color:#ae81ff">80&lt;/span>;
+&lt;span style="color:#f92672">server_name&lt;/span> &lt;span style="color:#e6db74">neuro.husmnet&lt;/span>
+&lt;span style="color:#e6db74">root&lt;/span> &lt;span style="color:#e6db74">/opt/neuro/public&lt;/span>;
+&lt;span style="color:#f92672">location&lt;/span> &lt;span style="color:#e6db74">^~&lt;/span> &lt;span style="color:#e6db74">/assets/&lt;/span> {
+&lt;span style="color:#f92672">root&lt;/span> &lt;span style="color:#e6db74">/opt/neuro/public&lt;/span>;
+&lt;span style="color:#f92672">gzip_static&lt;/span> &lt;span style="color:#66d9ef">on&lt;/span>;
+&lt;span style="color:#f92672">expires&lt;/span> &lt;span style="color:#e6db74">max&lt;/span>;
+&lt;span style="color:#f92672">add_header&lt;/span> &lt;span style="color:#e6db74">Cache-Control&lt;/span> &lt;span style="color:#e6db74">public&lt;/span>;
+}
+&lt;span style="color:#f92672">try_files&lt;/span> $uri/index.html $uri &lt;span style="color:#e6db74">@unicorn&lt;/span>;
+&lt;span style="color:#f92672">location&lt;/span> &lt;span style="color:#e6db74">@unicorn&lt;/span> {
+&lt;span style="color:#f92672">proxy_set_header&lt;/span> &lt;span style="color:#e6db74">X-Forwarded-For&lt;/span> $proxy_add_x_forwarded_for;
+&lt;span style="color:#f92672">proxy_set_header&lt;/span> &lt;span style="color:#e6db74">Host&lt;/span> $http_host;
+&lt;span style="color:#f92672">proxy_redirect&lt;/span> &lt;span style="color:#66d9ef">off&lt;/span>;
+&lt;span style="color:#f92672">proxy_pass&lt;/span> &lt;span style="color:#e6db74">http://neuro&lt;/span>;
+}
+&lt;span style="color:#f92672">error_page&lt;/span> &lt;span style="color:#ae81ff">500&lt;/span> &lt;span style="color:#ae81ff">502&lt;/span> &lt;span style="color:#ae81ff">503&lt;/span> &lt;span style="color:#ae81ff">504&lt;/span> &lt;span style="color:#e6db74">/500.html&lt;/span>;
+&lt;span style="color:#f92672">client_max_body_size&lt;/span> &lt;span style="color:#e6db74">4G&lt;/span>;
+&lt;span style="color:#f92672">keepalive_timeout&lt;/span> &lt;span style="color:#ae81ff">10&lt;/span>;
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Create &lt;code>unicorn.rb&lt;/code> in &lt;code>/opt/neuro/config/unicorn.rb&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">root &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">#{&lt;/span>&lt;span style="color:#66d9ef">Dir&lt;/span>&lt;span style="color:#f92672">.&lt;/span>pwd&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;span style="color:#75715e"># Define worker directory for Unicorn&lt;/span>
+working_directory root
+&lt;span style="color:#75715e"># Location of PID file&lt;/span>
+pid &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">#{&lt;/span>root&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">/tmp/pids/unicorn.pid&amp;#34;&lt;/span>
+&lt;span style="color:#75715e"># Define Log paths&lt;/span>
+stderr_path &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">#{&lt;/span>root&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">/log/unicorn.log&amp;#34;&lt;/span>
+stdout_path &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">#{&lt;/span>root&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">/log/unicorn.log&amp;#34;&lt;/span>
+&lt;span style="color:#75715e"># Listen on a UNIX data socket&lt;/span>
+listen &lt;span style="color:#e6db74">&amp;#34;/tmp/unicorn.neuro.sock&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">:backlog&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#ae81ff">64&lt;/span>
+&lt;span style="color:#75715e"># houllisten 8080, :tcp_nopush =&amp;gt; true&lt;/span>
+worker_processes &lt;span style="color:#ae81ff">2&lt;/span>
+&lt;span style="color:#75715e"># Load rails before forking workers for better worker spawn time&lt;/span>
+preload_app &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;span style="color:#75715e"># Restart workes hangin&amp;#39; out for more than 240 secs&lt;/span>
+timeout &lt;span style="color:#ae81ff">240&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Replace &lt;code>/etc/nginx/nginx.conf&lt;/code> with this content:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-nginx" data-lang="nginx">&lt;span style="color:#75715e"># user root;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">worker_processes&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>;
+&lt;span style="color:#66d9ef">error_log&lt;/span> &lt;span style="color:#e6db74">/var/log/nginx/error.log&lt;/span>;
+&lt;span style="color:#75715e">#error_log logs/error.log notice;
+&lt;/span>&lt;span style="color:#75715e">#error_log logs/error.log info;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">#pid logs/nginx.pid;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#66d9ef">events&lt;/span> {
+&lt;span style="color:#f92672">worker_connections&lt;/span> &lt;span style="color:#ae81ff">1024&lt;/span>;
+}
+&lt;span style="color:#66d9ef">http&lt;/span> {
+&lt;span style="color:#f92672">include&lt;/span> &lt;span style="color:#e6db74">mime.types&lt;/span>;
+&lt;span style="color:#f92672">default_type&lt;/span> &lt;span style="color:#e6db74">application/octet-stream&lt;/span>;
+&lt;span style="color:#f92672">sendfile&lt;/span> &lt;span style="color:#66d9ef">on&lt;/span>;
+&lt;span style="color:#f92672">keepalive_timeout&lt;/span> &lt;span style="color:#ae81ff">65&lt;/span>;
+&lt;span style="color:#f92672">gzip&lt;/span> &lt;span style="color:#66d9ef">on&lt;/span>;
+&lt;span style="color:#f92672">include&lt;/span> &lt;span style="color:#e6db74">/etc/nginx/sites-enabled/*&lt;/span>;
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Create &lt;code>sites-enabled&lt;/code> directory in &lt;code>/etc/nginx&lt;/code> and create a softlink to the &lt;code>nginx.conf&lt;/code> in our app:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">mkdir /etc/nginx/sites-enabled
+ln -s /opt/neuro/config/nginx.conf neuro.conf
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Create a directory for the pid&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">mkdir /opt/neuro/tmp/pids
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Before starting it for the first time, let us monitor important logs (open it using different
+terminals) :&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">tail -f /var/log/nginx/error.log
+tail -f /opt/neuro/log/unicorn.log
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Make sure you&amp;rsquo;ve precompiled your assets:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">rake assets:clean
+rake assets:precompile
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Start unicorn:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cd /opt/neuro
+unicorn -c config/unicorn.rb -E production -D
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Start nginx:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">nginx
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Congratulation! Make sure there&amp;rsquo;s no error in your logs. If there&amp;rsquo;re, you can use these commands to
+stop &lt;code>nginx&lt;/code> and &lt;code>unicorn&lt;/code> to start everything back:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">nginx -s stop
+killall unicorn
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Let&amp;rsquo;s test the gzip compression using &lt;code>curl&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ curl -LI --compressed http://neuro.husmnet/
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You&amp;rsquo;ll get something like this (notice the gzip info):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">HTTP/1.1 200 OK
+Server: nginx/1.2.2
+Date: Sat, 05 Jan 2013 21:00:26 GMT
+Content-Type: text/html; charset=utf-8
+Connection: keep-alive
+Status: 200 OK
+X-UA-Compatible: IE=Edge,chrome=1
+ETag: &amp;#34;a66ac1d43d8f07ecc0737e64dd8a3366&amp;#34;
+Cache-Control: max-age=0, private, must-revalidate
+Set-Cookie: _neuro_session=BAh7B0kiD3Nlc3Npb25faWQGOgZFRkkiJTQ2YTU2NjE3MDY0Y2RkNzk0Yzk3ODhhNDJlYmQ3ODA3BjsAVEkiEF9jc3JmX3Rva2VuBjsARkkiMVNvOXVTS2I2RXJIcTljbS9WeGRDODZyTUpVZENXL2NPVnJhTGR0V2xydGM9BjsARg%3D%3D--173e9d56a5cc434eb675b6626d90aced1cc17cd6; path=/; HttpOnly
+X-Request-Id: 760e233de4980dc75169f2c68a53dc31
+X-Runtime: 0.017885
+X-Rack-Cache: miss
+Content-Encoding: gzip
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>I admit, this is a very simple config, but it&amp;rsquo;s good enough for a beginner like
+me to get started. Good luck!&lt;/p></content></item><item><title>Getting Started with Xen on Slackware</title><link>https://amree.github.io/posts/getting-started-with-xen-on-slackware/</link><pubDate>Wed, 12 Sep 2012 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/getting-started-with-xen-on-slackware/</guid><description>&lt;p>Here&amp;rsquo;s a guide on how to setup Xen virtualization in Slackware.&lt;/p></description><content>&lt;p>Here&amp;rsquo;s a guide on how to setup Xen virtualization in Slackware.&lt;/p>
+&lt;h2 id="install-slackware">Install Slackware&lt;/h2>
+&lt;p>I&amp;rsquo;ll be doing this on Slackware v13.37 64 bit.&lt;/p>
+&lt;ul>
+&lt;li>Create 1 partition for the whole disk&lt;/li>
+&lt;li>Set its type to &lt;code>8e&lt;/code> (Linux LVM)&lt;/li>
+&lt;/ul>
+&lt;p>Run these commands to setup the LVM partitions:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">pvcreate /dev/sda1
+vgcreate vg01 /dev/sda1
+lvcreate -L 20G -n root vg01
+lvcreate -L 20G -n iso vg01
+lvcreate -L 8G -n swap vg01
+mkswap /dev/vg01/swap
+setup
+&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>Mount &lt;code>/dev/vg01/root&lt;/code> as &lt;code>/&lt;/code>&lt;/li>
+&lt;li>Mount &lt;code>/dev/vg01/iso&lt;/code> as &lt;code>/iso&lt;/code>&lt;/li>
+&lt;li>Install all packages from a, ap, d, f, l, n, t, tcl, x&lt;/li>
+&lt;/ul>
+&lt;p>Create custom &lt;code>initrd&lt;/code> after the setup complete:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">chroot /mnt
+/usr/share/mkinitrd/mkinitrd_command_generator.sh &amp;gt; init
+sh init
+ln -sf /boot/vmlinuz-generic-2.6.37.6 /boot/vmlinuz
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Add &lt;code>initrd&lt;/code> option in your &lt;code>/etc/lilo.conf&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt"># /etc/lilo.conf
+image = /boot/vmlinuz
+initrd = /boot/initrd.gz # Add this line
+root = /dev/vg01/root
+label = slackware
+read-only # Partitions should be mounted read-only for checking
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Install the new bootloader and reboot:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">lilo
+exit
+reboot
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="setup-dom0-host">Setup Dom0 (Host)&lt;/h2>
+&lt;h3 id="install-xen">Install Xen&lt;/h3>
+&lt;ul>
+&lt;li>Install &lt;a href="http://slackbuilds.org/repository/13.37/development/acpica/">acpica&lt;/a>&lt;/li>
+&lt;li>Install &lt;a href="http://slackbuilds.org/repository/13.37/system/xen/">xen&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h3 id="build-xen-kernel">Build Xen Kernel&lt;/h3>
+&lt;p>We&amp;rsquo;ll be using kernel v3.2.28 so that no patching will be required to enable Xen
+and for that we&amp;rsquo;ll get the one from Slackware&amp;rsquo;s repo. By the time of this
+writing, Slackware v14 has not been released yet (it&amp;rsquo;s in the current).&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">wget http://slackware.osuosl.org/slackware-current/source/k/linux-3.2.28.tar.xz
+tar Jxvf linux-3.2.28.tar.xz
+mv linux-3.2.28 linux-3.2.28-xen
+mv linux-3.2.28-xen/ /usr/src/
+cd /usr/src
+rm linux
+ln -s linux-3.2.28-xen linux
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Get Slackware&amp;rsquo;s default kernel config for a start. From there, you must add all
+Xen&amp;rsquo;s related kernel configs. You can refer to &lt;a href="http://wiki.xen.org/wiki/Mainline_Linux_Kernel_Configs">Xen&amp;rsquo;s
+wiki&lt;/a> on what kernel
+config that needs to be enabled.&lt;/p>
+&lt;p>You can also get my configs from this &lt;a href="https://gist.github.com/3695518">gist&lt;/a>.
+It&amp;rsquo;s based on 3.2.28 kernel (you can use Gist&amp;rsquo;s diff to see what config I&amp;rsquo;ve
+added).&lt;/p>
+&lt;p>Whatever you chose, make sure you&amp;rsquo;ll change the LOCALVERSION so that you won&amp;rsquo;t
+replace your current kernel. Use &lt;code>cat /proc/cpuinfo | grep -i 'processor' | wc -l&lt;/code> + 1 to get your cpu core count to be used with &lt;code>make -j&lt;/code>.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cd linux
+wget http://slackware.osuosl.org/slackware-current/source/k/config-x86_64/config-generic-3.2.28.x64
+cp config-generic-3.2.28.x64 .config
+make oldconfig
+make menuconfig
+make -j13 bzImage modules
+make modules_install
+cp System.map /boot/System.map-xen-3.2.28
+cp .config /boot/config-xen-3.2.28
+cd /boot
+rm System.map
+ln -s System.map-xen-3.2.28 System.map
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="xen--dom0--initrd">Xen + Dom0 + Initrd&lt;/h3>
+&lt;p>Since LILO doesn&amp;rsquo;t support &amp;ldquo;module&amp;rdquo; directive of Grub, we need to use &lt;code>mbootpack&lt;/code>.&lt;/p>
+&lt;ul>
+&lt;li>Install &lt;a href="http://slackbuilds.org/repository/13.37/system/mbootpack/">mbootpack&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>You can use &lt;code>/usr/share/mkinitrd/mkinitrd_command_generator.sh&lt;/code> for &lt;code>mkinitrd&lt;/code>
+recommendation. Create an initrd for Xen&amp;rsquo;s kernel:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">depmod 3.2.28-xen
+mkinitrd -c -k 3.2.28-xen -f ext4 -r /dev/vg01/root -m mptbase:mptscsih:mptsas:usbhid:ehci-hcd:uhci-hcd:jbd2:mbcache:ext4 -L -u -o /boot/initrd-xen.gz
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Create the boot image using &lt;code>mbootpack&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cd /boot
+gzip -d -c /boot/xen-4.1.2.gz &amp;gt; /boot/xen-4.1.2
+gzip -d -c /boot/initrd-xen.gz &amp;gt; /boot/initrd-xen
+mbootpack -o /boot/vmlinuz-xen-3.2.28 -m /usr/src/linux-3.2.28-xen/vmlinux -m /boot/initrd-xen /boot/xen-4.1.2
+ln -s vmlinuz-xen-3.2.28 vmlinuz-xen
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>With &lt;code>mbootpack&lt;/code>, we don&amp;rsquo;t have to specify &lt;code>initrd&lt;/code> option. Add these new configs into your &lt;code>/etc/lilo.conf&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt"># /etc/lilo.conf
+image = /boot/vmlinuz-xen
+root = /dev/vg01/root
+label = slackware-xen
+append=&amp;#34;-- nomodeset&amp;#34;
+read-only
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Put these configs on the top of your &lt;code>lilo.conf&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">default = slackware-xen
+timeout = 30
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Run &lt;code>lilo&lt;/code> and make sure there&amp;rsquo;s no error from the output:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ lilo
+Warning: LBA32 addressing assumed
+Added slackware
+Added slackware-xen *
+One warning was issued.
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Put these settings in your &lt;code>/etc/rc.d/rc.local&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt"># /etc/rc.d/rc.local
+if [ -d /proc/xen ]; then
+if [ -x /etc/rc.d/rc.xencommons ]; then
+echo &amp;#34;Starting XEN commons: /etc/rc.d/rc.xencommons&amp;#34;
+/etc/rc.d/rc.xencommons start
+fi
+if [ -x /etc/rc.d/rc.xendomains ]; then
+echo &amp;#34;Starting XEN domains: /etc/rc.d/rc.xendomains&amp;#34;
+/etc/rc.d/rc.xendomains start
+fi
+fi
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>And these commands in your &lt;code>/etc/rc.d/rc.local_shutdown&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt"># /etc/rc.d/rc.local_shutdown
+if [ -d /proc/xen ]; then
+if [ -x /etc/rc.d/rc.xendomains ]; then
+echo &amp;#34;Stopping XEN domains: /etc/rc.d/rc.xendomains&amp;#34;
+/etc/rc.d/rc.xendomains stop
+fi
+if [ -x /etc/rc.d/rc.xencommons ]; then
+echo &amp;#34;Stopping XEN commons: /etc/rc.d/rc.xencommons&amp;#34;
+/etc/rc.d/rc.xencommons stop
+fi
+fi
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>After the reboot, you should get something like this:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ uname -r
+3.2.28-xen
+$ cat /proc/xen/capabilities
+control_d
+$ cat /sys/hypervisor/properties/capabilities
+xen-3.0-x86_64 xen-3.0-x86_32p hvm-3.0-x86_32 hvm-3.0-x86_32p hvm-3.0-x86_64
+$ xl list
+Name ID Mem VCPUs State Time&lt;span style="color:#f92672">(&lt;/span>s&lt;span style="color:#f92672">)&lt;/span>
+Domain-0 &lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#ae81ff">15243&lt;/span> &lt;span style="color:#ae81ff">12&lt;/span> r----- 9.0
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Disable autosave and restore of &lt;code>DomU&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt"># /etc/default/xendomains
+XENDOMAINS_RESTORE=false
+XENDOMAINS_SAVE=&amp;#34;&amp;#34;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="setup-domu-guest">Setup DomU (Guest)&lt;/h2>
+&lt;p>I&amp;rsquo;m going to install a Slackware v13.37 64 bit as the first guest. I&amp;rsquo;ll be using
+an ISO image that I&amp;rsquo;ve copied into my &lt;code>/iso&lt;/code>.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cd /iso
+wget http://mirrors.xmission.com/slackware/slackware64-13.37-iso/slackware64-13.37-install-dvd.iso
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>For a start, we need to create a config file for the Slackware installation:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">mkdir ~/machines
+cd ~/machines
+vim slackware-install
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Put these initial configs in your &lt;code>/root/machines/slackware-install&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">kernel = &amp;#39;hvmloader&amp;#39;
+builder=&amp;#39;hvm&amp;#39;
+memory = 1024
+name = &amp;#34;slackware&amp;#34;
+vif = [ &amp;#39;mac=00:16:3E:AD:81:AE, bridge=virbr0, model=e1000&amp;#39; ]
+dhcp = &amp;#34;dhcp&amp;#34;
+disk = [&amp;#39;phy:/dev/vg01/slackware,hda,w&amp;#39;, &amp;#39;file:/iso/slackware64-13.37-install-dvd.iso,hdc:cdrom,r&amp;#39;]
+boot=&amp;#39;dc&amp;#39;
+sdl=0
+opengl=1
+vnc=1
+vncpasswd=&amp;#39;&amp;#39;
+serial=&amp;#39;pty&amp;#39;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>As you can see, there&amp;rsquo;re various of thing thats we need to take care of before
+we start the installation. First of all the networking.&lt;/p>
+&lt;h3 id="generate-random-mac">Generate Random MAC&lt;/h3>
+&lt;p>Use this command (thanks to &lt;a href="http://unixtitan.net/main/2009/12/01/xen-mac-generator/">Unixtitan&lt;/a>):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">perl -e &lt;span style="color:#e6db74">&amp;#39;printf &amp;#34;00:16:3E:%02X:%02X:%02X\n&amp;#34;, rand 0xFF, rand 0xFF, rand 0xFF&amp;#39;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="setup-networking-bridging">Setup Networking Bridging&lt;/h3>
+&lt;p>There are a few methods for a DomU to access the network. For this guide, I&amp;rsquo;ll
+use network bridging.&lt;/p>
+&lt;p>Put these configs (before starting anything related to Xen) into your &lt;code>/etc/rc.d/rc.local&lt;/code> to enable network bridge:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt"># /etc/rc.d/rc.local
+ifconfig eth0 up
+ifconfig eth0 0.0.0.0
+brctl addbr virbr0
+brctl addif virbr0 eth0
+ifconfig virbr0 192.168.1.10 netmask 255.255.255.0
+route add default gw 192.168.1.1
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Clear out any values set in your &lt;code>/etc/rc.d/rc.inet1.conf&lt;/code>. Usually the value of
+&lt;code>IPADDR[0]&lt;/code>, &lt;code>NETMASK[0]&lt;/code> and &lt;code>GATEWAY&lt;/code>.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt"># /etc/rc.d/rc.inet1.conf
+# Config information for eth0:
+IPADDR[0]=&amp;#34;&amp;#34;
+NETMASK[0]=&amp;#34;&amp;#34;
+USE_DHCP[0]=&amp;#34;&amp;#34;
+DHCP_HOSTNAME[0]=&amp;#34;&amp;#34;
+# Default gateway IP address:
+GATEWAY=&amp;#34;&amp;#34;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>This configs assume your main networking interface is &lt;code>eth0&lt;/code>. Change other
+settings based on your network environment. Reboot your &lt;code>Dom0&lt;/code>.&lt;/p>
+&lt;p>You&amp;rsquo;ll get something that looks like this after the reboot (if you got it right).&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">$ ifconfig
+eth0 Link encap:Ethernet HWaddr bc:30:5b:db:e2:99
+inet6 addr: fe80::be30:5bff:fedb:e299/64 Scope:Link
+UP BROADCAST RUNNING MULTICAST MTU:1500 Metric:1
+RX packets:163836 errors:0 dropped:0 overruns:0 frame:0
+TX packets:337 errors:0 dropped:0 overruns:0 carrier:0
+collisions:0 txqueuelen:1000
+RX bytes:18347806 (17.4 MiB) TX bytes:30535 (29.8 KiB)
+Interrupt:36 Memory:d6000000-d6012800
+lo Link encap:Local Loopback
+inet addr:127.0.0.1 Mask:255.0.0.0
+inet6 addr: ::1/128 Scope:Host
+UP LOOPBACK RUNNING MTU:16436 Metric:1
+RX packets:4 errors:0 dropped:0 overruns:0 frame:0
+TX packets:4 errors:0 dropped:0 overruns:0 carrier:0
+collisions:0 txqueuelen:0
+RX bytes:336 (336.0 B) TX bytes:336 (336.0 B)
+virbr0 Link encap:Ethernet HWaddr bc:30:5b:db:e2:99
+inet addr:192.168.1.10 Bcast:192.168.1.255 Mask:255.255.255.0
+inet6 addr: fe80::be30:5bff:fedb:e299/64 Scope:Link
+UP BROADCAST RUNNING MULTICAST MTU:1500 Metric:1
+RX packets:147426 errors:0 dropped:506 overruns:0 frame:0
+TX packets:129 errors:0 dropped:0 overruns:0 carrier:0
+collisions:0 txqueuelen:0
+RX bytes:12417385 (11.8 MiB) TX bytes:16779 (16.3 KiB)
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="enable-x11-forwarding-in-dom0">Enable X11 Forwarding in Dom0&lt;/h3>
+&lt;ul>
+&lt;li>Install &lt;a href="http://slackbuilds.org/repository/12.2/system/vncviewer/">vncviewer&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>Uncomment or create these options in your &lt;code>/etc/ssh/sshd_config&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt"># /etc/ssh/sshd_config
+X11Forwarding yes
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Restart your &lt;code>ssh&lt;/code> server:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">/etc/rc.d/rc.sshd restart
+exit
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Reconnect to &lt;code>Dom0&lt;/code> using &lt;code>-Y&lt;/code> option:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">ssh -Y root@192.168.1.10
+xclock
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If you can see a clock ticking, that means the X11 forward is working.&lt;/p>
+&lt;h3 id="prepare-space-for-domu">Prepare space for DomU&lt;/h3>
+&lt;p>I&amp;rsquo;m going to store my &lt;code>DomU&lt;/code> in the a new logical volume.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">lvcreate -L 15G -n slackware vg01
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="install-slackware-in-domu">Install Slackware in DomU&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cd machines
+xl create slackware
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If everything is good, you should see &lt;code>slackware&lt;/code> when you run &lt;code>xl list&lt;/code>.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">$ xl list
+Name ID Mem VCPUs State Time(s)
+Domain-0 0 13988 12 r----- 40.0
+slackware 2 1019 1 -b---- 4.6
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Install Slackware through VNC:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">xl vncviewer slackware
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Just install as if you&amp;rsquo;re installing on a normal server. &lt;code>halt&lt;/code> after you&amp;rsquo;ve finished your installation.&lt;/p>
+&lt;h3 id="start-slackware-in-domu">Start Slackware in DomU&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cd ~/machines
+cp slackware-install slackware
+vim slackware
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Change these two lines in your config file to make sure it&amp;rsquo;ll boot from the hardisk:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt"># /root/machines/slackware
+disk = [&amp;#39;phy:/dev/vg01/slackware,hda,w&amp;#39;]
+boot=&amp;#39;c&amp;#39;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Start the guest:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">xl create slackware
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="enable-console-in-domu">Enable Console in DomU&lt;/h3>
+&lt;p>It&amp;rsquo;s pretty annoying to use vnc everytime we need to access our &lt;code>DomU&lt;/code> directly. It&amp;rsquo;s possible to connect to our &lt;code>DomU&lt;/code> using console connection:&lt;/p>
+&lt;p>Uncomment these lines:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#75715e"># /etc/inittab&lt;/span>
+s1:12345:respawn:/sbin/agetty -L ttyS0 &lt;span style="color:#ae81ff">9600&lt;/span> vt100
+&lt;span style="color:#75715e"># /etc/securetty&lt;/span>
+ttyS0
+$ reboot
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>For Ubuntu&amp;rsquo;s &lt;code>DomU&lt;/code>, please check out &lt;a href="https://help.ubuntu.com/community/SerialConsoleHowto">https://help.ubuntu.com/community/SerialConsoleHowto&lt;/a>.&lt;/p>
+&lt;p>You can now connect to your Slackware DomU using:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">xl console slackware
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="additional-info">Additional Info&lt;/h2>
+&lt;p>Disable auto save and restore of domUs on host reboot:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">$ vim /etc/default/xendomains
+XENDOMAINS_RESTORE=false
+XENDOMAINS_SAVE=&amp;#34;&amp;#34;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>In order to run &lt;code>xl shutdown guest&lt;/code> so that your &lt;code>DomU&lt;/code> will shutdown
+gracefully, you need to use &lt;a href="http://wiki.xen.org/wiki/Xen_Linux_PV_on_HVM_drivers">PVHVM
+drivers&lt;/a>. You can refer
+&lt;a href="http://wiki.xen.org/wiki/Mainline_Linux_Kernel_Configs">here&lt;/a> for the related
+kernel configs that you need to enable in your kernel.&lt;/p>
+&lt;p>There are still many things that I&amp;rsquo;d like to add, but I think it&amp;rsquo;s good enough
+for now. After all, this post is about getting started, not a complete guide.
+I&amp;rsquo;ll update this post if I found anything worth of sharing.&lt;/p>
+&lt;p>Good luck!&lt;/p>
+&lt;p>More references:&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="http://wiki.xen.org/wiki/XenCommonProblems">http://wiki.xen.org/wiki/XenCommonProblems&lt;/a>&lt;/li>
+&lt;li>&lt;a href="http://wiki.xen.org/wiki/Xen_Best_Practices">http://wiki.xen.org/wiki/Xen_Best_Practices&lt;/a>&lt;/li>
+&lt;li>&lt;a href="http://wiki.xen.org/wiki/Xen_Linux_PV_on_HVM_drivers">http://wiki.xen.org/wiki/Xen_Linux_PV_on_HVM_drivers&lt;/a>&lt;/li>
+&lt;li>&lt;a href="http://alien.slackbook.org/dokuwiki/doku.php?id=linux:kernelbuilding">http://alien.slackbook.org/dokuwiki/doku.php?id=linux:kernelbuilding&lt;/a>&lt;/li>
+&lt;/ul></content></item><item><title>Corosync and Pacemaker in Slackware</title><link>https://amree.github.io/posts/corosync-and-pacemaker-in-slackware/</link><pubDate>Mon, 14 May 2012 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/corosync-and-pacemaker-in-slackware/</guid><description>&lt;p>This will be multi part post about high availability solution for Slackware. My
+first post will be about Corosync and Pacemaker.&lt;/p>
+&lt;p>You need to combine Corosync and Pacemaker with other distributed storage system
+such as
+&lt;a href="http://www.drbd.org/">DRBD&lt;/a>/&lt;a href="http://oss.oracle.com/projects/ocfs2/">OCFS2&lt;/a>/&lt;a href="http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/5/html-single/Global_File_System_2/">GFS&lt;/a>. I&amp;rsquo;ll talk about these stacks in another post.&lt;/p></description><content>&lt;p>This will be multi part post about high availability solution for Slackware. My
+first post will be about Corosync and Pacemaker.&lt;/p>
+&lt;p>You need to combine Corosync and Pacemaker with other distributed storage system
+such as
+&lt;a href="http://www.drbd.org/">DRBD&lt;/a>/&lt;a href="http://oss.oracle.com/projects/ocfs2/">OCFS2&lt;/a>/&lt;a href="http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/5/html-single/Global_File_System_2/">GFS&lt;/a>. I&amp;rsquo;ll talk about these stacks in another post.&lt;/p>
+&lt;p>GOAL:&lt;/p>
+&lt;ul>
+&lt;li>A MySQL server will always be available at the same IP even though it&amp;rsquo;s
+actually down (another server will take over automatically without the needs
+for manual intervention).&lt;/li>
+&lt;/ul>
+&lt;p>Environments:&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>Slackware v13.37&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Two nodes will be used:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">Node 1:
+192.168.1.101
+Node 2:
+192.168.1.102
+Cluster/Main/Failover IP:
+192.168.1.100
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ul>
+&lt;p>The MySQL data is not syncronized, this post is just about
+&lt;a href="http://www.corosync.org/">Corosync&lt;/a> and &lt;a href="http://www.clusterlabs.org/">Pacemaker&lt;/a>.&lt;/p>
+&lt;p>Guides:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Download and install these packages (by this order) in both nodes:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">http://slackbuilds.org/repository/13.37/libraries/libnet/
+http://slackbuilds.org/repository/13.37/libraries/libesmtp/
+http://slackbuilds.org/repository/13.37/system/clusterglue/
+http://slackbuilds.org/repository/13.37/system/clusterresourceagents/
+http://slackbuilds.org/repository/13.37/system/corosync/
+http://slackbuilds.org/repository/13.37/system/pacemaker/
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>I strongly suggest you build these packages one by one just to be sure there
+are no missing dependencies. BTW, some script adjustments are needed for
+Cluster Resource Agents but I&amp;rsquo;m sure you guys can handle it ;-)&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>It would be easier for the next steps if
+&lt;a href="http://www.debian-administration.org/articles/152">password-less&lt;/a> login with
+OpenSSH is enabled. In your &lt;code>Node 1&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">ssh-keygen -t rsa
+ssh-copy-id -i ~/.ssh/id_rsa.pub root@192.168.1.102
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Generate an authentication key for Corosync:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">corosync-keygen
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If you&amp;rsquo;re connecting remotely, pressing your keyboard won&amp;rsquo;t do any good. The
+fastest way would be typing directly into the server. The other way is
+running &lt;code>find .&lt;/code> on your &lt;code>/&lt;/code> directory (press &lt;code>Control + C&lt;/code> when the key has
+been generated).&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Copy the new generated authentication key to &lt;code>Node 2&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">scp /etc/corosync/authkey 192.168.1.102:/etc/corosync
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Copy the default &lt;code>corosync&lt;/code> configuration file:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cp /etc/corosync/corosync.conf.example /etc/corosync/corosync.conf
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Replace &lt;code>bindnetaddr&lt;/code> and &lt;code>logfile&lt;/code> (optional):&lt;/p>
+&lt;pre>&lt;code>bindnetaddr: 192.168.1.0
+logfile: /var/log/corosync
+&lt;/code>&lt;/pre>&lt;p>You can checkout the &lt;a href="http://www.corosync.org/doku.php?id=faq:configure_openais">reference&lt;/a> about those values. From corosync:&lt;/p>
+&lt;blockquote>
+&lt;p>If the local interface was 10.12.12.93 and the netmask was 255.0.0.0, Totem
+would execute the logical operation 10.12.12.93 &amp;amp; 255.0.0.0 and produce the
+value 10.0.0.0. This value would be compared against bindnetaddr and bind Totem
+to the NIC that matches. This can cause confusion if netmask or bindnetaddr are
+not set properly. In the example above, if bindnetaddr is 10.12.12.0, the
+network interface will never be matched. If bindnetaddr is 10.0.0.0 the
+interface will be matched.&lt;/p>
+&lt;/blockquote>
+&lt;/li>
+&lt;li>
+&lt;p>Copy &lt;code>corosync.conf&lt;/code> to &lt;code>Node 2&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">scp /etc/corosync/corosync.conf 192.168.1.102:/etc/corosync
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Create &lt;code>pacemaker&lt;/code> file so that &lt;code>Corosync&lt;/code> will automatically load &lt;code>Pacemaker&lt;/code> when it&amp;rsquo;s started:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">touch /etc/corosync/service.d/pacemaker
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Put these configs in that file:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">service {
+# Load the Pacemaker Cluster Resource Manager
+name: pacemaker
+ver: 0
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Copy the &lt;code>pacemaker&lt;/code> file to Node 2:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">scp /etc/corosync/service.d/pacemaker 192.168.1.102:/etc/corosync/service.d/
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Start your Corosync and let the magic begins:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">/etc/rc.d/rc.corosync start
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Check your log for any error:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">tail -f /var/log/corosync
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Check your process list:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">ps auxf
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Corosync should also load other processes automatically:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">root 2008 0.5 3.4 52668 3964 ? Ssl 13:55 0:00 corosync
+root 2015 0.0 1.9 12140 2248 ? S 13:55 0:00 \_ /usr/lib/heartbeat/stonithd
+226 2016 0.3 3.3 13004 3796 ? S 13:55 0:00 \_ /usr/lib/heartbeat/cib
+root 2017 0.0 1.6 6812 1848 ? S 13:55 0:00 \_ /usr/lib/heartbeat/lrmd
+226 2018 0.1 2.2 12404 2540 ? S 13:55 0:00 \_ /usr/lib/heartbeat/attrd
+226 2019 0.0 1.7 8664 2032 ? S 13:55 0:00 \_ /usr/lib/heartbeat/pengine
+226 2020 0.1 2.5 12528 2904 ? S 13:55 0:00 \_ /usr/lib/heartbeat/crmd
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Monitor your cluster using Pacemaker tools:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">crm status
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>It should be something like this:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#f92672">============&lt;/span>
+Last updated: Sun May &lt;span style="color:#ae81ff">13&lt;/span> 13:57:43 &lt;span style="color:#ae81ff">2012&lt;/span>
+Stack: openais
+Current DC: node1 - partition with quorum
+Version: 1.1.1-b9b672590e79770afb63b9b455400d92fb6b5d9e
+&lt;span style="color:#ae81ff">2&lt;/span> Nodes configured, &lt;span style="color:#ae81ff">2&lt;/span> expected votes
+&lt;span style="color:#ae81ff">0&lt;/span> Resources configured.
+&lt;span style="color:#f92672">============&lt;/span>
+Online: &lt;span style="color:#f92672">[&lt;/span> node1 node2 &lt;span style="color:#f92672">]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Give them some time to online if they&amp;rsquo;re offline.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Put some main configurations to your cluster:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">crm
+configure
+property stonith-enabled&lt;span style="color:#f92672">=&lt;/span>false
+property no-quorum-policy&lt;span style="color:#f92672">=&lt;/span>ignore
+commit
+quit
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If you&amp;rsquo;re getting some errors such as &lt;code>ERROR: cib-bootstrap-options: attribute last-lrm-refresh does not exist&lt;/code>, just proceed. It maybe a
+&lt;a href="http://www.gossamer-threads.com/lists/linuxha/users/63183">bug&lt;/a>.&lt;/p>
+&lt;p>We had to disable &lt;code>stonith&lt;/code> since we just want our Pacemaker to be running.
+However, in real production environment, you really need to configure
+&lt;code>stonith&lt;/code>, you can read more about it
+&lt;a href="http://www.novell.com/support/kb/doc.php?id=7004817">here&lt;/a>.&lt;/p>
+&lt;p>We also need to ignore quorum policy since we&amp;rsquo;re only using 2 nodes and you
+can read more about it
+&lt;a href="http://www.clusterlabs.org/wiki/FAQ#I_Killed_a_Node_but_the_Cluster_Didn.27t_Recover">here&lt;/a>.&lt;/p>
+&lt;p>You can see your new configuration by running:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">crm configure show
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Which will output:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">node node1
+node node2
+property $id=&amp;#34;cib-bootstrap-options&amp;#34; \
+dc-version=&amp;#34;1.1.1-b9b672590e79770afb63b9b455400d92fb6b5d9e&amp;#34; \
+cluster-infrastructure=&amp;#34;openais&amp;#34; \
+expected-quorum-votes=&amp;#34;2&amp;#34; \
+stonith-enabled=&amp;#34;false&amp;#34; \
+last-lrm-refresh=&amp;#34;1336919205&amp;#34; \
+no-quorum-policy=&amp;#34;ignore&amp;#34;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If you accidentally put some wrong configurations and don&amp;rsquo;t know how to edit
+it, you can use &lt;code>crm configure edit&lt;/code> to change your configurations directly
+but this method is highly not recommended since it&amp;rsquo;s error-prone.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>It&amp;rsquo;s time to configure our main/failover/cluster IP (our client will use
+this IP, not the nodes IP):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">crm
+configure
+primitive ip ocf:heartbeat:IPaddr params ip&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;192.168.1.100&amp;#34;&lt;/span> op monitor interval&lt;span style="color:#f92672">=&lt;/span>10s
+commit
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>If everyting goes well, you should be able to ping the cluster IP (&lt;code>192.168.1.100&lt;/code>) and &lt;code>crm status&lt;/code> should yield this result:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">============
+Last updated: Sun May 13 14:28:19 2012
+Stack: openais
+Current DC: node1 - partition with quorum
+Version: 1.1.1-b9b672590e79770afb63b9b455400d92fb6b5d9e
+2 Nodes configured, 2 expected votes
+1 Resources configured.
+============
+Online: [ node1 node2 ]
+ip (ocf::heartbeat:IPaddr): Started node1
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>We&amp;rsquo;ll now setup MySQL monitoring with &lt;code>Pacemaker&lt;/code>. But before that, make sure you:&lt;/p>
+&lt;p>Installed MySQL in both of the nodes.&lt;/p>
+&lt;p>Able to connect to your MySQL from other than &lt;code>localhost&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">mysql -u root -p -h 192.168.1.101
+mysql -u root -p -h 192.168.1.102
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can use this command to allow any host to connect to your MySQL:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">GRANT ALL PRIVILEGES ON *.* TO &amp;#39;root&amp;#39;@&amp;#39;%&amp;#39; IDENTIFIED BY &amp;#39;password&amp;#39; WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Created a database in &lt;code>Node 1&lt;/code> and &lt;code>Node 2&lt;/code>. For an example, a database
+named &lt;code>node1&lt;/code> in &lt;code>Node 1&lt;/code> and &lt;code>node2&lt;/code> in &lt;code>Node 2&lt;/code>. This is just for
+verification.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Add this resource:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">crm
+configure
+primitive mysql ocf:heartbeat:mysql &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>params binary&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;/usr/bin/mysqld_safe&amp;#34;&lt;/span> config&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;/etc/my.cnf&amp;#34;&lt;/span> user&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;mysql&amp;#34;&lt;/span> pid&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;/var/run/mysql/mysql.pid&amp;#34;&lt;/span> datadir&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;/var/lib/mysql&amp;#34;&lt;/span> socket&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;/var/run/mysql/mysql.sock&amp;#34;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>op monitor interval&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;30s&amp;#34;&lt;/span> timeout&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;30s&amp;#34;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>op start interval&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;0&amp;#34;&lt;/span> timeout&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;120&amp;#34;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span>op stop interval&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;0&amp;#34;&lt;/span> timeout&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;120&amp;#34;&lt;/span>
+commit
+quit
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The parameter above is purely based on the standard Slackware&amp;rsquo;s MySQL
+package. So make sure you&amp;rsquo;ve created &lt;code>/etc/my.cnf&lt;/code> which is not available by
+default. Just copy from the default file:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cp /etc/my-small.cnf /etc/my.cnf
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Your latest &lt;code>crm status&lt;/code> would show something like this:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">============
+Last updated: Mon May 14 01:13:23 2012
+Stack: openais
+Current DC: node1 - partition with quorum
+Version: 1.1.1-b9b672590e79770afb63b9b455400d92fb6b5d9e
+2 Nodes configured, 2 expected votes
+2 Resources configured.
+============
+Online: [ node1 node2 ]
+ip (ocf::heartbeat:IPaddr): Started node1
+mysql (ocf::heartbeat:mysql): Started node2
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>As you can see, &lt;code>mysql&lt;/code> has been started on &lt;code>Node 2&lt;/code>. Actually it doesn&amp;rsquo;t
+matter in which node it will start first (for this tutorial, not for the
+production server), what important is that if one of the nodes is down, the
+other node should start its MySQL automatically. You can test this situation
+by running these commands in your &lt;code>Node 2&lt;/code> to simulate a node failure:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">crm
+node
+standby
+quit
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>crm status&lt;/code> would show something like this (give &lt;code>Node 1&lt;/code> some time before it starts its MySQL):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">============
+Last updated: Mon May 14 01:21:12 2012
+Stack: openais
+Current DC: node1 - partition with quorum
+Version: 1.1.1-b9b672590e79770afb63b9b455400d92fb6b5d9e
+2 Nodes configured, 2 expected votes
+2 Resources configured.
+============
+Node node2: standby
+Online: [ node1 ]
+ip (ocf::heartbeat:IPaddr): Started node1
+mysql (ocf::heartbeat:mysql): Started node1
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Right now, your client can use the cluster IP (&lt;code>192.168.1.100&lt;/code>) to connect
+to your MySQL. The client won&amp;rsquo;t realize which node it connected to. In this
+case, he/she will connect to &lt;code>Node 2&lt;/code> if both of them (the nodes) are
+online. If &lt;code>Node 2&lt;/code> is offline, &lt;code>192.168.1.100&lt;/code> will automatically connect
+the client to MySQL in &lt;code>192.168.1.101&lt;/code>. If &lt;code>Node 1&lt;/code> is offline,
+&lt;code>192.168.1.100&lt;/code> will automatically uses MySQL in &lt;code>Node 2&lt;/code> which is in
+&lt;code>192.168.1.102&lt;/code>.&lt;/p>
+&lt;p>To reonline &lt;code>Node 2&lt;/code>, just use these commands in your &lt;code>Node 2&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">crm
+node
+online
+quit
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>However, usually you want to control which MySQL will be up first, either in
+&lt;code>Node 1&lt;/code> or in &lt;code>Node 2&lt;/code>. To make this happen, you need to use &lt;code>colocation&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">crm
+configure
+colocation ip-mysql inf: ip mysql
+commit
+quit
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>crm status&lt;/code> would show something like this:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">============
+Last updated: Mon May 14 01:26:41 2012
+Stack: openais
+Current DC: node1 - partition with quorum
+Version: 1.1.1-b9b672590e79770afb63b9b455400d92fb6b5d9e
+2 Nodes configured, 2 expected votes
+2 Resources configured.
+============
+Online: [ node1 node2 ]
+ip (ocf::heartbeat:IPaddr): Started node1
+mysql (ocf::heartbeat:mysql): Started node1
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>That means, your &lt;code>mysql&lt;/code> has been started on &lt;code>Node 1&lt;/code>. So, everytime
+&lt;code>corosync&lt;/code> is started on both of the nodes, &lt;code>mysql&lt;/code> will be started on &lt;code>Node 1&lt;/code> due to the &lt;code>colocation&lt;/code> configuration.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Try turning off &lt;code>Node 1&lt;/code> or &lt;code>Node 2&lt;/code> and see how MySQL switches side from both of the nodes.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>I think that&amp;rsquo;s it, next tutorial should be mainly about DRBD. Good luck!&lt;/p></content></item><item><title>Using GRUB instead of LILO in Slackware</title><link>https://amree.github.io/posts/using-grub-instead-of-lilo-in-slackware/</link><pubDate>Fri, 11 May 2012 05:00:00 +0000</pubDate><guid>https://amree.github.io/posts/using-grub-instead-of-lilo-in-slackware/</guid><description>&lt;p>These are the steps I used to replace LILO with GRUB as the boot manager after
+&lt;a href="https://amree.github.io/2012/05/11/upgrading-to-kernel-v3-for-slackware-v13.37/">upgrading my kernel to v3&lt;/a>.&lt;/p></description><content>&lt;p>These are the steps I used to replace LILO with GRUB as the boot manager after
+&lt;a href="https://amree.github.io/2012/05/11/upgrading-to-kernel-v3-for-slackware-v13.37/">upgrading my kernel to v3&lt;/a>.&lt;/p>
+&lt;p>Download directly and install:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">wget http://slackware.osuosl.org/slackware-13.37/extra/grub/grub-0.97-i486-9.txz
+installpkg grub-0.97-i486-9.txz
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Then jump to Step 3 and make sure you skip Step 4.&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>If you haven&amp;rsquo;t set any mirror for your &lt;code>slackpkg&lt;/code>, you need to edit your mirror list:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">vim /etc/slackpkg/mirrors
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Add a mirror, for an example, I use the one from Oregon State University:
+&lt;a href="http://slackware.osuosl.org/slackware-13.37/">http://slackware.osuosl.org/slackware-13.37/&lt;/a>&lt;/p>
+&lt;p>Do not forget the trailing &lt;code>/&lt;/code>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Run the update:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">slackpkg update
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Remove LILO&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">removepkg lilo
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Install GRUB&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">slackpkg install grub
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Run configuration editor for GRUB (just like &lt;code>liloconfig&lt;/code>):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">grubconfig
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>This is my working config from &lt;code>/boot/grub/menu.lst&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt"># GRUB configuration file &amp;#39;/boot/grub/menu.lst&amp;#39;.
+# generated by &amp;#39;grubconfig&amp;#39;. Fri May 11 02:21:11 2012
+#
+# The backup copy of the MBR for drive &amp;#39;/dev/sda&amp;#39; is
+# here &amp;#39;/boot/grub/mbr.sda.1594&amp;#39;. You can restore it like this.
+# dd if=mbr.sda.1594 of=/dev/sda bs=512 count=1
+#
+# Start GRUB global section
+#timeout 30
+#color light-gray/blue black/light-gray
+# End GRUB global section
+# Linux bootable partition config begins
+title slackware on (/dev/sda1)
+root (hd0,0)
+kernel /boot/vmlinuz root=/dev/sda1 ro vga=normal
+initrd /boot/initrd-3.2.13-smp
+# Linux bootable partition config ends
+title --- For help press &amp;#39;c&amp;#39;, type: &amp;#39;help&amp;#39;
+root (hd0)
+title --- For usage examples, type: &amp;#39;cat /boot/grub/grub.txt&amp;#39;
+root (hd0)
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ol>
+&lt;p>That&amp;rsquo;s it :)&lt;/p>
+&lt;h2 id="references">References:&lt;/h2>
+&lt;ul>
+&lt;li>&lt;a href="http://gnu-linux-slackware.blogspot.com/2009/07/booting-slackware-with-grub-gnu-grand.html">Booting Slackware with GRUB (GNU Grand Unified Bootloader)&lt;/a>&lt;/li>
+&lt;li>&lt;a href="http://www.linuxquestions.org/questions/slackware-14/how-do-i-modify-grub-to-boot-using-the-generic-kernel-863073/">How do I modify GRUB to boot using the generic kernel?&lt;/a>&lt;/li>
+&lt;/ul></content></item><item><title>Upgrading to Kernel v3 for Slackware v13.37</title><link>https://amree.github.io/posts/upgrading-to-kernel-v3-for-slackware-v13.37/</link><pubDate>Fri, 11 May 2012 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/upgrading-to-kernel-v3-for-slackware-v13.37/</guid><description>&lt;p>It&amp;rsquo;s time for an upgrade!&lt;/p></description><content>&lt;p>It&amp;rsquo;s time for an upgrade!&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Get all the necessary packages:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">wget http://slackware.osuosl.org/slackware-current/slackware/a/kernel-generic-smp-3.2.13_smp-i686-1.txz
+wget http://slackware.osuosl.org/slackware-current/slackware/a/kernel-modules-smp-3.2.13_smp-i686-1.txz
+wget http://slackware.osuosl.org/slackware-current/slackware/a/lilo-23.2-i486-1.txz
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Change your run level:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">telinit &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Install the kernel&amp;rsquo;s package:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">installpkg kernel-generic-smp-3.2.13_smp-i686-1.txz
+kernel-modules-smp-3.2.13_smp-i686-1.txz
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Create initial ramdisk images for preloading modules:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cd /boot
+mkinitrd -c -k 3.2.2-smp -m ext4 -f ext4 -r /dev/sda1 -o initrd-3.2.2-smp
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Edit your &lt;code>lilo.conf&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-text" data-lang="text"># Linux bootable partition config begins
+image = /boot/vmlinuz-generic-smp-3.2.2-smp
+initrd = /boot/initrd-3.2.2-smp
+root = /dev/sda1
+label = slackware
+read-only # Partitions should be mounted read-only for checking
+# Linux bootable partition config ends
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Reload &lt;code>lilo&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">lilo -v
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You&amp;rsquo;ll get:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-text" data-lang="text">Fatal: Setup length exceeds 31 maximum; kernel setup will overwrite boot loader
+&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>It&amp;rsquo;s because the kernel has grown so large. You can fix it by installing a
+fixed lilo from slackware-current, too&amp;quot; - from
+&lt;a href="http://www.linuxquestions.org/questions/slackware-14/using-slackware-3-2-kernel-package-from-current-on-13-37-a-927856/">LQ&lt;/a>.&lt;/p>
+&lt;/blockquote>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">upgradepkg /root/lilo-23.2-i486-1.txz
+lilo -v
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Reboot.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Check your new kernel information:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">uname -a
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You should get something like this:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">Linux slackware 3.2.13-smp &lt;span style="color:#75715e">#1 SMP Fri Mar 23 23:21:11 CDT 2012 i686 Intel(R) Core(TM)2 Duo CPU P8800 @ 2.66GHz GenuineIntel GNU/Linux&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ol>
+&lt;p>That&amp;rsquo;s all. Thanks for reading!&lt;/p></content></item><item><title>How to Read MyKad</title><link>https://amree.github.io/posts/how-to-read-mykad/</link><pubDate>Mon, 05 Dec 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/how-to-read-mykad/</guid><description>&lt;p>I&amp;rsquo;ve decided to merge posts about reading MyKad from my previous blog into a
+single post.&lt;/p>
+&lt;p>Notes:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>The &lt;strong>original codes were written by Xenon&lt;/strong> from
+&lt;a href="http://forum.lowyat.net/">Lowyat.net&lt;/a>. Somehow, he managed to reverse
+engineer MyKad&amp;rsquo;s APDU so that we can read it without buying any SDK.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>This application &lt;strong>only&lt;/strong> reads data from Jabatan Pendaftaran Negara (JPN).&lt;/p>
+&lt;/li>
+&lt;/ol></description><content>&lt;p>I&amp;rsquo;ve decided to merge posts about reading MyKad from my previous blog into a
+single post.&lt;/p>
+&lt;p>Notes:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>The &lt;strong>original codes were written by Xenon&lt;/strong> from
+&lt;a href="http://forum.lowyat.net/">Lowyat.net&lt;/a>. Somehow, he managed to reverse
+engineer MyKad&amp;rsquo;s APDU so that we can read it without buying any SDK.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>This application &lt;strong>only&lt;/strong> reads data from Jabatan Pendaftaran Negara (JPN).&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>Xenon also wrote two small example applications to read MyKad. I&amp;rsquo;ve listed them
+based on the programming language. Click on the link to download it:&lt;/p>
+&lt;ol>
+&lt;li>&lt;a href="https://github.com/amree/mykad-c">Visual C&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://github.com/amree/mykad-vb.net">Visual Basic .NET&lt;/a>&lt;/li>
+&lt;/ol>
+&lt;p>Since there&amp;rsquo;s no Java implementation of the code yet, I&amp;rsquo;ve decided to develop
+one. You can also get the source code from my
+&lt;a href="http://github.com/amree/mykad-java">Github&lt;/a>. It&amp;rsquo;s written using Netbeans.&lt;/p>
+&lt;p>I&amp;rsquo;m not going to give explanation about the code. Instead, I&amp;rsquo;m going to guide
+you guys on how to setup your system (Linux and Windows) so that you can read
+the Java application to read a MyKad.&lt;/p>
+&lt;h1 id="windows">Windows&lt;/h1>
+&lt;ol>
+&lt;li>
+&lt;p>Download &lt;a href="http://www.musclecard.com/middle.html">Windows binary&lt;/a> of JPC/SC Java API.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Download the application which is in Netbeans project format from my Github.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>You &lt;strong>must include&lt;/strong> &lt;code>jpcsc.jar&lt;/code> as the library. You can get the file from Step 1.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>You also &lt;strong>must put&lt;/strong> &lt;code>jpcsc.dll&lt;/code> into your main project folder. Furthermore,
+if you want to distribute the application, you need to put it together with
+your main jar file. You can also get the file from Step 1.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Plug in your reader (obviously).&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Run the application. I&amp;rsquo;d recommend you run it through Netbeans.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Insert a MyKad.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Wait until the application finish reading it (usually once the LED stop
+blinking).&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>A GUI will be displayed presenting your MyKad data.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>If there&amp;rsquo;s no data showing, there&amp;rsquo;s a possibility that your MyKad chip is
+spoiled.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;h1 id="linux">Linux&lt;/h1>
+&lt;ol>
+&lt;li>
+&lt;p>Login as a &lt;strong>root&lt;/strong>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Download &lt;a href="http://pcsclite.alioth.debian.org/">PCSC Lite&lt;/a> and install it. You
+need to put some parameters in your &lt;code>./configure&lt;/code> if you want to enable
+&lt;code>libusb&lt;/code> support. Please check the &lt;code>README&lt;/code>.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">tar xvjf pcsc-lite-1.8.1.tar.bz2
+cd pcsc-lite-1.8.1
+./configure --enable-libusb --disable-libudev
+make
+make install
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Download and install your reader&amp;rsquo;s driver. I&amp;rsquo;m using &lt;a href="http://www.hidglobal.com/prod_detail.php?prod_id=171">OMNIKEY 5321 USB&lt;/a>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Get &lt;a href="http://www.musclecard.com/middle.html">Windows binary&lt;/a> of JPC/SC Java API. It&amp;rsquo;s for Windows but it also has a precompiled Linux library in it.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Extract, copy and update:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">unzip jpcsc-0.8.0.zip
+cd jpcsc/bin/linux
+cp libjpcsc.so /usr/lib
+ldconfig
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Start the pcsc service:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">pcscd -d -f
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You should get something like this:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-text" data-lang="text">00000000 pcscdaemon.c:233:main() pcscd set to foreground with debug send to stdout
+00000044 configfile.l:287:DBGetReaderList() Parsing conf file: /usr/local/etc/reader.conf.d
+00000008 pcscdaemon.c:518:main() pcsc-lite 1.8.1 daemon ready.
+00001566 hotplug_libusb.c:514:HPAddHotPluggable() Adding USB device: 4:2:0
+00008631 readerfactory.c:934:RFInitializeReader() Attempting startup of OMNIKEY CardMan 5x21 (USB iClass Reader) 00 00 using /usr/local/lib/pcsc/drivers/ifdokrfid_lnx_i
+00000179 readerfactory.c:824:RFBindFunctions() Loading IFD Handler 3.0 HID HID Global OMNIKEY RFID IA32 v2.9.1
+00300863 readerfactory.c:296:RFAddReader() Using the reader polling thread
+00001975 readerfactory.c:934:RFInitializeReader() Attempting startup of OMNIKEY CardMan 5x21 (USB iClass Reader) 00 01 using /usr/local/lib/pcsc/drivers/ifdokrfid_lnx_i
+00000012 readerfactory.c:738:RFLoadReader() Reusing already loaded driver for /usr/local/lib/pcsc/drivers/ifdokrfid_lnx_i686-2.9.1.bundle/Contents/Linux/ifdokrfid.so
+00000014 readerfactory.c:824:RFBindFunctions() Loading IFD Handler 3.0 HID HID Global OMNIKEY RFID IA32 v2.9.1
+00424985 readerfactory.c:453:RFAddReader() Using the reader polling thread
+00444313 readerfactory.c:1301:RFWaitForReaderInit() Waiting init for reader: OMNIKEY CardMan 5x21 (USB iClass Reader) 00 01
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Run the Java application, it should be working right now.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>That&amp;rsquo;s it, again, the full credit should goes to Xenon :)&lt;/p></content></item><item><title>A Simple Working Example for Qt NCReport</title><link>https://amree.github.io/posts/a-simple-working-example-for-qt-ncreport/</link><pubDate>Sat, 09 Jul 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/a-simple-working-example-for-qt-ncreport/</guid><description>&lt;p>This should help you with NCReport in Qt.&lt;/p></description><content>&lt;p>This should help you with NCReport in Qt.&lt;/p>
+&lt;h2 id="windows">Windows&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>Download NCReport with MingW for Windows.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Install NCReport at&lt;/p>
+&lt;pre>&lt;code>C:\NCReport\2.6.1.mingw.eval
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Get the full &lt;a href="https://github.com/amree/ncreport-example">source code&lt;/a> of the project at my Github.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Go to Projects (bar at the left) &amp;gt; Run Settings &amp;gt; Click Details on the Run
+Environment &amp;gt; Edit PATH’s variable and append the following line at the end
+of the string.&lt;/p>
+&lt;pre>&lt;code>;C:\NCReport\2.6.1.mingw.eval\bin
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Run the project in &lt;strong>Debug&lt;/strong> and &lt;strong>Release&lt;/strong> mode. You should be able to run the report by clicking the button.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>Tested on:&lt;/p>
+&lt;ul>
+&lt;li>Windows 7 (64 bit)&lt;/li>
+&lt;li>NCReport 2.6.1 with MingW for Windows&lt;/li>
+&lt;li>QtSDK 1.1.2&lt;/li>
+&lt;li>Qt 4.7.3&lt;/li>
+&lt;li>Qt Creator 2.2.1&lt;/li>
+&lt;/ul>
+&lt;h2 id="linux">Linux&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>Download NCReport for Linux.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Install NCReport at &lt;code>/opt/ncreport&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Get the full &lt;a href="https://github.com/amree/ncreport-example">source code&lt;/a> of the project at my Github.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Run the project in &lt;strong>Debug&lt;/strong> and &lt;strong>Release&lt;/strong> mode. You should be able to run the report by clicking the button.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>Tested on:&lt;/p>
+&lt;ul>
+&lt;li>Slackware 13.37 (32 Bit)&lt;/li>
+&lt;li>NCReport 2.6.1 for Linux&lt;/li>
+&lt;li>QtSDK 1.1.2&lt;/li>
+&lt;li>Qt 4.7.3&lt;/li>
+&lt;li>Qt Creator 2.2.1&lt;/li>
+&lt;/ul></content></item><item><title>Using Sybase with Ruby on Rails on Linux</title><link>https://amree.github.io/posts/using-sybase-with-ruby-on-rails-on-linux/</link><pubDate>Fri, 01 Jul 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/using-sybase-with-ruby-on-rails-on-linux/</guid><description>&lt;p>This guide will help you (mostly will help me in the future) to configure your
+Ruby on Rails to support connection to Sybase.&lt;/p></description><content>&lt;p>This guide will help you (mostly will help me in the future) to configure your
+Ruby on Rails to support connection to Sybase.&lt;/p>
+&lt;p>I wrote this tutorial after everything’s good, so, I might miss a few steps that
+I’ve forgotten. Feel free to comment about it. With some adjustments, this guide
+&lt;strong>will also works with Mac OS X&lt;/strong>.&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Install FreeTDS. For Slackware users, you can get Slackbuild script at
+&lt;a href="http://slackbuilds.org/repository/13.37/development/freetds/">http://slackbuilds.org/repository/13.37/development/freetds/&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Edit &lt;code>/etc/freetds/freetds.conf&lt;/code> and put your database configurations in it:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ini" data-lang="ini">&lt;span style="color:#66d9ef">[myserver]&lt;/span>
+&lt;span style="color:#a6e22e">host&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">myserver.com&lt;/span>
+&lt;span style="color:#a6e22e">port&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">5000&lt;/span>
+&lt;span style="color:#a6e22e">tds version&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">5.0&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Test the configuration, you should get something like this:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">$ tsql -S myserver -U username
+locale is &amp;#34;C&amp;#34;
+locale charset is &amp;#34;ANSI_X3.4-1968&amp;#34;
+using default charset &amp;#34;ISO-8859-1&amp;#34;
+Msg 5704 (severity 10, state 1) from ???:
+&amp;#34;Changed client character set setting to &amp;#39;iso_1&amp;#39;.
+&amp;#34;
+1&amp;gt;
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Put this gems in your &lt;code>Gemfile&lt;/code> and run &lt;code>bundle&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">gem &lt;span style="color:#e6db74">&amp;#39;arel-sybase-visitor&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">:git&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;https://github.com/ifad/arel-sybase-visitor&amp;#39;&lt;/span>
+gem &lt;span style="color:#e6db74">&amp;#39;activerecord-sybase-adapter&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">:git&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;https://github.com/ifad/activerecord-sybase-adapter&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>An example configuration for your &lt;code>database.yml&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yml" data-lang="yml">&lt;span style="color:#f92672">development&lt;/span>:
+&lt;span style="color:#f92672">adapter&lt;/span>: &lt;span style="color:#ae81ff">sybase&lt;/span>
+&lt;span style="color:#f92672">dataserver&lt;/span>: &lt;span style="color:#ae81ff">myserver&lt;/span>
+&lt;span style="color:#f92672">username&lt;/span>:
+&lt;span style="color:#f92672">password&lt;/span>:
+&lt;span style="color:#f92672">database&lt;/span>:
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>You can try some query using your &lt;code>rails console&lt;/code> to make sure everything
+works fine.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>If you&amp;rsquo;re trying to connect from your &lt;code>irb&lt;/code> directly without using
+ActiveRecord you may want to put additional parameters. This works for me:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">client &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">TinyTds&lt;/span>&lt;span style="color:#f92672">::&lt;/span>&lt;span style="color:#66d9ef">Client&lt;/span>&lt;span style="color:#f92672">.&lt;/span>new(
+&lt;span style="color:#e6db74">:username&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">:password&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">:dataserver&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;myserver&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">:tds_version&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;100&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">:encoding&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;iso_1&amp;#39;&lt;/span>
+)
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ol>
+&lt;p>That&amp;rsquo;s it, good luck!&lt;/p></content></item><item><title>Running Multiple MySQL on a Single Server</title><link>https://amree.github.io/posts/running-multiple-mysql-on-a-single-server/</link><pubDate>Tue, 15 Mar 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/running-multiple-mysql-on-a-single-server/</guid><description>&lt;p>I’m pretty sure I’m going to forget these steps, so, just to be safe, I’m
+putting it here. I’m dividing this tutorial into two sections, one for default
+MySQL that comes from Slackware and the other one is for new MySQL.&lt;/p></description><content>&lt;p>I’m pretty sure I’m going to forget these steps, so, just to be safe, I’m
+putting it here. I’m dividing this tutorial into two sections, one for default
+MySQL that comes from Slackware and the other one is for new MySQL.&lt;/p>
+&lt;h2 id="using-the-default-mysql">Using the Default MySQL&lt;/h2>
+&lt;p>We need to create separate (different from the default) directory for the data
+to be stored. I’m going to create a new one for it. I’m going to name the
+directory as &lt;code>mysql-1&lt;/code>. Make sure you use full path when running
+&lt;code>mysql_install_db&lt;/code>.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cd /var/lib
+mkdir mysql-1
+chown -R mysql.mysql mysql-1
+mysql_install_db --datadir&lt;span style="color:#f92672">=&lt;/span>/var/lib/mysql-1 --user&lt;span style="color:#f92672">=&lt;/span>mysql
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>We also need a new configuration file so that it won’t clash with the default
+MySQL.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cp /etc/my-small.cnf /etc/my-1.cnf
+nano /etc/my-1.cnf
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>These are the settings that I’ve changed from the default file (other settings
+remain unchanged).&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ini" data-lang="ini">&lt;span style="color:#66d9ef">[client]&lt;/span>
+&lt;span style="color:#a6e22e">port&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">3307&lt;/span>
+&lt;span style="color:#a6e22e">socket&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">/var/run/mysql/mysql-1.sock&lt;/span>
+&lt;span style="color:#66d9ef">[mysqld]&lt;/span>
+&lt;span style="color:#a6e22e">port&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">3307&lt;/span>
+&lt;span style="color:#a6e22e">socket&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">/var/run/mysql/mysql-1.sock&lt;/span>
+&lt;span style="color:#a6e22e">server-id&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">10&lt;/span>
+&lt;span style="color:#a6e22e">innodb_data_home_dir&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">/var/lib/mysql-1/&lt;/span>
+&lt;span style="color:#a6e22e">innodb_log_group_home_dir&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">/var/lib/mysql-1/&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To run our newly configured MySQL instance, use this command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">/usr/bin/mysqld_safe --defaults-file&lt;span style="color:#f92672">=&lt;/span>/etc/my-1.cnf --datadir&lt;span style="color:#f92672">=&lt;/span>/var/lib/mysql-1 &amp;amp;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>By checking background process, you should see something like this&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ ps ax | grep mysql
+&lt;span style="color:#ae81ff">23416&lt;/span> pts/1 S 0:00 /bin/sh /usr/bin/mysqld_safe --defaults-file&lt;span style="color:#f92672">=&lt;/span>/etc/my-1.cnf --datadir&lt;span style="color:#f92672">=&lt;/span>/var/lib/mysql-1
+&lt;span style="color:#ae81ff">23515&lt;/span> pts/1 Sl 0:00 /usr/libexec/mysqld --defaults-file&lt;span style="color:#f92672">=&lt;/span>/etc/my-1.cnf --basedir&lt;span style="color:#f92672">=&lt;/span>/usr --datadir&lt;span style="color:#f92672">=&lt;/span>/var/lib/mysql-1 --user&lt;span style="color:#f92672">=&lt;/span>mysql --log-error&lt;span style="color:#f92672">=&lt;/span>/var/lib/mysql-1/eebox.err --pid-file&lt;span style="color:#f92672">=&lt;/span>/var/lib/mysql-1/eebox.pid --socket&lt;span style="color:#f92672">=&lt;/span>/var/run/mysql/mysql-1.sock --port&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">3307&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Time for some test, we need to make sure we’re connecting to the correct server. One way to do this is by checking the &lt;code>server_id&lt;/code>.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ mysql -u root -h 127.0.0.1 -P &lt;span style="color:#ae81ff">3307&lt;/span>
+mysql&amp;gt; SHOW VARIABLES LIKE &lt;span style="color:#e6db74">&amp;#34;server_id&amp;#34;&lt;/span>;
++---------------+-------+
+| Variable_name | Value |
++---------------+-------+
+| server_id | &lt;span style="color:#ae81ff">10&lt;/span> |
++---------------+-------+
+&lt;span style="color:#ae81ff">1&lt;/span> row in set &lt;span style="color:#f92672">(&lt;/span>0.00 sec&lt;span style="color:#f92672">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>As you can see, we have the same server_id as we specified in our my-1.cnf. You can use this command to shut it down.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">mysqladmin -h 127.0.0.1 -P &lt;span style="color:#ae81ff">3307&lt;/span> shutdown
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="using-new-downloaded-mysql">Using new Downloaded MySQL&lt;/h2>
+&lt;p>Download &lt;a href="http://dev.mysql.com/downloads/">MySQL Download&lt;/a> &amp;gt; MySQL Community Server &amp;gt; Linux Generic &amp;gt; Linux – Generic 2.6 (x86, 32-bit), Compressed TAR Archive&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cp mysql-5.5.9-linux2.6-i686.tar.gz /opt
+cd opt
+tar zxvf mysql-5.5.9-linux2.6-i686.tar.gz
+mv mysql-5.5.9-linux2.6-i686 mysql
+cd mysql
+chown -R mysql.mysql .
+./scripts/mysql_install_db --user&lt;span style="color:#f92672">=&lt;/span>mysql
+cp support-files/my-small.cnf /etc/my-2.cnf
+nano /etc/my-2.cnf
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>/etc/my-2.cnf&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ini" data-lang="ini">&lt;span style="color:#66d9ef">[client]&lt;/span>
+&lt;span style="color:#a6e22e">port&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">3308&lt;/span>
+&lt;span style="color:#a6e22e">socket&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">/var/run/mysql/mysql-2.sock&lt;/span>
+&lt;span style="color:#66d9ef">[mysqld]&lt;/span>
+&lt;span style="color:#a6e22e">port&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">3308&lt;/span>
+&lt;span style="color:#a6e22e">socket&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">/var/run/mysql/mysql-2.sock&lt;/span>
+&lt;span style="color:#a6e22e">server-id&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">20&lt;/span>
+&lt;span style="color:#a6e22e">innodb_data_home_dir&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">/var/lib/mysql-1/&lt;/span>
+&lt;span style="color:#a6e22e">innodb_log_group_home_dir&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">/var/lib/mysql-1/&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To run it, you need to specify some parameters&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">/opt/mysql/bin/mysqld --defaults-file&lt;span style="color:#f92672">=&lt;/span>/etc/my-2.cnf --basedir&lt;span style="color:#f92672">=&lt;/span>/opt/mysql --datadir&lt;span style="color:#f92672">=&lt;/span>/opt/mysql/data --plugin-dir&lt;span style="color:#f92672">=&lt;/span>/opt/mysql/lib/plugin --user&lt;span style="color:#f92672">=&lt;/span>mysql --log-error&lt;span style="color:#f92672">=&lt;/span>/opt/mysql/data/eebox.err
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To shut it down, you can use the following command&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">./bin/mysqladmin -h 127.0.0.1 -P &lt;span style="color:#ae81ff">3308&lt;/span> shutdown
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can test the server connection just like the method I used above.&lt;/p>
+&lt;p>That&amp;rsquo;s it, good luck!&lt;/p></content></item><item><title>Configuring Linux to work with NVidia Hybrid SLI Technology</title><link>https://amree.github.io/posts/configuring-linux-to-work-with-nvidia-hybrid-sli-technology/</link><pubDate>Sun, 21 Feb 2010 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/configuring-linux-to-work-with-nvidia-hybrid-sli-technology/</guid><description>&lt;p>First of all, at the time of this writing, NVIDIA Hybrid SLI Technology is &lt;a href="http://www.nvnews.net/vbulletin/showpost.php?p=1613349&amp;amp;postcount=2">not supported&lt;/a>
+on Linux and without proper configuration, you won’t even be able to load your
+Desktop Environment such as Xfce.&lt;/p></description><content>&lt;p>First of all, at the time of this writing, NVIDIA Hybrid SLI Technology is &lt;a href="http://www.nvnews.net/vbulletin/showpost.php?p=1613349&amp;amp;postcount=2">not supported&lt;/a>
+on Linux and without proper configuration, you won’t even be able to load your
+Desktop Environment such as Xfce.&lt;/p>
+&lt;p>That’s not the only problem, based on an
+&lt;a href="http://www.nvnews.net/articles/hybrid_sli_interview/index.shtml">interview&lt;/a>
+with NVIDIA’s Tom Petersen, one of its main feature is called HybridPower which
+basically allows users to shut off the graphics card when not needed and
+dramatically reduce power consumption. This means, there is a possibility that
+if we can’t find a way to turn off the second GPU, it will consume more power
+that it should be.&lt;/p>
+&lt;p>But that’s another problem. Right now, we just want to boot into our Desktop Environment properly.&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Running &lt;code>startx&lt;/code> would show these error messages from &lt;code>/var/log/Xorg.0.log&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">(!!) More than one possible primary device found
+(--) PCI: (0:2:0:0) 10de:06e8:1028:0271 rev 161, Mem @ 0xae000000/16777216, 0xd0000000/268435456, 0xac000000/33554432, I/O @ 0x00004000/128
+(--) PCI: (0:3:0:0) 10de:0866:1028:0271 rev 177, Mem @ 0xaa000000/16777216, 0xb0000000/268435456, 0xcc000000/33554432, I/O @ 0x00005000/128, BIOS @ 0x????????/131072
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Generate the default configuration for your X (using root):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">nvidia-xconfig
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Get the list of the GPUs.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">$ lspci
+02:00.0 VGA compatible controller: nVidia Corporation G98 [GeForce 9200M GS] (rev a1)
+03:00.0 VGA compatible controller: nVidia Corporation C79 [GeForce 9400M G] (rev b1)
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You will get a long list of devices connected to your PCI buses. We are only interested with the VGA controller.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>As you can see, we have two VGA controller, we just need to specify which one we would like to use.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">nano /etc/X11/xorg.conf
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Go to your Device section and set Bus ID for your controller in it. So, in the end, if I chose the second controller, my &lt;code>Xorg.conf&lt;/code> would somehow look like this:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">Section &amp;#34;Device&amp;#34;
+Identifier &amp;#34;Device0&amp;#34;
+Driver &amp;#34;nvidia&amp;#34;
+VendorName &amp;#34;NVIDIA Corporation&amp;#34;
+BoardName &amp;#34;GeForce 9400M G&amp;#34;
+BusID &amp;#34;PCI:3:0:0&amp;#34;
+EndSection
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The configuration is simple, you just need to &lt;strong>add the 6th line&lt;/strong>. Just
+make sure you put it in the correct format &lt;code>PCI:X:X:X&lt;/code>, X possibly refers
+to the last 3 digit number in your error log.&lt;/p>
+&lt;/li>
+&lt;/ol></content></item><item><title>How to Enable MySQL Support in Qt SDK for Linux</title><link>https://amree.github.io/posts/how-to-enable-mysql-support-in-qt-sdk-for-linux/</link><pubDate>Wed, 22 Jul 2009 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/how-to-enable-mysql-support-in-qt-sdk-for-linux/</guid><description>&lt;p>Known to work with:&lt;/p>
+&lt;ul>
+&lt;li>Slackware v13.37&lt;/li>
+&lt;li>Qt SDK v1.1.5 (32 bit)&lt;/li>
+&lt;li>Qt v4.8.0&lt;/li>
+&lt;li>MySQL v5.5.18&lt;/li>
+&lt;/ul></description><content>&lt;p>Known to work with:&lt;/p>
+&lt;ul>
+&lt;li>Slackware v13.37&lt;/li>
+&lt;li>Qt SDK v1.1.5 (32 bit)&lt;/li>
+&lt;li>Qt v4.8.0&lt;/li>
+&lt;li>MySQL v5.5.18&lt;/li>
+&lt;/ul>
+&lt;p>Please follow this guide properly:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Download Qt SDK for Linux/X11 at Qt Software.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Install it anywhere you want, just make sure you remember the path. I installed mine at &lt;code>/opt&lt;/code>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>To build MySQL as a plugin, you need to know two other paths:&lt;/p>
+&lt;p>MySQL header directory&amp;rsquo;s files example:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">decimal.h m_string.h my_dbug.h my_list.h my_sys.h mysql_embed.h mysqld_error.h sql_state.h typelib.h
+errmsg.h my_alloc.h my_dir.h my_net.h my_xml.h mysql_time.h raid.h sslopt-case.h
+keycache.h my_attribute.h my_getopt.h my_no_pthread.h mysql.h mysql_version.h readline.h sslopt-longopts.h
+m_ctype.h my_config.h my_global.h my_pthread.h mysql_com.h mysqld_ername.h sql_common.h sslopt-vars.h
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>MySQL library directory&amp;rsquo;s files example:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">libdbug.a libmyisammrg.a libmysqlclient.so@ libmysqlclient_r.a libmysqlclient_r.so.15@ libmysys.a
+libheap.a libmysqlclient.a libmysqlclient.so.15@ libmysqlclient_r.la* libmysqlclient_r.so.15.0.0* libvio.a
+libmyisam.a libmysqlclient.la* libmysqlclient.so.15.0.0* libmysqlclient_r.so@ libmystrings.a
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>I installed my MySQL at &lt;code>/opt&lt;/code>, so those files will be in:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#75715e"># Headers directory&lt;/span>
+/opt/mysql-5.5.18-linux2.6-i686/include/
+&lt;span style="color:#75715e"># Libraries directory&lt;/span>
+/opt/mysql-5.5.18-linux2.6-i686/lib
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Go to your main Qt SDK installation&amp;rsquo;s path:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cd /opt/QtSDK/
+cd QtSources/4.8.0/src/plugins/sqldrivers
+&lt;span style="color:#75715e"># Replace all the path based on your computer environment.&lt;/span>
+/opt/QtSDK/Desktop/Qt/4.8.0/gcc/bin/qmake -o Makefile &lt;span style="color:#e6db74">&amp;#34;INCLUDEPATH+=/opt/mysql-5.5.18-linux2.6-i686/include/&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;LIBS+=-L/opt/mysql-5.5.18-linux2.6-i686/lib -lmysqlclient&amp;#34;&lt;/span> mysql.pro
+make
+/opt/QtSDK/Desktop/Qt/4.8.0/gcc/bin/qmake &lt;span style="color:#e6db74">&amp;#34;INCLUDEPATH+=/opt/mysql-5.5.18-linux2.6-i686/include/&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;LIBS+=-L/opt/mysql-5.5.18-linux2.6-i686/lib -lmysqlclient_r&amp;#34;&lt;/span> mysql.pro
+make
+make install
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Some files with &lt;code>mysql&lt;/code> in the name will be copied in your sqldrivers path:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">/opt/QtSDK/Desktop/Qt/4.8.0/gcc/plugins/sqldrivers
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Before trying your MySQL coding, please make sure &lt;code>libmysqlclient.so&lt;/code> is in
+the &lt;code>LD_LIBRARY_PATH&lt;/code>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Create a new project and put these codes to test your new plugin.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">QT += core sql
+QT -= gui
+TARGET = mysql
+CONFIG += console
+CONFIG -= app_bundle
+TEMPLATE = app
+SOURCES += main.cpp
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Make sure you have &lt;code>mysql&lt;/code> included in your &lt;code>.pro&lt;/code> file.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="color:#75715e">#include&lt;/span> &lt;span style="color:#75715e">&amp;lt;QCoreApplication&amp;gt;&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e">#include&lt;/span> &lt;span style="color:#75715e">&amp;lt;QtSql&amp;gt;&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#66d9ef">int&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>(&lt;span style="color:#66d9ef">int&lt;/span> argc, &lt;span style="color:#66d9ef">char&lt;/span> &lt;span style="color:#f92672">*&lt;/span>argv[])
+{
+QCoreApplication a(argc, argv);
+qDebug() &lt;span style="color:#f92672">&amp;lt;&amp;lt;&lt;/span> QSqlDatabase&lt;span style="color:#f92672">::&lt;/span>drivers();
+&lt;span style="color:#66d9ef">return&lt;/span> a.exec();
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You should get &lt;code>QMYSQL&lt;/code> in the outputs when you ran the application:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">(&amp;#34;QSQLITE&amp;#34;, &amp;#34;QMYSQL3&amp;#34;, &amp;#34;QMYSQL&amp;#34;)
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can find my info at &lt;a href="http://qt-project.org/doc/qt-4.8/sql-driver.html">http://qt-project.org/doc/qt-4.8/sql-driver.html&lt;/a>.&lt;/p>
+&lt;/li>
+&lt;/ol></content></item><item><title>Reading Mifare 1K Card using Java in Linux</title><link>https://amree.github.io/posts/reading-mifare-1k-card-using-java-in-linux/</link><pubDate>Wed, 11 Feb 2009 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/reading-mifare-1k-card-using-java-in-linux/</guid><description>&lt;h2 id="the-story">The Story&lt;/h2>
+&lt;p>At the end of last year, my friends and I were tasked to read our staff card.
+The main objective was pretty simple which is to create a library where we don’t
+have to depend on the vendor every time we want to read our own staff card and
+the library should also work in Linux and Windows (that means Java to us).&lt;/p></description><content>&lt;h2 id="the-story">The Story&lt;/h2>
+&lt;p>At the end of last year, my friends and I were tasked to read our staff card.
+The main objective was pretty simple which is to create a library where we don’t
+have to depend on the vendor every time we want to read our own staff card and
+the library should also work in Linux and Windows (that means Java to us).&lt;/p>
+&lt;p>Working environment:&lt;/p>
+&lt;ul>
+&lt;li>Slackware 12.2&lt;/li>
+&lt;li>JDK 6 Update 11&lt;/li>
+&lt;li>Netbeans 6.5&lt;/li>
+&lt;li>libusb 0.1.12&lt;/li>
+&lt;li>Windows Binary of JPC/SC Java API 0.8.0&lt;/li>
+&lt;li>Smartcard Reader&lt;/li>
+&lt;/ul>
+&lt;p>Let’s talk about the reader first. You need to get a reader that supports Mifare
+1K card (obviously) which to be exact a reader that supports ISO14443A/B or
+ISO15693 (contactless standard). Now, to make your life easier, you should get a
+reader that can read contactless standards compliant using the same framework as
+ISO7816 compliant contact cards. In simple terms, you can use APDU to get the
+data that you want.&lt;/p>
+&lt;p>So, for this little project, we use &lt;strong>OMNIKEY CardMan 5321&lt;/strong> RFID reader. It has
+everything that we need, Linux/Windows supports, APDU calls to the contactless
+card, it even comes a contact card’s reader too and it’s also inexpensive.&lt;/p>
+&lt;p>Make sure you choose the correct reader or you won’t be able to use this
+tutorial. Some reader requires you to read using their own specific code, which
+means you can only use the code you wrote on that particular reader, unlike
+readers that support APDU calls to contactless cards.&lt;/p>
+&lt;h2 id="the-card">The Card&lt;/h2>
+&lt;p>1024 byte memory is organised as sixteen sectors, each of which is made up of
+four blocks and each block is 16 bytes long. The first block in the memory
+(Block 0) is read-only and is set in the factory to contain the four-byte serial
+number (UID), check bytes and manufacturers data. The last block of each sector
+(Blocks 3, 7, 11, 15 … 59, 63) is the Sector Trailer Block which contains the
+&lt;strong>two security Key codes (KeyA and KeyB&lt;/strong>) and the Access bits that define how
+the sector can be accessed.&lt;/p>
+&lt;p>Taking into account the Serial Number/Manufacturers Block and the Sector Trailer
+Blocks then there are 752 bytes of free memory for user storage. For all Read
+and Write operations the Mifare card memory is addressed by Block number (in
+hexadecimal format).&lt;/p>
+&lt;h2 id="the-installation">The Installation&lt;/h2>
+&lt;p>Before you begin coding your codes, you need to make sure your environment is
+ready for you. To do that, just follow steps from my previous tutorial which is
+pretty much the same.&lt;/p>
+&lt;h2 id="general-steps-to-read-the-card">General Steps to Read the Card&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>Load Mifare key&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Authenticate&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Read&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;h2 id="code">Code&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#f92672">package&lt;/span> my.husm.mifare&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> java.nio.ByteBuffer&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> java.util.List&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> javax.smartcardio.Card&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> javax.smartcardio.CardChannel&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> javax.smartcardio.CardException&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> javax.smartcardio.CardTerminal&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> javax.smartcardio.TerminalFactory&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Read&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#a6e22e">Read&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">try&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+CardTerminal terminal &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#75715e">// show the list of available terminals
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> TerminalFactory factory &lt;span style="color:#f92672">=&lt;/span> TerminalFactory&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getDefault&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+List&lt;span style="color:#f92672">&amp;lt;&lt;/span>CardTerminal&lt;span style="color:#f92672">&amp;gt;&lt;/span> terminals &lt;span style="color:#f92672">=&lt;/span> factory&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">terminals&lt;/span>&lt;span style="color:#f92672">().&lt;/span>&lt;span style="color:#a6e22e">list&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+String readerName &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">int&lt;/span> i &lt;span style="color:#f92672">=&lt;/span> 0&lt;span style="color:#f92672">;&lt;/span> i &lt;span style="color:#f92672">&amp;lt;&lt;/span> terminals&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">size&lt;/span>&lt;span style="color:#f92672">();&lt;/span> i&lt;span style="color:#f92672">++)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+readerName &lt;span style="color:#f92672">=&lt;/span> terminals&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">get&lt;/span>&lt;span style="color:#f92672">(&lt;/span>i&lt;span style="color:#f92672">).&lt;/span>&lt;span style="color:#a6e22e">toString&lt;/span>&lt;span style="color:#f92672">().&lt;/span>&lt;span style="color:#a6e22e">substring&lt;/span>&lt;span style="color:#f92672">(&lt;/span>
+terminals&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">get&lt;/span>&lt;span style="color:#f92672">(&lt;/span>i&lt;span style="color:#f92672">).&lt;/span>&lt;span style="color:#a6e22e">toString&lt;/span>&lt;span style="color:#f92672">().&lt;/span>&lt;span style="color:#a6e22e">length&lt;/span>&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">-&lt;/span> 2&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">(&lt;/span>readerName&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">equalsIgnoreCase&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;01&amp;#34;&lt;/span>&lt;span style="color:#f92672">))&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+terminal &lt;span style="color:#f92672">=&lt;/span> terminals&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">get&lt;/span>&lt;span style="color:#f92672">(&lt;/span>i&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#75715e">// Establish a connection with the card
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Waiting for a card..&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+terminal&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">waitForCardPresent&lt;/span>&lt;span style="color:#f92672">(&lt;/span>0&lt;span style="color:#f92672">);&lt;/span>
+Card card &lt;span style="color:#f92672">=&lt;/span> terminal&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">connect&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;T=0&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+CardChannel channel &lt;span style="color:#f92672">=&lt;/span> card&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getBasicChannel&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#75715e">// Start with something simple, read UID, kinda like Hello World!
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[]&lt;/span> baReadUID &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[&lt;/span>5&lt;span style="color:#f92672">];&lt;/span>
+baReadUID &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[]{(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0xFF&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0xCA&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x00&lt;span style="color:#f92672">,&lt;/span>
+&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x00&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x00&lt;span style="color:#f92672">};&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;UID: &amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> send&lt;span style="color:#f92672">(&lt;/span>baReadUID&lt;span style="color:#f92672">,&lt;/span> channel&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#75715e">// If successfull, the output will end with 9000
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">// OK, now, the real work
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// Get Serial Number
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// Load key
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[]&lt;/span> baLoadKey &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[&lt;/span>12&lt;span style="color:#f92672">];&lt;/span>
+baLoadKey &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[]{(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0xFF&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x82&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x20&lt;span style="color:#f92672">,&lt;/span>
+&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x1A&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x06&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0xFF&lt;span style="color:#f92672">,&lt;/span>
+&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0xFF&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0xFF&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0xFF&lt;span style="color:#f92672">,&lt;/span>
+&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0xFF&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0xFF&lt;span style="color:#f92672">};&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;LOAD KEY: &amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> send&lt;span style="color:#f92672">(&lt;/span>baLoadKey&lt;span style="color:#f92672">,&lt;/span> channel&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#75715e">// If successfull, will output 9000
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">// Authenticate
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[]&lt;/span> baAuth &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[&lt;/span>7&lt;span style="color:#f92672">];&lt;/span>
+baAuth &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[]{(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0xFF&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x88&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x00&lt;span style="color:#f92672">,&lt;/span>
+&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x09&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x60&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x00&lt;span style="color:#f92672">};&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;AUTHENTICATE: &amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> send&lt;span style="color:#f92672">(&lt;/span>baAuth&lt;span style="color:#f92672">,&lt;/span> channel&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#75715e">// If successfull, will output 9000
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">// Read Serial
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[]&lt;/span> baRead &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[&lt;/span>6&lt;span style="color:#f92672">];&lt;/span>
+baRead &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[]{(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0xFF&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0xB0&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x00&lt;span style="color:#f92672">,&lt;/span>
+&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x09&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">)&lt;/span> 0x10&lt;span style="color:#f92672">};&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;READ: &amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> send&lt;span style="color:#f92672">(&lt;/span>baRead&lt;span style="color:#f92672">,&lt;/span> channel&lt;span style="color:#f92672">));&lt;/span>
+&lt;span style="color:#75715e">// If successfull, the output will end with 9000
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span> &lt;span style="color:#66d9ef">catch&lt;/span> &lt;span style="color:#f92672">(&lt;/span>Exception ex&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+ex&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">printStackTrace&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> String &lt;span style="color:#a6e22e">send&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[]&lt;/span> cmd&lt;span style="color:#f92672">,&lt;/span> CardChannel channel&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+String res &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[]&lt;/span> baResp &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[&lt;/span>258&lt;span style="color:#f92672">];&lt;/span>
+ByteBuffer bufCmd &lt;span style="color:#f92672">=&lt;/span> ByteBuffer&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">wrap&lt;/span>&lt;span style="color:#f92672">(&lt;/span>cmd&lt;span style="color:#f92672">);&lt;/span>
+ByteBuffer bufResp &lt;span style="color:#f92672">=&lt;/span> ByteBuffer&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">wrap&lt;/span>&lt;span style="color:#f92672">(&lt;/span>baResp&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#75715e">// output = The length of the received response APDU
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span> output &lt;span style="color:#f92672">=&lt;/span> 0&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">try&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+output &lt;span style="color:#f92672">=&lt;/span> channel&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">transmit&lt;/span>&lt;span style="color:#f92672">(&lt;/span>bufCmd&lt;span style="color:#f92672">,&lt;/span> bufResp&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span> &lt;span style="color:#66d9ef">catch&lt;/span> &lt;span style="color:#f92672">(&lt;/span>CardException ex&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+ex&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">printStackTrace&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">int&lt;/span> i &lt;span style="color:#f92672">=&lt;/span> 0&lt;span style="color:#f92672">;&lt;/span> i &lt;span style="color:#f92672">&amp;lt;&lt;/span> output&lt;span style="color:#f92672">;&lt;/span> i&lt;span style="color:#f92672">++)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+res &lt;span style="color:#f92672">+=&lt;/span> String&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">format&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;%02X&amp;#34;&lt;/span>&lt;span style="color:#f92672">,&lt;/span> baResp&lt;span style="color:#f92672">[&lt;/span>i&lt;span style="color:#f92672">]);&lt;/span>
+&lt;span style="color:#75715e">// The result is formatted as a hexadecimal integer
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> res&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">[&lt;/span>&lt;span style="color:#66d9ef">public&lt;/span>&lt;span style="color:#f92672">](&lt;/span>&lt;span style="color:#66d9ef">public&lt;/span>&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>&lt;span style="color:#f92672">(&lt;/span>String&lt;span style="color:#f92672">[]&lt;/span> args&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">new&lt;/span> Read&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Make sure you have set the right connection protocol at line 43, as pointed out
+by Animesh (previous commentator).&lt;/p>
+&lt;p>These codes use Java API to read the smartcard, but I suggest you use the jpcsc
+library. It’s much more robust when it comes to error handling.&lt;/p>
+&lt;h2 id="the-apdu-commands">The APDU Commands&lt;/h2>
+&lt;h1 id="load-key">Load Key&lt;/h1>
+&lt;pre>&lt;code>+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
+| FF | 82 | 20 | 1A | 06 | FF | FF | FF | FF | FF | FF |
++--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
+| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 |
++--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
+1 = CLA : (Fixed)
+2 = INS : (Fixed)
+3 = P1 : (Fixed)
+4 = P2 : Key type, could be 00, 1A, 1B
+5 = LC : Key length, usually 6 for 6 byte
+6 = XX : ----+
+7 = XX : |
+8 = XX : |__ The Key (eg. FF FF FF FF FF FF)
+9 = XX : |
+10 = XX : |
+11 = XX : ----+
+# Autenthicate
++--------+--------+--------+--------+--------+--------+
+| FF | 88 | 00 | 01 | 60 | 00 |
++--------+--------+--------+--------+--------+--------+
+| 1 | 2 | 3 | 4 | 5 | 6 |
++--------+--------+--------+--------+--------+--------+
+1 = CLA : (Fixed)
+2 = INS : (Fixed)
+3 = P1 : (Fixed)
+4 = P2 : Block Number you want to authenticate in Hex
+5 = P3 : Mifare Block Number LSB
+6 = XX : Key type, could be 00, 1A, 1B
+# Read
++--------+--------+--------+--------+--------+
+| FF | B0 | 00 | 01 | 10 |
++--------+--------+--------+--------+--------+
+| 1 | 2 | 3 | 4 | 5 |
++--------+--------+--------+--------+--------+
+1 = CLA : (Fixed)
+2 = INS : (Fixed)
+3 = P1 : (Fixed)
+4 = P2 : Block Number that you want to read in Hex
+5 = Le : (Fixed)
+&lt;/code>&lt;/pre>&lt;p>That&amp;rsquo;s all, thanks for reading!&lt;/p></content></item><item><title>Printing to PDF using CUPS</title><link>https://amree.github.io/posts/printing-to-pdf-using-cups/</link><pubDate>Wed, 10 Sep 2008 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/printing-to-pdf-using-cups/</guid><description>Install CUPS-PDF based on your distro, you can download if from here.
+Go to http://localhost:631.
+If the page requested a username and password, just enter your root as username and password for your root.
+Go to Administration &amp;gt; Add Printer.
+In the Add Printer page, put a name for your virtual PDF printe, any name will do. Then click Continue.</description><content>&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>Install CUPS-PDF&lt;/strong> based on your distro, you can download if from
+&lt;a href="http://www.physik.uni-wuerzburg.de/~vrbehr/cups-pdf/download.shtml">here&lt;/a>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Go to &lt;a href="http://localhost:631">http://localhost:631&lt;/a>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>If the page requested a username and password, just enter your root as
+username and password for your root.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Go to &lt;strong>Administration &amp;gt; Add Printer&lt;/strong>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>In the &lt;strong>Add Printer&lt;/strong> page, &lt;strong>put a name&lt;/strong> for your virtual PDF printe, any
+name will do. Then click &lt;strong>Continue&lt;/strong>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>For the &lt;strong>Device for a&lt;/strong>, you should &lt;strong>select CUPS-PDF&lt;/strong> (Virtual PDF
+Driver). If it’s not there, then you haven’t executed &lt;strong>Step 1&lt;/strong>
+successfully.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>In the 3rd page, choose &lt;strong>Generic as the Make&lt;/strong> and then click &lt;strong>Continue&lt;/strong>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>In the 4th page, &lt;strong>choose Generic CUPS-PDF Printer (en)&lt;/strong> as the model and
+then click &lt;strong>Add Printer&lt;/strong>. For now, you’re done, but we need to customize
+where the file will be generated when you printed it.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Edit &lt;code>/etc/cups/cups-pdf.conf&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Put these lines at the end of the file and save it (both can be customized):&lt;/p>
+&lt;pre>&lt;code>Out /home/${USER}/Desktop
+Label 1
+&lt;/code>&lt;/pre>&lt;p>The first line actually tell CUPS to print your file to the Desktop and the second line will make sure your file won’t be overwritten by a newer one.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Restart CUPS&lt;/p>
+&lt;/li>
+&lt;/ol></content></item><item><title>Printing to Zebra S4M Using Java</title><link>https://amree.github.io/posts/printing-to-zebra-s4m-using-java/</link><pubDate>Sun, 11 May 2008 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/printing-to-zebra-s4m-using-java/</guid><description>&lt;p>Apparently there&amp;rsquo;re some codes scattered on the net telling people that you can
+print to a Zebra printer by sending ZPL II codes using &lt;code>PrintService&lt;/code>. But the
+problem is, it&amp;rsquo;s not working, I don&amp;rsquo;t know why, maybe because of a different
+version of printer or model but I&amp;rsquo;m pretty sure the thing that came out from the
+printer are just ordinary texts not barcode which is what the code was supposed
+to output.&lt;/p></description><content>&lt;p>Apparently there&amp;rsquo;re some codes scattered on the net telling people that you can
+print to a Zebra printer by sending ZPL II codes using &lt;code>PrintService&lt;/code>. But the
+problem is, it&amp;rsquo;s not working, I don&amp;rsquo;t know why, maybe because of a different
+version of printer or model but I&amp;rsquo;m pretty sure the thing that came out from the
+printer are just ordinary texts not barcode which is what the code was supposed
+to output.&lt;/p>
+&lt;h2 id="new-version">New Version&lt;/h2>
+&lt;p>Thanks to Oleg (a commentator) for pointing out on how to print using Zebra S4M
+connected either via USB or network.&lt;/p>
+&lt;p>The solution is pretty simple, all you have to do is do not install Zebra S4M as
+a Zebra S4M (sounds weird, I know), instead, just install it as a local raw
+printer (Linux) or generic text printer (Windows).&lt;/p>
+&lt;p>For CUPS user in Linux, this is the example for the correct configurations:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">/etc/cups/printers.conf
+&amp;lt;Printer Zebra&amp;gt;
+Info
+Location
+DeviceURI socket://10.1.1.5:9100
+State Idle
+StateTime 1223445299
+Accepting Yes
+Shared Yes
+JobSheets none none
+QuotaPeriod 0
+PageLimit 0
+KLimit 0
+OpPolicy default
+ErrorPolicy stop-printer
+Option orientation-requested 3
+&amp;lt;/Printer&amp;gt;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can always add the printer using the web interface, just make sure you
+choose RAW as the Make/Manufacturer and Model/Driver.&lt;/p>
+&lt;p>Test this Java code, it should print out a barcode:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#f92672">import&lt;/span> javax.print.Doc&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> javax.print.DocFlavor&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> javax.print.DocPrintJob&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> javax.print.PrintException&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> javax.print.PrintService&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> javax.print.PrintServiceLookup&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> javax.print.SimpleDoc&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> javax.print.attribute.PrintServiceAttribute&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> javax.print.attribute.standard.PrinterName&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">SimplePrint&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>&lt;span style="color:#f92672">(&lt;/span>String&lt;span style="color:#f92672">[]&lt;/span> args&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">try&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+PrintService psZebra &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+String sPrinterName &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+PrintService&lt;span style="color:#f92672">[]&lt;/span> services &lt;span style="color:#f92672">=&lt;/span> PrintServiceLookup&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">lookupPrintServices&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">int&lt;/span> i &lt;span style="color:#f92672">=&lt;/span> 0&lt;span style="color:#f92672">;&lt;/span> i &lt;span style="color:#f92672">&amp;lt;&lt;/span> services&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">length&lt;/span>&lt;span style="color:#f92672">;&lt;/span> i&lt;span style="color:#f92672">++)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+PrintServiceAttribute attr &lt;span style="color:#f92672">=&lt;/span> services&lt;span style="color:#f92672">[&lt;/span>i&lt;span style="color:#f92672">].&lt;/span>&lt;span style="color:#a6e22e">getAttribute&lt;/span>&lt;span style="color:#f92672">(&lt;/span>PrinterName&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+sPrinterName &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#f92672">((&lt;/span>PrinterName&lt;span style="color:#f92672">)&lt;/span> attr&lt;span style="color:#f92672">).&lt;/span>&lt;span style="color:#a6e22e">getValue&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">(&lt;/span>sPrinterName&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">toLowerCase&lt;/span>&lt;span style="color:#f92672">().&lt;/span>&lt;span style="color:#a6e22e">indexOf&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;zebra&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">&amp;gt;=&lt;/span> 0&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+psZebra &lt;span style="color:#f92672">=&lt;/span> services&lt;span style="color:#f92672">[&lt;/span>i&lt;span style="color:#f92672">];&lt;/span>
+&lt;span style="color:#66d9ef">break&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">(&lt;/span>psZebra &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Zebra printer is not found.&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+DocPrintJob job &lt;span style="color:#f92672">=&lt;/span> psZebra&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">createPrintJob&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+String s &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;^XA^FO100,40^BY3^B3,,30^FD123ABC^XZ&amp;#34;&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">byte&lt;/span>&lt;span style="color:#f92672">[]&lt;/span> by &lt;span style="color:#f92672">=&lt;/span> s&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getBytes&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+DocFlavor flavor &lt;span style="color:#f92672">=&lt;/span> DocFlavor&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">BYTE_ARRAY&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">AUTOSENSE&lt;/span>&lt;span style="color:#f92672">;&lt;/span>
+Doc doc &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> SimpleDoc&lt;span style="color:#f92672">(&lt;/span>by&lt;span style="color:#f92672">,&lt;/span> flavor&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+job&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">print&lt;/span>&lt;span style="color:#f92672">(&lt;/span>doc&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span> &lt;span style="color:#66d9ef">catch&lt;/span> &lt;span style="color:#f92672">(&lt;/span>PrintException e&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+e&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">printStackTrace&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Print using FTP:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#f92672">import&lt;/span> java.io.FileInputStream&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> org.apache.commons.net.ftp.FTP&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> org.apache.commons.net.ftp.FTPClient&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">FtpPrint&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>&lt;span style="color:#f92672">(&lt;/span>String&lt;span style="color:#f92672">[]&lt;/span> args&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">try&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+FTPClient f &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> FTPClient&lt;span style="color:#f92672">();&lt;/span>
+f&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">connect&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;10.1.127.3&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+f&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">login&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;anonymous&amp;#34;&lt;/span>&lt;span style="color:#f92672">,&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+f&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">setFileType&lt;/span>&lt;span style="color:#f92672">(&lt;/span>FTP&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">ASCII_FILE_TYPE&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+FileInputStream in &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> FileInputStream&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;/path/to/file&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">(&lt;/span>f&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">storeFile&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;filename&amp;#34;&lt;/span>&lt;span style="color:#f92672">,&lt;/span> in&lt;span style="color:#f92672">))&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+System&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">out&lt;/span>&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">println&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Upload ok&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+f&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">logout&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+f&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">disconnect&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span> &lt;span style="color:#66d9ef">catch&lt;/span> &lt;span style="color:#f92672">(&lt;/span>Exception e&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+e&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">printStackTrace&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Print using socket:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-java" data-lang="java">&lt;span style="color:#f92672">import&lt;/span> java.io.DataOutputStream&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> java.net.Socket&lt;span style="color:#f92672">;&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">SocketPrint&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>&lt;span style="color:#f92672">(&lt;/span>String argv&lt;span style="color:#f92672">[])&lt;/span> &lt;span style="color:#66d9ef">throws&lt;/span> Exception &lt;span style="color:#f92672">{&lt;/span>
+&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#66d9ef">int&lt;/span> i &lt;span style="color:#f92672">=&lt;/span> 0&lt;span style="color:#f92672">;&lt;/span> i &lt;span style="color:#f92672">&amp;amp;&lt;/span>lt&lt;span style="color:#f92672">;&lt;/span> 10&lt;span style="color:#f92672">;&lt;/span> i&lt;span style="color:#f92672">++)&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+Socket clientSocket &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> Socket&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;10.1.127.3&amp;#34;&lt;/span>&lt;span style="color:#f92672">,&lt;/span> 9100&lt;span style="color:#f92672">);&lt;/span>
+DataOutputStream outToServer &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> DataOutputStream&lt;span style="color:#f92672">(&lt;/span>clientSocket&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">getOutputStream&lt;/span>&lt;span style="color:#f92672">());&lt;/span>
+outToServer&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">writeBytes&lt;/span>&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#e6db74">&amp;#34;^XA^FO100,40^BY3^B3,,30^FD123ABC^XZ&amp;#34;&lt;/span>&lt;span style="color:#f92672">);&lt;/span>
+clientSocket&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#a6e22e">close&lt;/span>&lt;span style="color:#f92672">();&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;span style="color:#f92672">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>(I got it from &lt;a href="https://support.zebra.com">Zebra&amp;rsquo;s website&lt;/a>)&lt;/p>
+&lt;p>&lt;a href="http://www.zebra.com/id/zebra/na/en/index/products/printers/industrial_commercial/s4m.4.tabs.html">Download guide to ZPL II&lt;/a>&lt;/p></content></item></channel></rss>

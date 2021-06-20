@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>others on Amree Zaid</title><link>https://amree.github.io/tags/others/</link><description>Recent content in others on Amree Zaid</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 14 Jan 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://amree.github.io/tags/others/index.xml" rel="self" type="application/rss+xml"/><item><title>Manage Multiple App URL in Local Development</title><link>https://amree.github.io/posts/manage-multiple-app-url-in-local-development/</link><pubDate>Mon, 14 Jan 2019 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/manage-multiple-app-url-in-local-development/</guid><description>&lt;p>These days we might have multiple local applications that are running on
+different ports (e.g: &lt;code>http://localhost:3000, http://localhost:3001&lt;/code> and so on).
+This is pretty troublesome as we have to remember which application is running
+on which port.&lt;/p></description><content>&lt;p>These days we might have multiple local applications that are running on
+different ports (e.g: &lt;code>http://localhost:3000, http://localhost:3001&lt;/code> and so on).
+This is pretty troublesome as we have to remember which application is running
+on which port.&lt;/p>
+&lt;p>&lt;code>haproxy&lt;/code> can redirect a URL to a certain host with different port (this is
+impossible with &lt;code>hosts&lt;/code>). Here&amp;rsquo;s how we can do it in Mac OS:&lt;/p>
+&lt;p>Install &lt;code>haproxy&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">brew install haproxy
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Create a new file at &lt;code>/usr/local/etc/haproxy.cfg&lt;/code> and put these contents
+(customize as you wish):&lt;/p>
+&lt;pre>&lt;code>global
+maxconn 4096
+daemon
+defaults
+log global
+mode http
+timeout connect 5000ms
+timeout client 50000ms
+timeout server 50000ms
+frontend web_gateway
+bind *:80
+# https://cbonte.github.io/haproxy-dconv/1.7/configuration.html#7.1
+acl is_web hdr_beg(host) myapp.local
+acl is_api hdr(host) -i api.myapp.local
+acl is_admin hdr(host) -i admin.myapp.local
+use_backend web if is_web
+use_backend api if is_api
+use_backend admin if is_admin
+backend web
+# https://cbonte.github.io/haproxy-dconv/1.7/configuration.html#server
+server web 127.0.0.1:3000
+backend api
+server api 127.0.0.1:3001
+backend admin
+server admin 127.0.0.1:3002
+&lt;/code>&lt;/pre>&lt;p>Make sure you put the hosts declared before in &lt;code>/etc/hosts&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>127.0.0.1 localhost
+127.0.0.1 myapp.local.sg # We can use different domain here
+127.0.0.1 myapp.local.hk
+127.0.0.1 admin.myapp.local
+127.0.0.1 api.myapp.local
+&lt;/code>&lt;/pre>&lt;p>Run this command to ensure &lt;code>haproxy&lt;/code> will always be running&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">brew services start haproxy
+&lt;/code>&lt;/pre>&lt;/div></content></item><item><title>HUSM at Malaysia Open Source Conference 2011</title><link>https://amree.github.io/posts/husm-at-malaysia-open-source-conference-2011/</link><pubDate>Tue, 12 Jul 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/husm-at-malaysia-open-source-conference-2011/</guid><description>&lt;p>On the 5th of July 2011, Hospital Universiti Sains Malaysia (HUSM) has been
+chosen as one of the speakers in Malaysia Open Source Conference 2011. It was
+presented by &lt;a href="http://my.linkedin.com/in/yusdirman">Mr Yusdirman Bin Yusoff&lt;/a> as
+“Open Source in Health Care: HUSM 10 Years of Innovation”.&lt;/p></description><content>&lt;p>On the 5th of July 2011, Hospital Universiti Sains Malaysia (HUSM) has been
+chosen as one of the speakers in Malaysia Open Source Conference 2011. It was
+presented by &lt;a href="http://my.linkedin.com/in/yusdirman">Mr Yusdirman Bin Yusoff&lt;/a> as
+“Open Source in Health Care: HUSM 10 Years of Innovation”.&lt;/p>
+&lt;p>Basically it’s about &lt;strong>what&lt;/strong> and &lt;strong>how&lt;/strong> HUSM as one among few hospitals in
+Malaysia managed to develop its own Total Hospital Information System thus saved
+millions ringgit of taxpayers money. This is actually the first step for us (IT
+Unit, HUSM) to show to the world what we have done in this 10 years where most
+hospitals not willing to do.&lt;/p>
+&lt;p>The slide can be accessed at &lt;a href="https://speakerdeck.com/amree/open-source-in-healthcare-husm-10-years-of-innovative-effort">https://speakerdeck.com/amree/open-source-in-healthcare-husm-10-years-of-innovative-effort&lt;/a>&lt;/p></content></item></channel></rss>

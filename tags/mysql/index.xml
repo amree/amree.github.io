@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>mysql on Amree Zaid</title><link>https://amree.github.io/tags/mysql/</link><description>Recent content in mysql on Amree Zaid</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 11 Jul 2011 00:00:00 +0000</lastBuildDate><atom:link href="https://amree.github.io/tags/mysql/index.xml" rel="self" type="application/rss+xml"/><item><title>How to enable MySQL Support in Qt SDK for Windows</title><link>https://amree.github.io/posts/how-to-enable-mysql-support-in-qt-sdk-for-windows/</link><pubDate>Mon, 11 Jul 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/how-to-enable-mysql-support-in-qt-sdk-for-windows/</guid><description>&lt;p>It has been quite a while since I wrote the previous guide. Since that
+particular post gained a lot of visitors, I decided to write a new guide based
+on the new Qt SDK and MySQL so that it will help people with new version for
+both softwares.&lt;/p></description><content>&lt;p>It has been quite a while since I wrote the previous guide. Since that
+particular post gained a lot of visitors, I decided to write a new guide based
+on the new Qt SDK and MySQL so that it will help people with new version for
+both softwares.&lt;/p>
+&lt;p>Download Qt SDK and install it. In my case, I installed it at &lt;code>C:\QtSDK&lt;/code>. You
+must make sure that you’ve chosen to install Qt Sources. If you have Qt SDK
+installed but you haven’t install Qt sources, just go to this path to install
+it.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">Start &amp;gt; All Programs &amp;gt; Qt SDK &amp;gt; Maintain Qt SDK
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://amree.github.io/images/posts/2011-07-11-qt.png" alt="image">&lt;/p>
+&lt;p>Download MySQL and install it. In my case, I choose to install it at:&lt;/p>
+&lt;p>C:\Program Files (x86)\MySQL\MySQL Server 5.5.&lt;/p>
+&lt;p>You don’t need to install everything if you want to compile the plugin. Make
+sure you will at least choose to install Client C API Library.&lt;/p>
+&lt;p>&lt;img src="https://amree.github.io/images/posts/2011-07-11-mysql.png" alt="image">&lt;/p>
+&lt;p>Open:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">Start &amp;gt; All Programs &amp;gt; Qt SDK &amp;gt; Desktop &amp;gt; Qt 4.7.3 for Desktop (MingW)**
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Run these commands (change according to your environment):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bat" data-lang="bat">&lt;span style="color:#66d9ef">set&lt;/span> mysql=C:\PROGRA~2\MySQL\MYSQLS~1.5
+&lt;span style="color:#66d9ef">cd&lt;/span> \
+&lt;span style="color:#66d9ef">cd&lt;/span> QtSDK\QtSources\4.7.3\src\plugins\sqldrivers\mysql\
+qmake &lt;span style="color:#e6db74">&amp;#34;INCLUDEPATH+=&lt;/span>%mysql%&lt;span style="color:#e6db74">\include&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;LIBS+=&lt;/span>%mysql%&lt;span style="color:#e6db74">\lib\libmysql.lib&amp;#34;&lt;/span> -o Makefile mysql.pro
+mingw32-make
+qmake &lt;span style="color:#e6db74">&amp;#34;INCLUDEPATH+=&lt;/span>%mysql%&lt;span style="color:#e6db74">\include&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;LIBS+=&lt;/span>%mysql%&lt;span style="color:#e6db74">\lib\libmysql.lib&amp;#34;&lt;/span> -o Makefile mysql.pro &lt;span style="color:#e6db74">&amp;#34;CONFIG+=release&amp;#34;&lt;/span>
+mingw32-make
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You should be able to run these commands &lt;strong>without any error&lt;/strong>.&lt;/p>
+&lt;p>You’ll find two directories (&lt;strong>debug&lt;/strong> and &lt;strong>release&lt;/strong>) created in the current
+directory.&lt;/p>
+&lt;p>In &lt;strong>debug&lt;/strong> directory, you’ll find &lt;code>libqsqlmysqld4.a&lt;/code> and &lt;code>qsqlmysqld4.dll&lt;/code>.&lt;/p>
+&lt;p>Meanwhile, in &lt;strong>release&lt;/strong> directory, you’ll find &lt;code>libqsqlmysql4.a&lt;/code> and
+&lt;code>qsqlmysql4.dll&lt;/code>.&lt;/p>
+&lt;p>&lt;strong>Copy all these 4 files into&lt;/strong>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">C:\QtSDK\Desktop\Qt\4.7.3\mingw\plugins\sqldrivers
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Copy &lt;code>libmysql.dll&lt;/code> (found in your MySQL installation directory) into C:\Windows.&lt;/p>
+&lt;p>Create new project and put these codes to test your new plugin&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="color:#75715e">#include&lt;/span> &lt;span style="color:#75715e">&amp;lt;QApplication&amp;gt;&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e">#include&lt;/span> &lt;span style="color:#75715e">&amp;lt;QtSql&amp;gt;&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#66d9ef">int&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>(&lt;span style="color:#66d9ef">int&lt;/span> argc, &lt;span style="color:#66d9ef">char&lt;/span> &lt;span style="color:#f92672">*&lt;/span>argv[])
+{
+QCoreApplication a(argc, argv);
+qDebug() &lt;span style="color:#f92672">&amp;lt;&amp;lt;&lt;/span> QSqlDatabase&lt;span style="color:#f92672">::&lt;/span>drivers();
+&lt;span style="color:#66d9ef">return&lt;/span> a.exec();
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Make sure you have QtSql Module in your project configuration file (.pro file)&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">QT += sql
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You’ll get these outputs showing that your Qt has supports for MySQL:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">(&amp;#34;QSQLITE&amp;#34;, &amp;#34;QMYSQL3&amp;#34;, &amp;#34;QMYSQL&amp;#34;, &amp;#34;QODBC3&amp;#34;, &amp;#34;QODBC&amp;#34;)
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Things to watch out for:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>You can’t use MySQL 64 Bit (at the moment)&lt;/strong> to compile the plugin.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Make sure you’ll &lt;strong>use short path&lt;/strong> type if you’ve installed MySQL into directory’s name containing spaces.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Load sql module&lt;/strong> in your .pro file.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>Tested on:&lt;/p>
+&lt;ul>
+&lt;li>11/7/2011 – Windows 64 Bit, MySQL Server 5.5.1 32 Bit (Community Version) and Qt 4.7.3.&lt;/li>
+&lt;/ul></content></item><item><title>Running Multiple MySQL on a Single Server</title><link>https://amree.github.io/posts/running-multiple-mysql-on-a-single-server/</link><pubDate>Tue, 15 Mar 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/running-multiple-mysql-on-a-single-server/</guid><description>&lt;p>I’m pretty sure I’m going to forget these steps, so, just to be safe, I’m
+putting it here. I’m dividing this tutorial into two sections, one for default
+MySQL that comes from Slackware and the other one is for new MySQL.&lt;/p></description><content>&lt;p>I’m pretty sure I’m going to forget these steps, so, just to be safe, I’m
+putting it here. I’m dividing this tutorial into two sections, one for default
+MySQL that comes from Slackware and the other one is for new MySQL.&lt;/p>
+&lt;h2 id="using-the-default-mysql">Using the Default MySQL&lt;/h2>
+&lt;p>We need to create separate (different from the default) directory for the data
+to be stored. I’m going to create a new one for it. I’m going to name the
+directory as &lt;code>mysql-1&lt;/code>. Make sure you use full path when running
+&lt;code>mysql_install_db&lt;/code>.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cd /var/lib
+mkdir mysql-1
+chown -R mysql.mysql mysql-1
+mysql_install_db --datadir&lt;span style="color:#f92672">=&lt;/span>/var/lib/mysql-1 --user&lt;span style="color:#f92672">=&lt;/span>mysql
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>We also need a new configuration file so that it won’t clash with the default
+MySQL.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cp /etc/my-small.cnf /etc/my-1.cnf
+nano /etc/my-1.cnf
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>These are the settings that I’ve changed from the default file (other settings
+remain unchanged).&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ini" data-lang="ini">&lt;span style="color:#66d9ef">[client]&lt;/span>
+&lt;span style="color:#a6e22e">port&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">3307&lt;/span>
+&lt;span style="color:#a6e22e">socket&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">/var/run/mysql/mysql-1.sock&lt;/span>
+&lt;span style="color:#66d9ef">[mysqld]&lt;/span>
+&lt;span style="color:#a6e22e">port&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">3307&lt;/span>
+&lt;span style="color:#a6e22e">socket&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">/var/run/mysql/mysql-1.sock&lt;/span>
+&lt;span style="color:#a6e22e">server-id&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">10&lt;/span>
+&lt;span style="color:#a6e22e">innodb_data_home_dir&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">/var/lib/mysql-1/&lt;/span>
+&lt;span style="color:#a6e22e">innodb_log_group_home_dir&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">/var/lib/mysql-1/&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To run our newly configured MySQL instance, use this command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">/usr/bin/mysqld_safe --defaults-file&lt;span style="color:#f92672">=&lt;/span>/etc/my-1.cnf --datadir&lt;span style="color:#f92672">=&lt;/span>/var/lib/mysql-1 &amp;amp;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>By checking background process, you should see something like this&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ ps ax | grep mysql
+&lt;span style="color:#ae81ff">23416&lt;/span> pts/1 S 0:00 /bin/sh /usr/bin/mysqld_safe --defaults-file&lt;span style="color:#f92672">=&lt;/span>/etc/my-1.cnf --datadir&lt;span style="color:#f92672">=&lt;/span>/var/lib/mysql-1
+&lt;span style="color:#ae81ff">23515&lt;/span> pts/1 Sl 0:00 /usr/libexec/mysqld --defaults-file&lt;span style="color:#f92672">=&lt;/span>/etc/my-1.cnf --basedir&lt;span style="color:#f92672">=&lt;/span>/usr --datadir&lt;span style="color:#f92672">=&lt;/span>/var/lib/mysql-1 --user&lt;span style="color:#f92672">=&lt;/span>mysql --log-error&lt;span style="color:#f92672">=&lt;/span>/var/lib/mysql-1/eebox.err --pid-file&lt;span style="color:#f92672">=&lt;/span>/var/lib/mysql-1/eebox.pid --socket&lt;span style="color:#f92672">=&lt;/span>/var/run/mysql/mysql-1.sock --port&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">3307&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Time for some test, we need to make sure we’re connecting to the correct server. One way to do this is by checking the &lt;code>server_id&lt;/code>.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ mysql -u root -h 127.0.0.1 -P &lt;span style="color:#ae81ff">3307&lt;/span>
+mysql&amp;gt; SHOW VARIABLES LIKE &lt;span style="color:#e6db74">&amp;#34;server_id&amp;#34;&lt;/span>;
++---------------+-------+
+| Variable_name | Value |
++---------------+-------+
+| server_id | &lt;span style="color:#ae81ff">10&lt;/span> |
++---------------+-------+
+&lt;span style="color:#ae81ff">1&lt;/span> row in set &lt;span style="color:#f92672">(&lt;/span>0.00 sec&lt;span style="color:#f92672">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>As you can see, we have the same server_id as we specified in our my-1.cnf. You can use this command to shut it down.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">mysqladmin -h 127.0.0.1 -P &lt;span style="color:#ae81ff">3307&lt;/span> shutdown
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="using-new-downloaded-mysql">Using new Downloaded MySQL&lt;/h2>
+&lt;p>Download &lt;a href="http://dev.mysql.com/downloads/">MySQL Download&lt;/a> &amp;gt; MySQL Community Server &amp;gt; Linux Generic &amp;gt; Linux – Generic 2.6 (x86, 32-bit), Compressed TAR Archive&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cp mysql-5.5.9-linux2.6-i686.tar.gz /opt
+cd opt
+tar zxvf mysql-5.5.9-linux2.6-i686.tar.gz
+mv mysql-5.5.9-linux2.6-i686 mysql
+cd mysql
+chown -R mysql.mysql .
+./scripts/mysql_install_db --user&lt;span style="color:#f92672">=&lt;/span>mysql
+cp support-files/my-small.cnf /etc/my-2.cnf
+nano /etc/my-2.cnf
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>/etc/my-2.cnf&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ini" data-lang="ini">&lt;span style="color:#66d9ef">[client]&lt;/span>
+&lt;span style="color:#a6e22e">port&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">3308&lt;/span>
+&lt;span style="color:#a6e22e">socket&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">/var/run/mysql/mysql-2.sock&lt;/span>
+&lt;span style="color:#66d9ef">[mysqld]&lt;/span>
+&lt;span style="color:#a6e22e">port&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">3308&lt;/span>
+&lt;span style="color:#a6e22e">socket&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">/var/run/mysql/mysql-2.sock&lt;/span>
+&lt;span style="color:#a6e22e">server-id&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">20&lt;/span>
+&lt;span style="color:#a6e22e">innodb_data_home_dir&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">/var/lib/mysql-1/&lt;/span>
+&lt;span style="color:#a6e22e">innodb_log_group_home_dir&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">/var/lib/mysql-1/&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To run it, you need to specify some parameters&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">/opt/mysql/bin/mysqld --defaults-file&lt;span style="color:#f92672">=&lt;/span>/etc/my-2.cnf --basedir&lt;span style="color:#f92672">=&lt;/span>/opt/mysql --datadir&lt;span style="color:#f92672">=&lt;/span>/opt/mysql/data --plugin-dir&lt;span style="color:#f92672">=&lt;/span>/opt/mysql/lib/plugin --user&lt;span style="color:#f92672">=&lt;/span>mysql --log-error&lt;span style="color:#f92672">=&lt;/span>/opt/mysql/data/eebox.err
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To shut it down, you can use the following command&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">./bin/mysqladmin -h 127.0.0.1 -P &lt;span style="color:#ae81ff">3308&lt;/span> shutdown
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can test the server connection just like the method I used above.&lt;/p>
+&lt;p>That&amp;rsquo;s it, good luck!&lt;/p></content></item></channel></rss>

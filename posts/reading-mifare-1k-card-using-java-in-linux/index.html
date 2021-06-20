@@ -1,0 +1,195 @@
+<!doctype html><html lang=en><head><title>Reading Mifare 1K Card using Java in Linux :: Amree Zaid</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="The Story At the end of last year, my friends and I were tasked to read our staff card. The main objective was pretty simple which is to create a library where we don’t have to depend on the vendor every time we want to read our own staff card and the library should also work in Linux and Windows (that means Java to us).
+"><meta name=keywords content><meta name=robots content="noodp"><link rel=canonical href=https://amree.github.io/posts/reading-mifare-1k-card-using-java-in-linux/><link rel=stylesheet href=https://amree.github.io/assets/style.css><link rel=stylesheet href=https://amree.github.io/assets/green.css><link rel=apple-touch-icon href=https://amree.github.io/img/apple-touch-icon-192x192.png><link rel="shortcut icon" href=https://amree.github.io/img/favicon/green.png><meta name=twitter:card content="summary"><meta name=twitter:site content><meta name=twitter:creator content><meta property="og:locale" content="en"><meta property="og:type" content="article"><meta property="og:title" content="Reading Mifare 1K Card using Java in Linux"><meta property="og:description" content="The Story At the end of last year, my friends and I were tasked to read our staff card. The main objective was pretty simple which is to create a library where we don’t have to depend on the vendor every time we want to read our own staff card and the library should also work in Linux and Windows (that means Java to us).
+"><meta property="og:url" content="https://amree.github.io/posts/reading-mifare-1k-card-using-java-in-linux/"><meta property="og:site_name" content="Amree Zaid"><meta property="og:image" content="https://amree.github.io/img/favicon/green.png"><meta property="og:image:width" content="2048"><meta property="og:image:height" content="1024"><meta property="article:published_time" content="2009-02-11 00:00:00 +0000 UTC"></head><body class=green><div class="container center headings--one-size"><header class=header><div class=header__inner><div class=header__logo><a href=/><div class=logo>Amree Zaid</div></a></div><div class=menu-trigger>menu</div></div><nav class=menu><ul class="menu__inner menu__inner--desktop"><li><a href=https://twitter.com/AmreeZaid>Twitter</a></li></ul><ul class="menu__inner menu__inner--mobile"><li><a href=https://twitter.com/AmreeZaid>Twitter</a></li></ul></nav></header><div class=content><div class=post><h1 class=post-title><a href=https://amree.github.io/posts/reading-mifare-1k-card-using-java-in-linux/>Reading Mifare 1K Card using Java in Linux</a></h1><div class=post-meta><span class=post-date>2009-02-11</span></div><span class=post-tags>#<a href=https://amree.github.io/tags/linux/>linux</a>&nbsp;
+#<a href=https://amree.github.io/tags/java/>java</a>&nbsp;</span><div class=post-content><div><h2 id=the-story>The Story<a href=#the-story class=hanchor arialabel=Anchor>&#8983;</a></h2><p>At the end of last year, my friends and I were tasked to read our staff card.
+The main objective was pretty simple which is to create a library where we don’t
+have to depend on the vendor every time we want to read our own staff card and
+the library should also work in Linux and Windows (that means Java to us).</p><p>Working environment:</p><ul><li>Slackware 12.2</li><li>JDK 6 Update 11</li><li>Netbeans 6.5</li><li>libusb 0.1.12</li><li>Windows Binary of JPC/SC Java API 0.8.0</li><li>Smartcard Reader</li></ul><p>Let’s talk about the reader first. You need to get a reader that supports Mifare
+1K card (obviously) which to be exact a reader that supports ISO14443A/B or
+ISO15693 (contactless standard). Now, to make your life easier, you should get a
+reader that can read contactless standards compliant using the same framework as
+ISO7816 compliant contact cards. In simple terms, you can use APDU to get the
+data that you want.</p><p>So, for this little project, we use <strong>OMNIKEY CardMan 5321</strong> RFID reader. It has
+everything that we need, Linux/Windows supports, APDU calls to the contactless
+card, it even comes a contact card’s reader too and it’s also inexpensive.</p><p>Make sure you choose the correct reader or you won’t be able to use this
+tutorial. Some reader requires you to read using their own specific code, which
+means you can only use the code you wrote on that particular reader, unlike
+readers that support APDU calls to contactless cards.</p><h2 id=the-card>The Card<a href=#the-card class=hanchor arialabel=Anchor>&#8983;</a></h2><p>1024 byte memory is organised as sixteen sectors, each of which is made up of
+four blocks and each block is 16 bytes long. The first block in the memory
+(Block 0) is read-only and is set in the factory to contain the four-byte serial
+number (UID), check bytes and manufacturers data. The last block of each sector
+(Blocks 3, 7, 11, 15 … 59, 63) is the Sector Trailer Block which contains the
+<strong>two security Key codes (KeyA and KeyB</strong>) and the Access bits that define how
+the sector can be accessed.</p><p>Taking into account the Serial Number/Manufacturers Block and the Sector Trailer
+Blocks then there are 752 bytes of free memory for user storage. For all Read
+and Write operations the Mifare card memory is addressed by Block number (in
+hexadecimal format).</p><h2 id=the-installation>The Installation<a href=#the-installation class=hanchor arialabel=Anchor>&#8983;</a></h2><p>Before you begin coding your codes, you need to make sure your environment is
+ready for you. To do that, just follow steps from my previous tutorial which is
+pretty much the same.</p><h2 id=general-steps-to-read-the-card>General Steps to Read the Card<a href=#general-steps-to-read-the-card class=hanchor arialabel=Anchor>&#8983;</a></h2><ol><li><p>Load Mifare key</p></li><li><p>Authenticate</p></li><li><p>Read</p></li></ol><h2 id=code>Code<a href=#code class=hanchor arialabel=Anchor>&#8983;</a></h2><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#f92672>package</span> my.husm.mifare<span style=color:#f92672>;</span>
+
+<span style=color:#f92672>import</span> java.nio.ByteBuffer<span style=color:#f92672>;</span>
+<span style=color:#f92672>import</span> java.util.List<span style=color:#f92672>;</span>
+<span style=color:#f92672>import</span> javax.smartcardio.Card<span style=color:#f92672>;</span>
+<span style=color:#f92672>import</span> javax.smartcardio.CardChannel<span style=color:#f92672>;</span>
+<span style=color:#f92672>import</span> javax.smartcardio.CardException<span style=color:#f92672>;</span>
+<span style=color:#f92672>import</span> javax.smartcardio.CardTerminal<span style=color:#f92672>;</span>
+<span style=color:#f92672>import</span> javax.smartcardio.TerminalFactory<span style=color:#f92672>;</span>
+
+<span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Read</span> <span style=color:#f92672>{</span>
+
+   <span style=color:#66d9ef>public</span> <span style=color:#a6e22e>Read</span><span style=color:#f92672>()</span> <span style=color:#f92672>{</span>
+
+       <span style=color:#66d9ef>try</span> <span style=color:#f92672>{</span>
+
+           CardTerminal terminal <span style=color:#f92672>=</span> <span style=color:#66d9ef>null</span><span style=color:#f92672>;</span>
+
+           <span style=color:#75715e>// show the list of available terminals
+</span><span style=color:#75715e></span>           TerminalFactory factory <span style=color:#f92672>=</span> TerminalFactory<span style=color:#f92672>.</span><span style=color:#a6e22e>getDefault</span><span style=color:#f92672>();</span>
+           List<span style=color:#f92672>&lt;</span>CardTerminal<span style=color:#f92672>&gt;</span> terminals <span style=color:#f92672>=</span> factory<span style=color:#f92672>.</span><span style=color:#a6e22e>terminals</span><span style=color:#f92672>().</span><span style=color:#a6e22e>list</span><span style=color:#f92672>();</span>
+
+           String readerName <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;&#34;</span><span style=color:#f92672>;</span>
+
+           <span style=color:#66d9ef>for</span> <span style=color:#f92672>(</span><span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> 0<span style=color:#f92672>;</span> i <span style=color:#f92672>&lt;</span> terminals<span style=color:#f92672>.</span><span style=color:#a6e22e>size</span><span style=color:#f92672>();</span> i<span style=color:#f92672>++)</span> <span style=color:#f92672>{</span>
+
+               readerName <span style=color:#f92672>=</span> terminals<span style=color:#f92672>.</span><span style=color:#a6e22e>get</span><span style=color:#f92672>(</span>i<span style=color:#f92672>).</span><span style=color:#a6e22e>toString</span><span style=color:#f92672>().</span><span style=color:#a6e22e>substring</span><span style=color:#f92672>(</span>
+                                   terminals<span style=color:#f92672>.</span><span style=color:#a6e22e>get</span><span style=color:#f92672>(</span>i<span style=color:#f92672>).</span><span style=color:#a6e22e>toString</span><span style=color:#f92672>().</span><span style=color:#a6e22e>length</span><span style=color:#f92672>()</span> <span style=color:#f92672>-</span> 2<span style=color:#f92672>);</span>
+
+               <span style=color:#66d9ef>if</span> <span style=color:#f92672>(</span>readerName<span style=color:#f92672>.</span><span style=color:#a6e22e>equalsIgnoreCase</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;01&#34;</span><span style=color:#f92672>))</span> <span style=color:#f92672>{</span>
+                   terminal <span style=color:#f92672>=</span> terminals<span style=color:#f92672>.</span><span style=color:#a6e22e>get</span><span style=color:#f92672>(</span>i<span style=color:#f92672>);</span>
+               <span style=color:#f92672>}</span>
+           <span style=color:#f92672>}</span>
+
+           <span style=color:#75715e>// Establish a connection with the card
+</span><span style=color:#75715e></span>           System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;Waiting for a card..&#34;</span><span style=color:#f92672>);</span>
+           terminal<span style=color:#f92672>.</span><span style=color:#a6e22e>waitForCardPresent</span><span style=color:#f92672>(</span>0<span style=color:#f92672>);</span>
+
+           Card card <span style=color:#f92672>=</span> terminal<span style=color:#f92672>.</span><span style=color:#a6e22e>connect</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;T=0&#34;</span><span style=color:#f92672>);</span>
+           CardChannel channel <span style=color:#f92672>=</span> card<span style=color:#f92672>.</span><span style=color:#a6e22e>getBasicChannel</span><span style=color:#f92672>();</span>
+
+           <span style=color:#75715e>// Start with something simple, read UID, kinda like Hello World!
+</span><span style=color:#75715e></span>           <span style=color:#66d9ef>byte</span><span style=color:#f92672>[]</span> baReadUID <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> <span style=color:#66d9ef>byte</span><span style=color:#f92672>[</span>5<span style=color:#f92672>];</span>
+
+           baReadUID <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> <span style=color:#66d9ef>byte</span><span style=color:#f92672>[]{(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0xFF<span style=color:#f92672>,</span> <span style=color:#f92672>(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0xCA<span style=color:#f92672>,</span> <span style=color:#f92672>(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0x00<span style=color:#f92672>,</span>
+                                  <span style=color:#f92672>(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0x00<span style=color:#f92672>,</span> <span style=color:#f92672>(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0x00<span style=color:#f92672>};</span>
+
+           System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;UID: &#34;</span> <span style=color:#f92672>+</span> send<span style=color:#f92672>(</span>baReadUID<span style=color:#f92672>,</span> channel<span style=color:#f92672>));</span>
+           <span style=color:#75715e>// If successfull, the output will end with 9000
+</span><span style=color:#75715e></span>
+           <span style=color:#75715e>// OK, now, the real work
+</span><span style=color:#75715e></span>           <span style=color:#75715e>// Get Serial Number
+</span><span style=color:#75715e></span>           <span style=color:#75715e>// Load key
+</span><span style=color:#75715e></span>           <span style=color:#66d9ef>byte</span><span style=color:#f92672>[]</span> baLoadKey <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> <span style=color:#66d9ef>byte</span><span style=color:#f92672>[</span>12<span style=color:#f92672>];</span>
+
+           baLoadKey <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> <span style=color:#66d9ef>byte</span><span style=color:#f92672>[]{(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0xFF<span style=color:#f92672>,</span> <span style=color:#f92672>(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0x82<span style=color:#f92672>,</span> <span style=color:#f92672>(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0x20<span style=color:#f92672>,</span>
+                                     <span style=color:#f92672>(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0x1A<span style=color:#f92672>,</span> <span style=color:#f92672>(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0x06<span style=color:#f92672>,</span> <span style=color:#f92672>(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0xFF<span style=color:#f92672>,</span>
+                                     <span style=color:#f92672>(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0xFF<span style=color:#f92672>,</span> <span style=color:#f92672>(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0xFF<span style=color:#f92672>,</span> <span style=color:#f92672>(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0xFF<span style=color:#f92672>,</span>
+                                     <span style=color:#f92672>(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0xFF<span style=color:#f92672>,</span> <span style=color:#f92672>(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0xFF<span style=color:#f92672>};</span>
+
+           System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;LOAD KEY: &#34;</span> <span style=color:#f92672>+</span> send<span style=color:#f92672>(</span>baLoadKey<span style=color:#f92672>,</span> channel<span style=color:#f92672>));</span>
+           <span style=color:#75715e>// If successfull, will output 9000
+</span><span style=color:#75715e></span>
+           <span style=color:#75715e>// Authenticate
+</span><span style=color:#75715e></span>           <span style=color:#66d9ef>byte</span><span style=color:#f92672>[]</span> baAuth <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> <span style=color:#66d9ef>byte</span><span style=color:#f92672>[</span>7<span style=color:#f92672>];</span>
+
+           baAuth <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> <span style=color:#66d9ef>byte</span><span style=color:#f92672>[]{(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0xFF<span style=color:#f92672>,</span> <span style=color:#f92672>(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0x88<span style=color:#f92672>,</span> <span style=color:#f92672>(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0x00<span style=color:#f92672>,</span>
+                               <span style=color:#f92672>(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0x09<span style=color:#f92672>,</span> <span style=color:#f92672>(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0x60<span style=color:#f92672>,</span> <span style=color:#f92672>(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0x00<span style=color:#f92672>};</span>
+
+           System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;AUTHENTICATE: &#34;</span> <span style=color:#f92672>+</span> send<span style=color:#f92672>(</span>baAuth<span style=color:#f92672>,</span> channel<span style=color:#f92672>));</span>
+           <span style=color:#75715e>// If successfull, will output 9000
+</span><span style=color:#75715e></span>
+           <span style=color:#75715e>// Read Serial
+</span><span style=color:#75715e></span>           <span style=color:#66d9ef>byte</span><span style=color:#f92672>[]</span> baRead <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> <span style=color:#66d9ef>byte</span><span style=color:#f92672>[</span>6<span style=color:#f92672>];</span>
+
+           baRead <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> <span style=color:#66d9ef>byte</span><span style=color:#f92672>[]{(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0xFF<span style=color:#f92672>,</span> <span style=color:#f92672>(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0xB0<span style=color:#f92672>,</span> <span style=color:#f92672>(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0x00<span style=color:#f92672>,</span>
+                               <span style=color:#f92672>(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0x09<span style=color:#f92672>,</span> <span style=color:#f92672>(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>)</span> 0x10<span style=color:#f92672>};</span>
+
+           System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;READ: &#34;</span> <span style=color:#f92672>+</span> send<span style=color:#f92672>(</span>baRead<span style=color:#f92672>,</span> channel<span style=color:#f92672>));</span>
+           <span style=color:#75715e>// If successfull, the output will end with 9000
+</span><span style=color:#75715e></span>
+       <span style=color:#f92672>}</span> <span style=color:#66d9ef>catch</span> <span style=color:#f92672>(</span>Exception ex<span style=color:#f92672>)</span> <span style=color:#f92672>{</span>
+           ex<span style=color:#f92672>.</span><span style=color:#a6e22e>printStackTrace</span><span style=color:#f92672>();</span>
+       <span style=color:#f92672>}</span>
+   <span style=color:#f92672>}</span>
+
+   <span style=color:#66d9ef>public</span> String <span style=color:#a6e22e>send</span><span style=color:#f92672>(</span><span style=color:#66d9ef>byte</span><span style=color:#f92672>[]</span> cmd<span style=color:#f92672>,</span> CardChannel channel<span style=color:#f92672>)</span> <span style=color:#f92672>{</span>
+
+       String res <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;&#34;</span><span style=color:#f92672>;</span>
+
+       <span style=color:#66d9ef>byte</span><span style=color:#f92672>[]</span> baResp <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> <span style=color:#66d9ef>byte</span><span style=color:#f92672>[</span>258<span style=color:#f92672>];</span>
+       ByteBuffer bufCmd <span style=color:#f92672>=</span> ByteBuffer<span style=color:#f92672>.</span><span style=color:#a6e22e>wrap</span><span style=color:#f92672>(</span>cmd<span style=color:#f92672>);</span>
+       ByteBuffer bufResp <span style=color:#f92672>=</span> ByteBuffer<span style=color:#f92672>.</span><span style=color:#a6e22e>wrap</span><span style=color:#f92672>(</span>baResp<span style=color:#f92672>);</span>
+
+       <span style=color:#75715e>// output = The length of the received response APDU
+</span><span style=color:#75715e></span>       <span style=color:#66d9ef>int</span> output <span style=color:#f92672>=</span> 0<span style=color:#f92672>;</span>
+
+       <span style=color:#66d9ef>try</span> <span style=color:#f92672>{</span>
+
+           output <span style=color:#f92672>=</span> channel<span style=color:#f92672>.</span><span style=color:#a6e22e>transmit</span><span style=color:#f92672>(</span>bufCmd<span style=color:#f92672>,</span> bufResp<span style=color:#f92672>);</span>
+
+       <span style=color:#f92672>}</span> <span style=color:#66d9ef>catch</span> <span style=color:#f92672>(</span>CardException ex<span style=color:#f92672>)</span> <span style=color:#f92672>{</span>
+           ex<span style=color:#f92672>.</span><span style=color:#a6e22e>printStackTrace</span><span style=color:#f92672>();</span>
+       <span style=color:#f92672>}</span>
+
+       <span style=color:#66d9ef>for</span> <span style=color:#f92672>(</span><span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> 0<span style=color:#f92672>;</span> i <span style=color:#f92672>&lt;</span> output<span style=color:#f92672>;</span> i<span style=color:#f92672>++)</span> <span style=color:#f92672>{</span>
+           res <span style=color:#f92672>+=</span> String<span style=color:#f92672>.</span><span style=color:#a6e22e>format</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;%02X&#34;</span><span style=color:#f92672>,</span> baResp<span style=color:#f92672>[</span>i<span style=color:#f92672>]);</span>
+           <span style=color:#75715e>// The result is formatted as a hexadecimal integer
+</span><span style=color:#75715e></span>       <span style=color:#f92672>}</span>
+
+       <span style=color:#66d9ef>return</span> res<span style=color:#f92672>;</span>
+   <span style=color:#f92672>}</span>
+
+   <span style=color:#f92672>[</span><span style=color:#66d9ef>public</span><span style=color:#f92672>](</span><span style=color:#66d9ef>public</span><span style=color:#f92672>)</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>main</span><span style=color:#f92672>(</span>String<span style=color:#f92672>[]</span> args<span style=color:#f92672>)</span> <span style=color:#f92672>{</span>
+       <span style=color:#66d9ef>new</span> Read<span style=color:#f92672>();</span>
+   <span style=color:#f92672>}</span>
+<span style=color:#f92672>}</span>
+</code></pre></div><p>Make sure you have set the right connection protocol at line 43, as pointed out
+by Animesh (previous commentator).</p><p>These codes use Java API to read the smartcard, but I suggest you use the jpcsc
+library. It’s much more robust when it comes to error handling.</p><h2 id=the-apdu-commands>The APDU Commands<a href=#the-apdu-commands class=hanchor arialabel=Anchor>&#8983;</a></h2><h1 id=load-key>Load Key<a href=#load-key class=hanchor arialabel=Anchor>&#8983;</a></h1><pre><code>+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
+|   FF   |   82   |   20   |   1A   |   06   |   FF   |   FF   |   FF   |   FF   |   FF   |   FF   |
++--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
+|   1    |   2    |   3    |   4    |   5    |   6    |   7    |   8    |   9    |   10   |   11   |
++--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
+
+1   = CLA : (Fixed)
+2   = INS : (Fixed)
+3   = P1  : (Fixed)
+4   = P2  : Key type, could be 00, 1A, 1B
+5   = LC  : Key length, usually 6 for 6 byte
+6   = XX  : ----+
+7   = XX  :     |
+8   = XX  :     |__ The Key (eg. FF FF FF FF FF FF)
+9   = XX  :     |
+10  = XX  :     |
+11  = XX  : ----+
+
+# Autenthicate
++--------+--------+--------+--------+--------+--------+
+|   FF   |   88   |   00   |   01   |   60   |   00   |
++--------+--------+--------+--------+--------+--------+
+|   1    |   2    |   3    |   4    |   5    |   6    |
++--------+--------+--------+--------+--------+--------+
+
+1   = CLA : (Fixed)
+2   = INS : (Fixed)
+3   = P1  : (Fixed)
+4   = P2  : Block Number you want to authenticate in Hex
+5   = P3  : Mifare Block Number LSB
+6   = XX  : Key type, could be 00, 1A, 1B
+
+# Read
++--------+--------+--------+--------+--------+
+|   FF   |   B0   |   00   |   01   |   10   |
++--------+--------+--------+--------+--------+
+|   1    |   2    |   3    |   4    |   5    |
++--------+--------+--------+--------+--------+
+
+1   = CLA : (Fixed)
+2   = INS : (Fixed)
+3   = P1  : (Fixed)
+4   = P2  : Block Number that you want to read in Hex
+5   = Le  : (Fixed)
+</code></pre><p>That&rsquo;s all, thanks for reading!</p></div></div><div class=pagination><div class=pagination__title><span class=pagination__title-h>Read other posts</span><hr></div><div class=pagination__buttons><span class="button previous"><a href=https://amree.github.io/posts/how-to-enable-mysql-support-in-qt-sdk-for-linux/><span class=button__icon>←</span>
+<span class=button__text>How to Enable MySQL Support in Qt SDK for Linux</span></a></span>
+<span class="button next"><a href=https://amree.github.io/posts/printing-to-pdf-using-cups/><span class=button__text>Printing to PDF using CUPS</span>
+<span class=button__icon>→</span></a></span></div></div></div></div><footer class=footer><div class=footer__inner><div class=copyright><span>© 2021 Powered by <a href=http://gohugo.io>Hugo</a></span>
+<span>:: Theme made by <a href=https://twitter.com/panr>panr</a></span></div></div></footer><script src=https://amree.github.io/assets/main.js></script><script src=https://amree.github.io/assets/prism.js></script></div></body></html>

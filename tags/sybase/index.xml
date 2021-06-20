@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>sybase on Amree Zaid</title><link>https://amree.github.io/tags/sybase/</link><description>Recent content in sybase on Amree Zaid</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 01 Jul 2011 00:00:00 +0000</lastBuildDate><atom:link href="https://amree.github.io/tags/sybase/index.xml" rel="self" type="application/rss+xml"/><item><title>Using Sybase with Ruby on Rails on Linux</title><link>https://amree.github.io/posts/using-sybase-with-ruby-on-rails-on-linux/</link><pubDate>Fri, 01 Jul 2011 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/using-sybase-with-ruby-on-rails-on-linux/</guid><description>&lt;p>This guide will help you (mostly will help me in the future) to configure your
+Ruby on Rails to support connection to Sybase.&lt;/p></description><content>&lt;p>This guide will help you (mostly will help me in the future) to configure your
+Ruby on Rails to support connection to Sybase.&lt;/p>
+&lt;p>I wrote this tutorial after everything’s good, so, I might miss a few steps that
+I’ve forgotten. Feel free to comment about it. With some adjustments, this guide
+&lt;strong>will also works with Mac OS X&lt;/strong>.&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Install FreeTDS. For Slackware users, you can get Slackbuild script at
+&lt;a href="http://slackbuilds.org/repository/13.37/development/freetds/">http://slackbuilds.org/repository/13.37/development/freetds/&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Edit &lt;code>/etc/freetds/freetds.conf&lt;/code> and put your database configurations in it:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ini" data-lang="ini">&lt;span style="color:#66d9ef">[myserver]&lt;/span>
+&lt;span style="color:#a6e22e">host&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">myserver.com&lt;/span>
+&lt;span style="color:#a6e22e">port&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">5000&lt;/span>
+&lt;span style="color:#a6e22e">tds version&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">5.0&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Test the configuration, you should get something like this:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-txt" data-lang="txt">$ tsql -S myserver -U username
+locale is &amp;#34;C&amp;#34;
+locale charset is &amp;#34;ANSI_X3.4-1968&amp;#34;
+using default charset &amp;#34;ISO-8859-1&amp;#34;
+Msg 5704 (severity 10, state 1) from ???:
+&amp;#34;Changed client character set setting to &amp;#39;iso_1&amp;#39;.
+&amp;#34;
+1&amp;gt;
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Put this gems in your &lt;code>Gemfile&lt;/code> and run &lt;code>bundle&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">gem &lt;span style="color:#e6db74">&amp;#39;arel-sybase-visitor&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">:git&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;https://github.com/ifad/arel-sybase-visitor&amp;#39;&lt;/span>
+gem &lt;span style="color:#e6db74">&amp;#39;activerecord-sybase-adapter&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">:git&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;https://github.com/ifad/activerecord-sybase-adapter&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>An example configuration for your &lt;code>database.yml&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yml" data-lang="yml">&lt;span style="color:#f92672">development&lt;/span>:
+&lt;span style="color:#f92672">adapter&lt;/span>: &lt;span style="color:#ae81ff">sybase&lt;/span>
+&lt;span style="color:#f92672">dataserver&lt;/span>: &lt;span style="color:#ae81ff">myserver&lt;/span>
+&lt;span style="color:#f92672">username&lt;/span>:
+&lt;span style="color:#f92672">password&lt;/span>:
+&lt;span style="color:#f92672">database&lt;/span>:
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>You can try some query using your &lt;code>rails console&lt;/code> to make sure everything
+works fine.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>If you&amp;rsquo;re trying to connect from your &lt;code>irb&lt;/code> directly without using
+ActiveRecord you may want to put additional parameters. This works for me:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ruby" data-lang="ruby">client &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">TinyTds&lt;/span>&lt;span style="color:#f92672">::&lt;/span>&lt;span style="color:#66d9ef">Client&lt;/span>&lt;span style="color:#f92672">.&lt;/span>new(
+&lt;span style="color:#e6db74">:username&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">:password&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">:dataserver&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;myserver&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">:tds_version&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;100&amp;#39;&lt;/span>,
+&lt;span style="color:#e6db74">:encoding&lt;/span> &lt;span style="color:#f92672">=&amp;gt;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;iso_1&amp;#39;&lt;/span>
+)
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ol>
+&lt;p>That&amp;rsquo;s it, good luck!&lt;/p></content></item></channel></rss>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>php on Amree Zaid</title><link>https://amree.github.io/tags/php/</link><description>Recent content in php on Amree Zaid</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sat, 09 Oct 2010 00:00:00 +0000</lastBuildDate><atom:link href="https://amree.github.io/tags/php/index.xml" rel="self" type="application/rss+xml"/><item><title>Adding memcached support to PHP in Slackware 13.1</title><link>https://amree.github.io/posts/adding-memcached-support-to-php-in-slackware-13-1/</link><pubDate>Sat, 09 Oct 2010 00:00:00 +0000</pubDate><guid>https://amree.github.io/posts/adding-memcached-support-to-php-in-slackware-13-1/</guid><description>&lt;p>I just started learning Zend Framework and in one of the tutorials I read, I
+need to enable memcached in my PHP which is not available by default.&lt;/p></description><content>&lt;p>I just started learning Zend Framework and in one of the tutorials I read, I
+need to enable memcached in my PHP which is not available by default.&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Install &lt;a href="http://slackbuilds.org/repository/13.1/libraries/libevent/">libevent&lt;/a>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Install &lt;a href="http://slackbuilds.org/repository/13.1/network/memcached/">memcached&lt;/a>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Install &lt;a href="http://slackbuilds.org/repository/13.1/libraries/libmemcached/">libmemcached&lt;/a>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Install memcache.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">wget http://pecl.php.net/get/memcache-2.2.6.tgz
+tar -zxvf memcache-2.2.6.tgz
+cd memcache-2.2.6
+phpize &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> ./configure --enable-memcache &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> make
+cp modules/memcache.so /usr/lib/php/extensions/
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Load the module using .ini files in /etc/php&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">touch /etc/php/memcached.ini
+echo &lt;span style="color:#e6db74">&amp;#39;extension=memcache.so&amp;#39;&lt;/span> &amp;gt; /etc/php/memcached.ini
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Run memcached as a daemon (d = daemon, m = memory, u = user, l = IP to listen to, p = port).&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">memcached -d -m &lt;span style="color:#ae81ff">1024&lt;/span> -u root -l 127.0.0.1 -p &lt;span style="color:#ae81ff">11211&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Put this file in your web directory and run it. It should be rendered without any error.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-php" data-lang="php">&lt;span style="color:#f92672">&amp;lt;?&lt;/span>&lt;span style="color:#a6e22e">php&lt;/span>
+$memcache &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> &lt;span style="color:#a6e22e">Memcache&lt;/span>;
+$memcache&lt;span style="color:#f92672">-&amp;gt;&lt;/span>&lt;span style="color:#a6e22e">connect&lt;/span>(&lt;span style="color:#e6db74">&amp;#39;localhost&amp;#39;&lt;/span>, &lt;span style="color:#ae81ff">11211&lt;/span>) &lt;span style="color:#66d9ef">or&lt;/span> &lt;span style="color:#66d9ef">die&lt;/span> (&lt;span style="color:#e6db74">&amp;#34;Could not connect&amp;#34;&lt;/span>);
+$version &lt;span style="color:#f92672">=&lt;/span> $memcache&lt;span style="color:#f92672">-&amp;gt;&lt;/span>&lt;span style="color:#a6e22e">getVersion&lt;/span>();
+&lt;span style="color:#66d9ef">echo&lt;/span> &lt;span style="color:#e6db74">&amp;#34;Server&amp;#39;s version: &amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>$version&lt;span style="color:#f92672">.&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&amp;lt;br/&amp;gt;&lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>;
+$tmp_object &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> &lt;span style="color:#66d9ef">stdClass&lt;/span>;
+$tmp_object&lt;span style="color:#f92672">-&amp;gt;&lt;/span>&lt;span style="color:#a6e22e">str_attr&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;test&amp;#39;&lt;/span>;
+$tmp_object&lt;span style="color:#f92672">-&amp;gt;&lt;/span>&lt;span style="color:#a6e22e">int_attr&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">123&lt;/span>;
+$memcache&lt;span style="color:#f92672">-&amp;gt;&lt;/span>&lt;span style="color:#a6e22e">set&lt;/span>(&lt;span style="color:#e6db74">&amp;#39;key&amp;#39;&lt;/span>, $tmp_object, &lt;span style="color:#66d9ef">false&lt;/span>, &lt;span style="color:#ae81ff">10&lt;/span>) &lt;span style="color:#66d9ef">or&lt;/span> &lt;span style="color:#66d9ef">die&lt;/span> (&lt;span style="color:#e6db74">&amp;#34;Failed to save data at the server&amp;#34;&lt;/span>);
+&lt;span style="color:#66d9ef">echo&lt;/span> &lt;span style="color:#e6db74">&amp;#34;Store data in the cache (data will expire in 10 seconds)&amp;lt;br/&amp;gt;&lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>;
+$get_result &lt;span style="color:#f92672">=&lt;/span> $memcache&lt;span style="color:#f92672">-&amp;gt;&lt;/span>&lt;span style="color:#a6e22e">get&lt;/span>(&lt;span style="color:#e6db74">&amp;#39;key&amp;#39;&lt;/span>);
+&lt;span style="color:#66d9ef">echo&lt;/span> &lt;span style="color:#e6db74">&amp;#34;Data from the cache:&amp;lt;br/&amp;gt;&lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>;
+&lt;span style="color:#a6e22e">var_dump&lt;/span>($get_result);
+&lt;span style="color:#75715e">?&amp;gt;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ol>
+&lt;p>References:&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="http://my2.php.net/manual/en/memcache.installation.php">http://my2.php.net/manual/en/memcache.installation.php&lt;/a>&lt;/li>
+&lt;li>&lt;a href="http://stackoverflow.com/questions/1442411/using-memcache-vs-memcached-with-php">http://stackoverflow.com/questions/1442411/using-memcache-vs-memcached-with-php&lt;/a>&lt;/li>
+&lt;/ul></content></item></channel></rss>

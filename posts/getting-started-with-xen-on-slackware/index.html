@@ -1,0 +1,230 @@
+<!doctype html><html lang=en><head><title>Getting Started with Xen on Slackware :: Amree Zaid</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Here&amp;rsquo;s a guide on how to setup Xen virtualization in Slackware.
+"><meta name=keywords content><meta name=robots content="noodp"><link rel=canonical href=https://amree.github.io/posts/getting-started-with-xen-on-slackware/><link rel=stylesheet href=https://amree.github.io/assets/style.css><link rel=stylesheet href=https://amree.github.io/assets/green.css><link rel=apple-touch-icon href=https://amree.github.io/img/apple-touch-icon-192x192.png><link rel="shortcut icon" href=https://amree.github.io/img/favicon/green.png><meta name=twitter:card content="summary"><meta name=twitter:site content><meta name=twitter:creator content><meta property="og:locale" content="en"><meta property="og:type" content="article"><meta property="og:title" content="Getting Started with Xen on Slackware"><meta property="og:description" content="Here&amp;rsquo;s a guide on how to setup Xen virtualization in Slackware.
+"><meta property="og:url" content="https://amree.github.io/posts/getting-started-with-xen-on-slackware/"><meta property="og:site_name" content="Amree Zaid"><meta property="og:image" content="https://amree.github.io/img/favicon/green.png"><meta property="og:image:width" content="2048"><meta property="og:image:height" content="1024"><meta property="article:published_time" content="2012-09-12 00:00:00 +0000 UTC"></head><body class=green><div class="container center headings--one-size"><header class=header><div class=header__inner><div class=header__logo><a href=/><div class=logo>Amree Zaid</div></a></div><div class=menu-trigger>menu</div></div><nav class=menu><ul class="menu__inner menu__inner--desktop"><li><a href=https://twitter.com/AmreeZaid>Twitter</a></li></ul><ul class="menu__inner menu__inner--mobile"><li><a href=https://twitter.com/AmreeZaid>Twitter</a></li></ul></nav></header><div class=content><div class=post><h1 class=post-title><a href=https://amree.github.io/posts/getting-started-with-xen-on-slackware/>Getting Started with Xen on Slackware</a></h1><div class=post-meta><span class=post-date>2012-09-12</span></div><span class=post-tags>#<a href=https://amree.github.io/tags/linux/>linux</a>&nbsp;
+#<a href=https://amree.github.io/tags/xen/>xen</a>&nbsp;</span><div class=post-content><div><p>Here&rsquo;s a guide on how to setup Xen virtualization in Slackware.</p><h2 id=install-slackware>Install Slackware<a href=#install-slackware class=hanchor arialabel=Anchor>&#8983;</a></h2><p>I&rsquo;ll be doing this on Slackware v13.37 64 bit.</p><ul><li>Create 1 partition for the whole disk</li><li>Set its type to <code>8e</code> (Linux LVM)</li></ul><p>Run these commands to setup the LVM partitions:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>pvcreate /dev/sda1
+vgcreate vg01 /dev/sda1
+lvcreate -L 20G -n root vg01
+lvcreate -L 20G -n iso vg01
+lvcreate -L 8G -n swap vg01
+mkswap /dev/vg01/swap
+setup
+</code></pre></div><ul><li>Mount <code>/dev/vg01/root</code> as <code>/</code></li><li>Mount <code>/dev/vg01/iso</code> as <code>/iso</code></li><li>Install all packages from a, ap, d, f, l, n, t, tcl, x</li></ul><p>Create custom <code>initrd</code> after the setup complete:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>chroot /mnt
+/usr/share/mkinitrd/mkinitrd_command_generator.sh &gt; init
+sh init
+ln -sf /boot/vmlinuz-generic-2.6.37.6 /boot/vmlinuz
+</code></pre></div><p>Add <code>initrd</code> option in your <code>/etc/lilo.conf</code>:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt># /etc/lilo.conf
+
+image = /boot/vmlinuz
+  initrd = /boot/initrd.gz # Add this line
+  root = /dev/vg01/root
+  label = slackware
+  read-only  # Partitions should be mounted read-only for checking
+</code></pre></div><p>Install the new bootloader and reboot:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>lilo
+exit
+reboot
+</code></pre></div><h2 id=setup-dom0-host>Setup Dom0 (Host)<a href=#setup-dom0-host class=hanchor arialabel=Anchor>&#8983;</a></h2><h3 id=install-xen>Install Xen<a href=#install-xen class=hanchor arialabel=Anchor>&#8983;</a></h3><ul><li>Install <a href=http://slackbuilds.org/repository/13.37/development/acpica/>acpica</a></li><li>Install <a href=http://slackbuilds.org/repository/13.37/system/xen/>xen</a></li></ul><h3 id=build-xen-kernel>Build Xen Kernel<a href=#build-xen-kernel class=hanchor arialabel=Anchor>&#8983;</a></h3><p>We&rsquo;ll be using kernel v3.2.28 so that no patching will be required to enable Xen
+and for that we&rsquo;ll get the one from Slackware&rsquo;s repo. By the time of this
+writing, Slackware v14 has not been released yet (it&rsquo;s in the current).</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>wget http://slackware.osuosl.org/slackware-current/source/k/linux-3.2.28.tar.xz
+tar Jxvf linux-3.2.28.tar.xz
+mv linux-3.2.28 linux-3.2.28-xen
+mv linux-3.2.28-xen/ /usr/src/
+cd /usr/src
+rm linux
+ln -s linux-3.2.28-xen linux
+</code></pre></div><p>Get Slackware&rsquo;s default kernel config for a start. From there, you must add all
+Xen&rsquo;s related kernel configs. You can refer to <a href=http://wiki.xen.org/wiki/Mainline_Linux_Kernel_Configs>Xen&rsquo;s
+wiki</a> on what kernel
+config that needs to be enabled.</p><p>You can also get my configs from this <a href=https://gist.github.com/3695518>gist</a>.
+It&rsquo;s based on 3.2.28 kernel (you can use Gist&rsquo;s diff to see what config I&rsquo;ve
+added).</p><p>Whatever you chose, make sure you&rsquo;ll change the LOCALVERSION so that you won&rsquo;t
+replace your current kernel. Use <code>cat /proc/cpuinfo | grep -i 'processor' | wc -l</code> + 1 to get your cpu core count to be used with <code>make -j</code>.</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>cd linux
+wget http://slackware.osuosl.org/slackware-current/source/k/config-x86_64/config-generic-3.2.28.x64
+cp config-generic-3.2.28.x64 .config
+make oldconfig
+make menuconfig
+make -j13 bzImage modules
+make modules_install
+cp System.map /boot/System.map-xen-3.2.28
+cp .config /boot/config-xen-3.2.28
+cd /boot
+rm System.map
+ln -s System.map-xen-3.2.28 System.map
+</code></pre></div><h3 id=xen--dom0--initrd>Xen + Dom0 + Initrd<a href=#xen--dom0--initrd class=hanchor arialabel=Anchor>&#8983;</a></h3><p>Since LILO doesn&rsquo;t support &ldquo;module&rdquo; directive of Grub, we need to use <code>mbootpack</code>.</p><ul><li>Install <a href=http://slackbuilds.org/repository/13.37/system/mbootpack/>mbootpack</a></li></ul><p>You can use <code>/usr/share/mkinitrd/mkinitrd_command_generator.sh</code> for <code>mkinitrd</code>
+recommendation. Create an initrd for Xen&rsquo;s kernel:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>depmod 3.2.28-xen
+mkinitrd -c -k 3.2.28-xen -f ext4 -r /dev/vg01/root -m mptbase:mptscsih:mptsas:usbhid:ehci-hcd:uhci-hcd:jbd2:mbcache:ext4 -L -u -o /boot/initrd-xen.gz
+</code></pre></div><p>Create the boot image using <code>mbootpack</code>:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>cd /boot
+gzip -d -c /boot/xen-4.1.2.gz &gt; /boot/xen-4.1.2
+gzip -d -c /boot/initrd-xen.gz &gt; /boot/initrd-xen
+mbootpack -o /boot/vmlinuz-xen-3.2.28 -m /usr/src/linux-3.2.28-xen/vmlinux -m /boot/initrd-xen /boot/xen-4.1.2
+ln -s vmlinuz-xen-3.2.28 vmlinuz-xen
+</code></pre></div><p>With <code>mbootpack</code>, we don&rsquo;t have to specify <code>initrd</code> option. Add these new configs into your <code>/etc/lilo.conf</code>:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt># /etc/lilo.conf
+
+image = /boot/vmlinuz-xen
+  root = /dev/vg01/root
+  label = slackware-xen
+  append=&#34;-- nomodeset&#34;
+  read-only
+</code></pre></div><p>Put these configs on the top of your <code>lilo.conf</code>:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt>default = slackware-xen
+timeout = 30
+</code></pre></div><p>Run <code>lilo</code> and make sure there&rsquo;s no error from the output:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ lilo
+Warning: LBA32 addressing assumed
+Added slackware
+Added slackware-xen *
+One warning was issued.
+</code></pre></div><p>Put these settings in your <code>/etc/rc.d/rc.local</code>:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt># /etc/rc.d/rc.local
+
+if [ -d /proc/xen ]; then
+  if [ -x /etc/rc.d/rc.xencommons ]; then
+    echo &#34;Starting XEN commons:  /etc/rc.d/rc.xencommons&#34;
+    /etc/rc.d/rc.xencommons start
+  fi
+  if [ -x /etc/rc.d/rc.xendomains ]; then
+    echo &#34;Starting XEN domains:  /etc/rc.d/rc.xendomains&#34;
+    /etc/rc.d/rc.xendomains start
+  fi
+fi
+</code></pre></div><p>And these commands in your <code>/etc/rc.d/rc.local_shutdown</code>:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt># /etc/rc.d/rc.local_shutdown
+
+if [ -d /proc/xen ]; then
+  if [ -x /etc/rc.d/rc.xendomains ]; then
+    echo &#34;Stopping XEN domains:  /etc/rc.d/rc.xendomains&#34;
+    /etc/rc.d/rc.xendomains stop
+  fi
+  if [ -x /etc/rc.d/rc.xencommons ]; then
+    echo &#34;Stopping XEN commons:  /etc/rc.d/rc.xencommons&#34;
+    /etc/rc.d/rc.xencommons stop
+  fi
+fi
+</code></pre></div><p>After the reboot, you should get something like this:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ uname -r
+3.2.28-xen
+
+$ cat /proc/xen/capabilities
+control_d
+
+$ cat /sys/hypervisor/properties/capabilities
+xen-3.0-x86_64 xen-3.0-x86_32p hvm-3.0-x86_32 hvm-3.0-x86_32p hvm-3.0-x86_64
+
+$ xl list
+Name                       ID   Mem VCPUs  State Time<span style=color:#f92672>(</span>s<span style=color:#f92672>)</span>
+Domain-0                    <span style=color:#ae81ff>0</span> <span style=color:#ae81ff>15243</span>    <span style=color:#ae81ff>12</span>     r-----       9.0
+</code></pre></div><p>Disable autosave and restore of <code>DomU</code>:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt># /etc/default/xendomains
+
+XENDOMAINS_RESTORE=false
+XENDOMAINS_SAVE=&#34;&#34;
+</code></pre></div><h2 id=setup-domu-guest>Setup DomU (Guest)<a href=#setup-domu-guest class=hanchor arialabel=Anchor>&#8983;</a></h2><p>I&rsquo;m going to install a Slackware v13.37 64 bit as the first guest. I&rsquo;ll be using
+an ISO image that I&rsquo;ve copied into my <code>/iso</code>.</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>cd /iso
+wget http://mirrors.xmission.com/slackware/slackware64-13.37-iso/slackware64-13.37-install-dvd.iso
+</code></pre></div><p>For a start, we need to create a config file for the Slackware installation:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>mkdir ~/machines
+cd ~/machines
+vim slackware-install
+</code></pre></div><p>Put these initial configs in your <code>/root/machines/slackware-install</code>:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt>kernel = &#39;hvmloader&#39;
+builder=&#39;hvm&#39;
+memory = 1024
+name = &#34;slackware&#34;
+vif = [ &#39;mac=00:16:3E:AD:81:AE, bridge=virbr0, model=e1000&#39; ]
+dhcp = &#34;dhcp&#34;
+disk = [&#39;phy:/dev/vg01/slackware,hda,w&#39;, &#39;file:/iso/slackware64-13.37-install-dvd.iso,hdc:cdrom,r&#39;]
+boot=&#39;dc&#39;
+sdl=0
+opengl=1
+vnc=1
+vncpasswd=&#39;&#39;
+serial=&#39;pty&#39;
+</code></pre></div><p>As you can see, there&rsquo;re various of thing thats we need to take care of before
+we start the installation. First of all the networking.</p><h3 id=generate-random-mac>Generate Random MAC<a href=#generate-random-mac class=hanchor arialabel=Anchor>&#8983;</a></h3><p>Use this command (thanks to <a href=http://unixtitan.net/main/2009/12/01/xen-mac-generator/>Unixtitan</a>):</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>perl -e <span style=color:#e6db74>&#39;printf &#34;00:16:3E:%02X:%02X:%02X\n&#34;, rand 0xFF, rand 0xFF, rand 0xFF&#39;</span>
+</code></pre></div><h3 id=setup-networking-bridging>Setup Networking Bridging<a href=#setup-networking-bridging class=hanchor arialabel=Anchor>&#8983;</a></h3><p>There are a few methods for a DomU to access the network. For this guide, I&rsquo;ll
+use network bridging.</p><p>Put these configs (before starting anything related to Xen) into your <code>/etc/rc.d/rc.local</code> to enable network bridge:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt># /etc/rc.d/rc.local
+
+ifconfig eth0 up
+ifconfig eth0 0.0.0.0
+
+brctl addbr virbr0
+brctl addif virbr0 eth0
+ifconfig virbr0 192.168.1.10 netmask 255.255.255.0
+route add default gw 192.168.1.1
+</code></pre></div><p>Clear out any values set in your <code>/etc/rc.d/rc.inet1.conf</code>. Usually the value of
+<code>IPADDR[0]</code>, <code>NETMASK[0]</code> and <code>GATEWAY</code>.</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt># /etc/rc.d/rc.inet1.conf
+
+# Config information for eth0:
+IPADDR[0]=&#34;&#34;
+NETMASK[0]=&#34;&#34;
+USE_DHCP[0]=&#34;&#34;
+DHCP_HOSTNAME[0]=&#34;&#34;
+
+# Default gateway IP address:
+GATEWAY=&#34;&#34;
+</code></pre></div><p>This configs assume your main networking interface is <code>eth0</code>. Change other
+settings based on your network environment. Reboot your <code>Dom0</code>.</p><p>You&rsquo;ll get something that looks like this after the reboot (if you got it right).</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt>$ ifconfig
+
+eth0      Link encap:Ethernet  HWaddr bc:30:5b:db:e2:99
+          inet6 addr: fe80::be30:5bff:fedb:e299/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:163836 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:337 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:18347806 (17.4 MiB)  TX bytes:30535 (29.8 KiB)
+          Interrupt:36 Memory:d6000000-d6012800
+
+lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:16436  Metric:1
+          RX packets:4 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:4 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0
+          RX bytes:336 (336.0 B)  TX bytes:336 (336.0 B)
+
+virbr0    Link encap:Ethernet  HWaddr bc:30:5b:db:e2:99
+          inet addr:192.168.1.10  Bcast:192.168.1.255  Mask:255.255.255.0
+          inet6 addr: fe80::be30:5bff:fedb:e299/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:147426 errors:0 dropped:506 overruns:0 frame:0
+          TX packets:129 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0
+          RX bytes:12417385 (11.8 MiB)  TX bytes:16779 (16.3 KiB)
+</code></pre></div><h3 id=enable-x11-forwarding-in-dom0>Enable X11 Forwarding in Dom0<a href=#enable-x11-forwarding-in-dom0 class=hanchor arialabel=Anchor>&#8983;</a></h3><ul><li>Install <a href=http://slackbuilds.org/repository/12.2/system/vncviewer/>vncviewer</a></li></ul><p>Uncomment or create these options in your <code>/etc/ssh/sshd_config</code>:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt># /etc/ssh/sshd_config
+
+X11Forwarding yes
+</code></pre></div><p>Restart your <code>ssh</code> server:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>/etc/rc.d/rc.sshd restart
+exit
+</code></pre></div><p>Reconnect to <code>Dom0</code> using <code>-Y</code> option:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>ssh -Y root@192.168.1.10
+xclock
+</code></pre></div><p>If you can see a clock ticking, that means the X11 forward is working.</p><h3 id=prepare-space-for-domu>Prepare space for DomU<a href=#prepare-space-for-domu class=hanchor arialabel=Anchor>&#8983;</a></h3><p>I&rsquo;m going to store my <code>DomU</code> in the a new logical volume.</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>lvcreate -L 15G -n slackware vg01
+</code></pre></div><h3 id=install-slackware-in-domu>Install Slackware in DomU<a href=#install-slackware-in-domu class=hanchor arialabel=Anchor>&#8983;</a></h3><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>cd machines
+xl create slackware
+</code></pre></div><p>If everything is good, you should see <code>slackware</code> when you run <code>xl list</code>.</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt>$ xl list
+Name                         ID   Mem VCPUs  State Time(s)
+Domain-0                      0 13988    12     r-----      40.0
+slackware                     2  1019     1     -b----       4.6
+</code></pre></div><p>Install Slackware through VNC:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>xl vncviewer slackware
+</code></pre></div><p>Just install as if you&rsquo;re installing on a normal server. <code>halt</code> after you&rsquo;ve finished your installation.</p><h3 id=start-slackware-in-domu>Start Slackware in DomU<a href=#start-slackware-in-domu class=hanchor arialabel=Anchor>&#8983;</a></h3><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>cd ~/machines
+cp slackware-install slackware
+vim slackware
+</code></pre></div><p>Change these two lines in your config file to make sure it&rsquo;ll boot from the hardisk:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt># /root/machines/slackware
+
+disk = [&#39;phy:/dev/vg01/slackware,hda,w&#39;]
+boot=&#39;c&#39;
+</code></pre></div><p>Start the guest:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>xl create slackware
+</code></pre></div><h3 id=enable-console-in-domu>Enable Console in DomU<a href=#enable-console-in-domu class=hanchor arialabel=Anchor>&#8983;</a></h3><p>It&rsquo;s pretty annoying to use vnc everytime we need to access our <code>DomU</code> directly. It&rsquo;s possible to connect to our <code>DomU</code> using console connection:</p><p>Uncomment these lines:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#75715e># /etc/inittab</span>
+s1:12345:respawn:/sbin/agetty -L ttyS0 <span style=color:#ae81ff>9600</span> vt100
+
+<span style=color:#75715e># /etc/securetty</span>
+ttyS0
+
+$ reboot
+</code></pre></div><p>For Ubuntu&rsquo;s <code>DomU</code>, please check out <a href=https://help.ubuntu.com/community/SerialConsoleHowto>https://help.ubuntu.com/community/SerialConsoleHowto</a>.</p><p>You can now connect to your Slackware DomU using:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>xl console slackware
+</code></pre></div><h2 id=additional-info>Additional Info<a href=#additional-info class=hanchor arialabel=Anchor>&#8983;</a></h2><p>Disable auto save and restore of domUs on host reboot:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-txt data-lang=txt>$ vim /etc/default/xendomains
+
+XENDOMAINS_RESTORE=false
+XENDOMAINS_SAVE=&#34;&#34;
+</code></pre></div><p>In order to run <code>xl shutdown guest</code> so that your <code>DomU</code> will shutdown
+gracefully, you need to use <a href=http://wiki.xen.org/wiki/Xen_Linux_PV_on_HVM_drivers>PVHVM
+drivers</a>. You can refer
+<a href=http://wiki.xen.org/wiki/Mainline_Linux_Kernel_Configs>here</a> for the related
+kernel configs that you need to enable in your kernel.</p><p>There are still many things that I&rsquo;d like to add, but I think it&rsquo;s good enough
+for now. After all, this post is about getting started, not a complete guide.
+I&rsquo;ll update this post if I found anything worth of sharing.</p><p>Good luck!</p><p>More references:</p><ul><li><a href=http://wiki.xen.org/wiki/XenCommonProblems>http://wiki.xen.org/wiki/XenCommonProblems</a></li><li><a href=http://wiki.xen.org/wiki/Xen_Best_Practices>http://wiki.xen.org/wiki/Xen_Best_Practices</a></li><li><a href=http://wiki.xen.org/wiki/Xen_Linux_PV_on_HVM_drivers>http://wiki.xen.org/wiki/Xen_Linux_PV_on_HVM_drivers</a></li><li><a href="http://alien.slackbook.org/dokuwiki/doku.php?id=linux:kernelbuilding">http://alien.slackbook.org/dokuwiki/doku.php?id=linux:kernelbuilding</a></li></ul></div></div><div class=pagination><div class=pagination__title><span class=pagination__title-h>Read other posts</span><hr></div><div class=pagination__buttons><span class="button previous"><a href=https://amree.github.io/posts/rails-unicorn-and-nginx-on-slackware/><span class=button__icon>←</span>
+<span class=button__text>Rails, Unicorn and Nginx on Slackware</span></a></span>
+<span class="button next"><a href=https://amree.github.io/posts/corosync-and-pacemaker-in-slackware/><span class=button__text>Corosync and Pacemaker in Slackware</span>
+<span class=button__icon>→</span></a></span></div></div></div></div><footer class=footer><div class=footer__inner><div class=copyright><span>© 2021 Powered by <a href=http://gohugo.io>Hugo</a></span>
+<span>:: Theme made by <a href=https://twitter.com/panr>panr</a></span></div></div></footer><script src=https://amree.github.io/assets/main.js></script><script src=https://amree.github.io/assets/prism.js></script></div></body></html>
