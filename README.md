@@ -1,13 +1,7 @@
 # README
 
-Install `hugo`:
-
 ```
 brew install hugo
-```
-
-Run the server using `hugo server`:
-
-```
-hugo server
+git submodule add -f https://github.com/panr/hugo-theme-terminal.git themes/terminal
+hugo server -t terminal
 ```
