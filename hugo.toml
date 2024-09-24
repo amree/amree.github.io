@@ -3,51 +3,22 @@ languageCode = "en-us"
 title = "Amree Zaid"
 baseurl = "/"
 theme = "terminal"
-paginate = 5
+pagerSize = 5
 
 [params]
-  # dir name of your main content (default is `content/posts`).
-  # the list of set content will show up on your index page (baseurl).
   contentTypeName = "posts"
-
-  # ["orange", "blue", "red", "green", "pink"]
-  themeColor = "green"
-
+  themeColor = "red"
   # if you set this to 0, only submenu trigger will be visible
   showMenuItems = 2
-
-  # show selector to switch language
-  showLanguageSelector = false
-
-  # set theme to full screen width
   fullWidthTheme = false
-
-  # center theme with default width
   centerTheme = true
 
-  # set a custom favicon (default is a `themeColor` square)
-  # favicon = "favicon.ico"
-
-  # set post to show the last updated
-  # If you use git, you can set `enableGitInfo` to `true` and then post will automatically get the last updated
-  showLastUpdated = false
-  # enableGitInfo = true
-  # Provide a string as a prefix for the last update date. By default, it looks like this: 2020-xx-xx [Updated: 2020-xx-xx] :: Author
-  # updatedDatePrefix = "Updated"
-
-  # set all headings to their default size (depending on browser settings)
-  # it's set to `true` by default
-  # oneHeadingSize = false
-
-[params.twitter]
-  # set Twitter handles for Twitter cards
-  # see https://developer.twitter.com/en/docs/tweets/optimize-with-cards/guides/getting-started#card-and-content-attribution
-  # do not include @
-  creator = ""
-  site = ""
+  [params.twitter]
+  creator = "AmreeZaid"
+  site = "AmreeZaid"
 
 [taxanomies]
-  tag = "tags"
+tag = "tags"
 
 [markup]
   [markup.goldmark]
@@ -55,10 +26,10 @@ paginate = 5
       unsafe = true
 
 [permalinks]
-  posts = "/:year/:month/:day/:title/"
+posts = "/:year/:month/:day/:title/"
 
 [languages]
-  [languages.en]
+  [languages.en.params]
     languageName = "English"
     title = "Amree Zaid"
     subtitle = "A place for me to share something"
@@ -73,17 +44,17 @@ paginate = 5
     missingContentMessage = "Page not found..."
     missingBackButtonLabel = "Back to home page"
 
-    [languages.en.params.logo]
-      logoText = "Amree Zaid"
-      logoHomeLink = "/"
+  [languages.en.params.logo]
+    logoText = "Amree Zaid"
+    logoHomeLink = "/"
 
-    [languages.en.menu]
-      [[languages.en.menu.main]]
-        identifier = "all-posts"
-        name = "All Posts"
-        url = "/all-posts"
+  [languages.en.menu]
+    [[languages.en.menu.main]]
+      identifier = "posts"
+      name = "ALL Posts"
+      url = "/posts"
 
-      [[languages.en.menu.main]]
-        identifier = "twitter"
-        name = "Twitter"
-        url = "https://twitter.com/AmreeZaid"
+  [[languages.en.menu.main]]
+    identifier = "twitter"
+    name = "Twitter"
+    url = "https://twitter.com/AmreeZaid"
