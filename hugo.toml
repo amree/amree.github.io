@@ -50,9 +50,9 @@ posts = "/:year/:month/:day/:title/"
 
   [languages.en.menu]
     [[languages.en.menu.main]]
-      identifier = "posts"
-      name = "ALL Posts"
-      url = "/posts"
+      identifier = "archive"
+      name = "Archive"
+      url = "/archive"
 
   [[languages.en.menu.main]]
     identifier = "twitter"
