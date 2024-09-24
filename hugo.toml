@@ -3,7 +3,9 @@ languageCode = "en-us"
 title = "Amree Zaid"
 baseurl = "/"
 theme = "terminal"
-pagerSize = 5
+
+[pagination]
+  pagerSize = 5
 
 [params]
   contentTypeName = "posts"
