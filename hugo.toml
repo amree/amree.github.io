@@ -15,12 +15,25 @@ theme = "terminal"
   fullWidthTheme = false
   centerTheme = true
 
+  subtitle = "A place for me to share something"
+  menuMore = "Show more"
+  readMore = "Read more"
+  readOtherPosts = "Read other posts"
+  newerPosts = "Newer posts"
+  olderPosts = "Older posts"
+  missingContentMessage = "Page not found..."
+  missingBackButtonLabel = "Back to home page"
+
+  [params.logo]
+    logoText = "Amree Zaid"
+    logoHomeLink = "/"
+
   [params.twitter]
-  creator = "AmreeZaid"
-  site = "AmreeZaid"
+    creator = "AmreeZaid"
+    site = "AmreeZaid"
 
 [taxanomies]
-tag = "tags"
+  tag = "tags"
 
 [markup]
   [markup.goldmark]
@@ -28,35 +41,23 @@ tag = "tags"
       unsafe = true
 
 [permalinks]
-posts = "/:year/:month/:day/:title/"
+  posts = "/:year/:month/:day/:title/"
 
-[languages]
-  [languages.en.params]
-    languageName = "English"
-    title = "Amree Zaid"
-    subtitle = "A place for me to share something"
-    owner = "Amree Zaid"
-    keywords = ""
-    copyright = ""
-    menuMore = "Show more"
-    readMore = "Read more"
-    readOtherPosts = "Read other posts"
-    newerPosts = "Newer posts"
-    olderPosts = "Older posts"
-    missingContentMessage = "Page not found..."
-    missingBackButtonLabel = "Back to home page"
+[menu]
+  [[menu.main]]
+    identifier = "archive"
+    name = "Archive"
+    url = "/archive"
+    weight = 1
 
-  [languages.en.params.logo]
-    logoText = "Amree Zaid"
-    logoHomeLink = "/"
-
-  [languages.en.menu]
-    [[languages.en.menu.main]]
-      identifier = "archive"
-      name = "Archive"
-      url = "/archive"
-
-  [[languages.en.menu.main]]
+  [[menu.main]]
     identifier = "twitter"
     name = "Twitter"
     url = "https://twitter.com/AmreeZaid"
+    weight = 3
+
+  [[menu.main]]
+    identifier = "github"
+    name = "Github"
+    url = "https://github.com/amree"
+    weight = 4
