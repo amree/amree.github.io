@@ -1,0 +1,15 @@
+{{ define "main" }}
+  <h1 class="post-title">
+    <a href="{{ .Permalink }}">{{ .Title | markdownify }}</a>
+  </h1>
+  <div class="posts">
+        {{ range $category, $randoms := .Site.Data.random }}
+            <p>{{ $category | title }}</p>
+            <ul>
+                {{ range sort $randoms "date" "desc" }}
+                <li>{{- dateFormat "2006-01-02" .date -}}&nbsp;<a href="{{ .url }}" target="_blank">{{ .title | markdownify }}</a></li>
+                {{ end }}
+            </ul>
+        {{ end }}
+  </div>
+{{ end }}

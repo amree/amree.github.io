@@ -51,6 +51,12 @@ theme = "terminal"
     weight = 1
 
   [[menu.main]]
+    identifier = "random"
+    name = "Random"
+    url = "/random"
+    weight = 2
+
+  [[menu.main]]
     identifier = "twitter"
     name = "Twitter"
     url = "https://twitter.com/AmreeZaid"
