@@ -11,7 +11,7 @@ stores author's information history.
 
 <!--more-->
 
-![image](/images/posts/2011-01-05-diff.png)
+![image](/images/posts/2011-01-05/diff.png)
 
 So, in order to fix it, I ran this little script from Github in my master
 branch.
@@ -45,10 +45,11 @@ export GIT_COMMITTER_EMAIL="$cm"
 ```
 
 To push it into the server, I need to use `git push -f` instead of `git push`.
-If you use the latter command, you'll end up with a merged history (every commit
-will have another one identical to it).
+If you use the latter command, you'll end up with a merged history (every
+commit will have another one identical to it).
 
-If you use Redmine, you may need to fetch change set. Just run this command in your Redmine's directory:
+If you use Redmine, you may need to fetch change set. Just run this command in
+your Redmine's directory:
 
 ```text
 script/runner "Repository.fetch_changesets" -e production

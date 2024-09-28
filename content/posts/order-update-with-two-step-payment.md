@@ -36,9 +36,11 @@ The simplest workflow would be:
 - Customer checkout from our websites with a date far in the future
 - We'll queue the card authorization 7 days before the cut off date
 - Customer didn't make any changes
-- When the time comes, we authorized the amount, queue another job for the card capture process
+- When the time comes, we authorized the amount, queue another job for the card
+capture process
 - On the day of the cut off date, we'll capture the amount automatically
-- No order update from the web will be allowed at this point. They need to contact our customer support for this
+- No order update from the web will be allowed at this point. They need to
+contact our customer support for this
 
 
 The complexity keeps on compounding as you need to think about these scenarios:
@@ -68,7 +70,7 @@ I don't think I can meet the deadline without those helps lol.
 I'd love to tell you more about the whole process, but it was pretty long. But
 you can see the branch conditions that I've drawn here:
 
-![diagram](/images/posts/2020-05-09-two-step-payment.jpg)
+![diagram](/images/posts/2020-05-09/two-step-payment.jpg)
 
 ```txt
 P = Pending Authorization
