@@ -2,6 +2,8 @@
 title: Tiny Guide to Webscaling
 date: 2023-11-26
 tags: [devops]
+readingTime: true
+toc: true
 ---
 
 Someone on Twitter asked what if Khairul Aming wanted to set up his own website
