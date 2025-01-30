@@ -1,3 +1,4 @@
 [submodule "themes/terminal"]
 	path = themes/terminal
-	url = https://github.com/panr/hugo-theme-terminal.git
+	url = git@github.com:amree/hugo-theme-terminal.git
+	branch = amree.dev
