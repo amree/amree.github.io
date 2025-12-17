@@ -1,7 +1,6 @@
 baseURL = "https://amree.dev"
 languageCode = "en-us"
 title = "Amree Zaid"
-baseurl = "/"
 theme = "terminal"
 
 [pagination]
@@ -9,7 +8,6 @@ theme = "terminal"
 
 [params]
   contentTypeName = "posts"
-  themeColor = "red"
   # if you set this to 0, only submenu trigger will be visible
   showMenuItems = 2
   fullWidthTheme = false
@@ -32,7 +30,7 @@ theme = "terminal"
     creator = "AmreeZaid"
     site = "AmreeZaid"
 
-[taxanomies]
+[taxonomies]
   tag = "tags"
 
 [markup]
@@ -57,9 +55,9 @@ theme = "terminal"
     weight = 2
 
   [[menu.main]]
-    identifier = "twitter"
-    name = "Twitter"
-    url = "https://twitter.com/AmreeZaid"
+    identifier = "x"
+    name = "X"
+    url = "https://x.com/AmreeZaid"
     weight = 3
 
   [[menu.main]]
