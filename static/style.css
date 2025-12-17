@@ -4,6 +4,37 @@
   --accent: #ffb366;
 }
 
+/* Light theme */
+body.light-theme {
+  --background: #f5f5f5;
+  --foreground: #1a1a1a;
+  --accent: #e67300;
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  background: var(--background);
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9998;
+  transition: transform 0.2s ease;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1);
+}
+
 /* Reading progress bar */
 .reading-progress {
   position: fixed;
@@ -14,4 +45,71 @@
   background: var(--accent);
   z-index: 9999;
   transition: width 0.1s ease-out;
+}
+
+/* Light theme Prism overrides */
+body.light-theme code[class*=language-],
+body.light-theme pre[class*=language-] {
+  color: #393a34;
+  text-shadow: none;
+}
+
+body.light-theme :not(pre)>code[class*=language-],
+body.light-theme pre[class*=language-] {
+  background: #f6f8fa;
+}
+
+body.light-theme .token.comment,
+body.light-theme .token.prolog,
+body.light-theme .token.doctype,
+body.light-theme .token.cdata {
+  color: #6a737d;
+}
+
+body.light-theme .token.punctuation {
+  color: #393a34;
+}
+
+body.light-theme .token.property,
+body.light-theme .token.tag,
+body.light-theme .token.boolean,
+body.light-theme .token.number,
+body.light-theme .token.constant,
+body.light-theme .token.symbol,
+body.light-theme .token.deleted {
+  color: #d73a49;
+}
+
+body.light-theme .token.selector,
+body.light-theme .token.attr-name,
+body.light-theme .token.string,
+body.light-theme .token.char,
+body.light-theme .token.builtin,
+body.light-theme .token.inserted {
+  color: #22863a;
+}
+
+body.light-theme .token.operator,
+body.light-theme .token.entity,
+body.light-theme .token.url,
+body.light-theme .language-css .token.string,
+body.light-theme .style .token.string {
+  color: #d73a49;
+}
+
+body.light-theme .token.atrule,
+body.light-theme .token.attr-value,
+body.light-theme .token.keyword {
+  color: #005cc5;
+}
+
+body.light-theme .token.function,
+body.light-theme .token.class-name {
+  color: #6f42c1;
+}
+
+body.light-theme .token.regex,
+body.light-theme .token.important,
+body.light-theme .token.variable {
+  color: #e36209;
 }
