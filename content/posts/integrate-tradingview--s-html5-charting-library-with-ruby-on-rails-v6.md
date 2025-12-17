@@ -1,5 +1,5 @@
 ---
-title: Integrate TradingView's HTML5 Charting Library with Ruby on Rails v6
+title: TradingView Charting Library with Rails 6
 date: 2020-11-23
 tags: [tradingview, ruby]
 ---
