@@ -3,3 +3,15 @@
   --foreground: #e0e0e0;
   --accent: #ffb366;
 }
+
+/* Reading progress bar */
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 3px;
+  background: var(--accent);
+  z-index: 9999;
+  transition: width 0.1s ease-out;
+}
