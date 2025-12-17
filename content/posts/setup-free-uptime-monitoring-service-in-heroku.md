@@ -1,7 +1,7 @@
 ---
 title: Setup Free Uptime Monitoring Service in Heroku
 date: 2013-06-28
-tags: [heroku]
+tags: [devops]
 ---
 
 A free way for us to setup free version of uptime service.

@@ -1,7 +1,7 @@
 ---
 title: See Full Referrer URL in Google Analytics
 date: 2012-01-21
-tags: [google-analytics]
+tags: [others]
 ---
 
 Most of the tutorial on the web focuses on the old version of Google Analytics.

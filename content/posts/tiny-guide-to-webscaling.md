@@ -1,7 +1,7 @@
 ---
 title: Tiny Guide to Webscaling
 date: 2023-11-26
-tags: [devops]
+tags: [performance]
 readingTime: true
 toc: true
 ---

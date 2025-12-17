@@ -1,7 +1,7 @@
 ---
 title: Minimizing Problems Before and When They Occur
 date: 2023-05-09
-tags: [others]
+tags: [performance]
 ---
 
 Although we use monolithic architecture, we actually "break down" the

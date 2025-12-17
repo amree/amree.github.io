@@ -1,7 +1,7 @@
 ---
 title: Notes on Demystifying Contributing to Rails
 date: 2015-05-27
-tags: [notes]
+tags: [rails]
 ---
 
 This is my notes for presentation by [Eileen

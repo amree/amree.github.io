@@ -1,7 +1,7 @@
 ---
 title: Caching 101
 date: 2023-12-31
-tags: [others]
+tags: [performance]
 ---
 
 Caching is something we use to reduce the access to the original source. To do

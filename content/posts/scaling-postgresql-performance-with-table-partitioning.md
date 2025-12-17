@@ -1,7 +1,7 @@
 ---
 title: Scaling PostgreSQL Performance with Table Partitioning
 date: 2025-06-13
-tags: [postgresql, performance, database]
+tags: [postgresql, performance]
 ---
 
 CoinGecko's engineering team successfully optimized a 1TB+ PostgreSQL table storing hourly crypto price data by implementing table partitioning. The initiative delivered dramatic performance improvements: 86% reduction in p99 response time (from 4.13s to 578ms) and 20% IOPS reduction.

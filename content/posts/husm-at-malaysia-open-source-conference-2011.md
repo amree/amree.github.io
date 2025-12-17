@@ -1,7 +1,7 @@
 ---
 title: HUSM at Malaysia Open Source Conference 2011
 date: 2011-07-12
-tags: [others]
+tags: [presentations]
 showFullContent: true
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: CoinGecko's Interview Process for Level 1 to Level 3
 date: 2023-06-24
-tags: [interviews]
+tags: [engineering]
 ---
 
 I've been talking to a prospective candidate who has been inquiring about the

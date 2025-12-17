@@ -1,7 +1,7 @@
 ---
 title: Manage Multiple App URL in Local Development
 date: 2019-01-14
-tags: [others]
+tags: [linux]
 ---
 
 These days we might have multiple local applications that are running on
