@@ -130,7 +130,7 @@ docker run --rm jordi/ab -c 500 -n 500 http://host.docker.internal:3000/
 
 The result:
 
-![image](/images/posts/2022-08-31/result.png)
+![image](/images/posts/rails-connection-pool-vs-pgbouncer/result.png)
 
 
 ## Calculating the amount of database needed

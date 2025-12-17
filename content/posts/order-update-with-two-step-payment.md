@@ -70,7 +70,7 @@ I don't think I can meet the deadline without those helps lol.
 I'd love to tell you more about the whole process, but it was pretty long. But
 you can see the branch conditions that I've drawn here:
 
-![diagram](/images/posts/2020-05-09/two-step-payment.jpg)
+![diagram](/images/posts/order-update-with-two-step-payment/two-step-payment.jpg)
 
 ```txt
 P = Pending Authorization

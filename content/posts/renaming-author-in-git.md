@@ -11,7 +11,7 @@ stores author's information history.
 
 <!--more-->
 
-![image](/images/posts/2011-01-05/diff.png)
+![image](/images/posts/renaming-author-in-git/diff.png)
 
 So, in order to fix it, I ran this little script from Github in my master
 branch.

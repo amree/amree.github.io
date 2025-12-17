@@ -20,7 +20,7 @@ it.
 Start > All Programs > Qt SDK > Maintain Qt SDK
 ```
 
-![image](/images/posts/2011-07-11/qt.png)
+![image](/images/posts/how-to-enable-mysql-support-in-qt-sdk-for-windows/qt.png)
 
 Download MySQL and install it. In my case, I choose to install it at:
 
@@ -29,7 +29,7 @@ C:\Program Files (x86)\MySQL\MySQL Server 5.5.
 You don’t need to install everything if you want to compile the plugin. Make
 sure you will at least choose to install Client C API Library.
 
-![image](/images/posts/2011-07-11/mysql.png)
+![image](/images/posts/how-to-enable-mysql-support-in-qt-sdk-for-windows/mysql.png)
 
 Open:
 

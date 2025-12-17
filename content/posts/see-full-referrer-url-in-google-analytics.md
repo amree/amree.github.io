@@ -27,6 +27,6 @@ more).
 
 That's it. You can refer to the screenshot below if you're feeling lost:
 
-![image](/images/posts/2012-01-21/ga.png)
+![image](/images/posts/see-full-referrer-url-in-google-analytics/ga.png)
 
 Good luck!

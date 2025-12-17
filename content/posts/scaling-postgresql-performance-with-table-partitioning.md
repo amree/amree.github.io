@@ -217,19 +217,19 @@ When we are talking about the result, we should return back to why we are doing 
 
 The IOPS was reduced by 20% right after this exercise. Since this table was being used extensively across all of our applications, we can reduce the maximum IOPS thus allowing us to save our costs further. To be clear, we are running multiple replicas so the cost savings are multiplied by the number of replicas that we have.
 
-![IOPS](/images/posts/2025-06-13/iops.png)
+![IOPS](/images/posts/scaling-postgresql-performance-with-table-partitioning/iops.png)
 
 ### Response Time
 
 This was quite significant as we managed to reduce the p99 from 4.13s to 578ms. That is a about 86% reduction in terms of the response time. You can see how flat the chart is right after we made the switch.
 
-![Response Time](/images/posts/2025-06-13/response-time.png)
+![Response Time](/images/posts/scaling-postgresql-performance-with-table-partitioning/response-time.png)
 
 ### Replica Lag
 
 Right before we made the table switch, we had increased usage of the affected endpoints causing higher IOPS which in result caused us replica lags. But, it went away the moment we flipped to the partitioned table.
 
-![Replica Lag](/images/posts/2025-06-13/replica-lag.png)
+![Replica Lag](/images/posts/scaling-postgresql-performance-with-table-partitioning/replica-lag.png)
 
 ## What we would do differently
 

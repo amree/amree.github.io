@@ -39,7 +39,7 @@ before. It doesn’t require tools (you can create a script if you want to); you
 need some basic git commands and small notes. It’s hard to explain this without
 a visualization, so I’ve created one. You guys can see it in the attachment.
 
-![diagram](/images/posts/2022-11-18/01.png)
+![diagram](/images/posts/how-i-used-chained-branches-to-help-with-major-upgrade/01.png)
 
 
 1. Every PR must be based on the master (master <- pkg-upgrade-1 )
@@ -80,11 +80,11 @@ It may look simple, but ‘major-upgrade-1’ PR combines techniques from 1 to 3
 It’s a bit hard to wrap your mind when you read it for the first time, but you
 can look at the image for that. Hopefully, it will help.
 
-![diagram](/images/posts/2022-11-18/02.png)
+![diagram](/images/posts/how-i-used-chained-branches-to-help-with-major-upgrade/02.png)
 
 What kind of git command that I need to use?
 
-![diagram](/images/posts/2022-11-18/03.png)
+![diagram](/images/posts/how-i-used-chained-branches-to-help-with-major-upgrade/03.png)
 
 Is this the best way to do this? It helped me keep working without being
 blocked by pending PR or deployments. Remember, I don’t deploy immediately to
