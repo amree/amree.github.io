@@ -113,3 +113,54 @@ body.light-theme .token.important,
 body.light-theme .token.variable {
   color: #e36209;
 }
+
+/* Heading anchors - override theme's .hanchor */
+.hanchor {
+  margin-left: 8px;
+  visibility: visible;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.hanchor svg {
+  display: block;
+}
+
+.hanchor.copied {
+  opacity: 1;
+  color: #22863a;
+}
+
+/* Toast notification */
+.toast {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  background: var(--accent);
+  color: var(--background);
+  padding: 10px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  z-index: 9999;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+h1:hover .hanchor,
+h2:hover .hanchor,
+h3:hover .hanchor,
+h4:hover .hanchor,
+h5:hover .hanchor,
+h6:hover .hanchor,
+.hanchor:focus {
+  opacity: 1;
+}
