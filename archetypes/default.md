@@ -1,6 +1,8 @@
 ---
 title: "{{ replace .Name "-" " " | title }}"
 date: {{ .Date }}
-draft: true
+tags: []
+typora-copy-images-to: ../../static/images/posts/${filename}
+typora-root-url: ../../static
 ---
 
