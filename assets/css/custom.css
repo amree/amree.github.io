@@ -207,3 +207,38 @@ details.expandable > *:not(summary) {
   padding: 16px 20px;
   margin: 0;
 }
+
+/* Tooltip using data-tip attribute (abbr[title] converted via JS) */
+abbr[title], [data-tip] {
+  position: relative;
+  border-bottom: 1px dotted var(--accent);
+  text-decoration: none;
+  cursor: help;
+  color: var(--accent);
+}
+
+[data-tip]::after {
+  content: attr(data-tip);
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--foreground);
+  color: var(--background);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  width: max-content;
+  max-width: 280px;
+  z-index: 100;
+  margin-bottom: 8px;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  white-space: normal;
+}
+
+[data-tip]:hover::after {
+  visibility: visible;
+  opacity: 1;
+}
