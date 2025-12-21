@@ -98,3 +98,55 @@ function showToast(message) {
     });
   });
 })();
+
+// Sidebar
+(function() {
+  var overlay = null;
+
+  function createOverlay() {
+    if (overlay) return overlay;
+    overlay = document.createElement('div');
+    overlay.className = 'sidebar-overlay';
+    overlay.innerHTML = '<div class="sidebar-panel"><button class="sidebar-close">&times;</button><h3 class="sidebar-title"></h3><div class="sidebar-content"></div></div>';
+    document.body.appendChild(overlay);
+
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) closeSidebar();
+    });
+    overlay.querySelector('.sidebar-close').addEventListener('click', closeSidebar);
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && overlay.classList.contains('open')) {
+        closeSidebar();
+      }
+    });
+
+    return overlay;
+  }
+
+  function openSidebar(title, content) {
+    var o = createOverlay();
+    o.querySelector('.sidebar-title').textContent = title;
+    o.querySelector('.sidebar-content').innerHTML = content;
+    o.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeSidebar() {
+    if (overlay) {
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  }
+
+  // Initialize triggers
+  document.querySelectorAll('.sidebar-trigger').forEach(function(trigger) {
+    trigger.addEventListener('click', function() {
+      var target = document.getElementById(trigger.dataset.sidebar);
+      if (target) {
+        var title = target.dataset.title || 'Info';
+        openSidebar(title, target.innerHTML);
+      }
+    });
+  });
+})();

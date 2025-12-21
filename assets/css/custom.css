@@ -242,3 +242,103 @@ abbr[title], [data-tip] {
   visibility: visible;
   opacity: 1;
 }
+
+/* Sidebar */
+.sidebar-trigger {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  padding: 1px 4px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.sidebar-trigger:hover {
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.sidebar-data {
+  display: none;
+}
+
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 10000;
+}
+
+.sidebar-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.sidebar-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 33vw;
+  max-width: 90vw;
+  height: 100%;
+  background: var(--background);
+  border-left: 2px solid var(--accent);
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  z-index: 10001;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+@media (max-width: 1024px) {
+  .sidebar-panel {
+    width: 90vw;
+  }
+}
+
+.sidebar-overlay.open .sidebar-panel {
+  transform: translateX(0);
+}
+
+.sidebar-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: var(--foreground);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px 10px;
+}
+
+.sidebar-close:hover {
+  color: var(--accent);
+}
+
+.sidebar-title {
+  margin: 0 0 20px 0;
+  padding-right: 40px;
+  color: var(--accent);
+  font-size: 1.2em;
+}
+
+.sidebar-content {
+  line-height: 1.7;
+}
+
+.sidebar-content p {
+  margin: 0 0 1em 0;
+}
+
+.sidebar-content p:last-child {
+  margin-bottom: 0;
+}
+
+.sidebar-content .hanchor {
+  display: none;
+}
