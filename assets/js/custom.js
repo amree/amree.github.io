@@ -127,7 +127,17 @@ function showToast(message) {
   function openSidebar(title, content) {
     var o = createOverlay();
     o.querySelector('.sidebar-title').textContent = title;
-    o.querySelector('.sidebar-content').innerHTML = content;
+    var sidebarContent = o.querySelector('.sidebar-content');
+    sidebarContent.innerHTML = content;
+    // Re-render KaTeX if available
+    if (typeof renderMathInElement === 'function') {
+      renderMathInElement(sidebarContent, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ]
+      });
+    }
     o.classList.add('open');
     document.body.style.overflow = 'hidden';
   }

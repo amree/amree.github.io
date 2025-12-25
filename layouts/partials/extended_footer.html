@@ -14,3 +14,16 @@
   {{ $js := $custom | js.Build | minify | fingerprint }}
   <script src="{{ $js.Permalink }}"></script>
 {{ end }}
+
+{{- if .Params.math }}
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+<script>
+renderMathInElement(document.body, {
+  delimiters: [
+    {left: "$$", right: "$$", display: true},
+    {left: "$", right: "$", display: false}
+  ]
+});
+</script>
+{{- end }}

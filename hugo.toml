@@ -37,6 +37,12 @@ theme = "terminal"
   [markup.goldmark]
     [markup.goldmark.renderer]
       unsafe = true
+    [markup.goldmark.extensions]
+      [markup.goldmark.extensions.passthrough]
+        enable = true
+        [markup.goldmark.extensions.passthrough.delimiters]
+          block = [['$$', '$$']]
+          inline = [['$', '$']]
 
 [permalinks]
   posts = "/:year/:month/:day/:title/"

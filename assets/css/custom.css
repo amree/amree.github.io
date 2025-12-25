@@ -47,6 +47,27 @@ body.light-theme {
   transition: width 0.1s ease-out;
 }
 
+/* Math block styling */
+.katex-display {
+  background: color-mix(in srgb, var(--accent) 8%, var(--background));
+  border-left: 3px solid var(--accent);
+  border-radius: 0 4px 4px 0;
+  padding: 1em 1.5em;
+  margin: 1.5em 0;
+  overflow-x: auto;
+}
+
+.katex-display > .katex {
+  text-align: left;
+}
+
+/* Inline math subtle highlight */
+.katex:not(.katex-display .katex) {
+  padding: 0.1em 0.3em;
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+  border-radius: 3px;
+}
+
 /* Light theme Prism overrides */
 body.light-theme code[class*=language-],
 body.light-theme pre[class*=language-] {
