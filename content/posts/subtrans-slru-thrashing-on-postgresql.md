@@ -3,6 +3,7 @@ title: "Subtrans SLRU Thrashing on PostgreSQL"
 date: 2025-12-18T07:36:59+08:00
 tags: [postgresql]
 toc: true
+math: true
 typora-copy-images-to: ../../static/images/posts/${filename}
 typora-root-url: ../../static
 ---
@@ -125,19 +126,19 @@ This requires knowing the status of the transaction that created the tuple. Post
 
 ```
 Tuple xmin = 1001
-      │
+      |
       ▼
 Step 1: Is 1001 in ProcArray?
-      │
-      ├── Yes → still running → not visible (stop here)
-      │
-      └── No → transaction finished, go to step 2
-               │
+      |
+      +-- Yes → still running → not visible (stop here)
+      |
+      +-- No → transaction finished, go to step 2
+               |
                ▼
          Step 2: Check CLOG[1001]
-               │
-               ├── COMMITTED → visible
-               └── ABORTED → not visible
+               |
+               +-- COMMITTED → visible
+               +-- ABORTED → not visible
 ```
 
 `ProcArray` is the quick check for "is it running right now"?
@@ -156,11 +157,11 @@ Instead, PostgreSQL takes a snpashot once (per transaction or statement, depened
 
 ```
 Snapshot taken at statement start:
-┌─────────────────────────────────┐
-│ xmin: 1000  (oldest running)    │
-│ xmax: 1005  (next to assign)    │
-│ xip_list: [1000, 1001, 1003]    │
-└─────────────────────────────────┘
++---------------------------------+
+| xmin: 1000  (oldest running)    |
+| xmax: 1005  (next to assign)    |
+| xip_list: [1000, 1001, 1003]    |
++---------------------------------+
 
 "XIDs 1000, 1001, and 1003 are still running"
 "XIDs 1002 and 1004 finished (need CLOG check)"
@@ -171,12 +172,12 @@ For each tuple, PostgreSQL compares against this local snapshot:
 
 ```
 Tuple xmin = 1002
-      │
+      |
       ▼
 Is 1002 in my xip_list? → No
 Is 1002 >= snapshot xmax? → No
 Is 1002 < snapshot xmin? → No
-      │
+      |
       ▼
 Transaction 1002 finished before my snapshot.
 Check CLOG for final status.
@@ -281,11 +282,11 @@ CLOG page created (all zeros):
 
 ```
 XID 1000 commits:
-┌─────────────────────────────────────┐
-│ 1000: 01 (COMMITTED) ← written now  │
-│ 1001: 00 (IN_PROGRESS) ← still zero │
-│ 1002: 00 (IN_PROGRESS) ← still zero │
-└─────────────────────────────────────┘
++-------------------------------------+
+| 1000: 01 (COMMITTED) ← written now  |
+| 1001: 00 (IN_PROGRESS) ← still zero |
+| 1002: 00 (IN_PROGRESS) ← still zero |
++-------------------------------------+
 ```
 
 Note: Read-only transactions never get an XID and never touch CLOG.
@@ -323,16 +324,16 @@ CLOG lives on disk, but PostgerSQL caches pages in memory using an SLRU cache.
 
 ```
 Request: "What's the status of XID 50000?"
-      │
+      |
       ▼
 Calculate page: 50000 ÷ 32,768 = page 1
-      │
+      |
       ▼
 Is page 1 in cache?
-      │
-      ├── Yes (cache hit) → read from memory
-      │
-      └── No (cache miss) → evict least recently used page
+      |
+      +-- Yes (cache hit) → read from memory
+      |
+      +-- No (cache miss) → evict least recently used page
                             load from disk into cache
                             read from memory
 ```
@@ -346,19 +347,112 @@ All XIDs:         ~131,000 pages needed (4.3B ÷ 32,768)
 Cache holds:      128 pages
 ```
 
-adsf
+But it doesn't need to. In practise:
 
+```
+Active transactions:  Maybe 1,000 concurrent
+Recent XIDs to check: Maybe 100,000
 
+100,000 XIDs / 32,768 per page = ~3 pages
 
+3 pages < 128 buffers (fit easily)
+```
 
+Old XIDs are either:
+* Frozen (hint bit set, no CLOG lookup)
+* In the gap between cache and freeze threshold (rare, loaded from disk)
 
+The cache is a window into the "working set" — the XIDs you're actively checking:
 
+```
+All XIDs:     [0]--------------------------------[4.3B]
+               |                                    |
+               +---- mostly frozen or irrelevant ---+
+               
+Working set:                    [current - 100k]---[current]
+                                        |              |
+                                        +-- active ----+
+                                        
+Cache easily holds the working set.
+```
+
+#### Why CLOG cache rarely <span class="sidebar-trigger" data-sidebar="sidebar-thrashes-definition">thrashes</span>
+
+The combination of:
+
+* Small storage (2 bits per XID)
+* Large buffer count (128)
+* Dense packing (every XID has a slot)
+
+Means CLOG cache almost always has what you need.
+
+### When subtransactions enter the picture
+
+```
+Tuple xmin = 1002 (subtransaction XID)
+      │
+      ▼
+Step 1: CLOG[1002] → SUB_COMMITTED
+        "It's a subtransaction, need parent"
+      │
+      ▼
+Step 2: Subtrans[1002] → 1000
+        "Parent is XID 1000"
+      │
+      ▼
+Step 3: CLOG[1000] → COMMITTED
+        "Parent committed"
+      │
+      ▼
+Visible ✓
+```
+
+### What is Subtrans?
+
+Subtrans map subtransaction XIDs to their parent XIDs:
+
+```
+Subtrans[1002] = 1000  ← "1002's parent is 1000"
+Subtrans[1003] = 1000  ← "1003's parent is 1000"
+```
+
+#### Why Subtrans entries are 32 bits
+
+Subtrans stores parent XIDs. XIDs are 32 bits, s, each entry must be 32 bits:
+
+```
+Subtrans entry = parent XID = 32 bits
+```
+
+No way to compress it. You need 32 bits to stoer a 32-bit number.
+
+#### Subtrans binary layout
+
+32 bits (4 bytes) per XID:
+
+```
+XID 1000: [00000000 00000000 00000000 00000000] ← not a subtx
+XID 1001: [00000000 00000000 00000000 00000000] ← not a subtx
+XID 1002: [00000000 00000000 00000011 11101000] ← parent is 1000
+```
+
+8KB page = 8,192 bytes / 4 bytes per XID = 2,048 XIDs per page
+
+#### Why Subtrans SLRU is the problem
+
+| Property            | CLOG SLRU  | Subtrans SLRU |
+| ------------------- | ---------- | ------------- |
+| Buffers             | 128        | 32            |
+| Storage per XID     | 2 bits     | 32 bits       |
+| XIDs per page       | 32,768     | 2,048         |
+| Total XIDs in cache | ~4 million | ~64,000       |
+| Data density        | Dense      | Sparse        |
 
 ## XID Horizon
 
 ## Subtransactions
 
-## Subtrans SLRU Thrashing
+## Subtrans SLRU <span class="sidebar-trigger" data-sidebar="sidebar-thrashes-definition">thrashing</span>
 
 ## References
 
@@ -459,4 +553,23 @@ So the contrast is:
 |---|---|
 | Total XID space | ~4.3 billion (2³²) |
 | SLRU cache window | ~4 million (2²²) |
+{{</sidebar>}}
+
+{{<sidebar id="thrashes-definition" title="Thrashes Definition">}}
+Thrashing is a computer science term describing a situation where a system spends more time managing resources than doing useful work.
+The classic example is memory/page thrashing:
+Working set > Available memory
+
+```
+┌─────────────────────────────┐
+│  Load page A (evict B)      │
+│  Need B → Load B (evict A)  │
+│  Need A → Load A (evict B)  │
+│  Need B → Load B (evict A)  │
+│  ...endless swapping...     │
+└─────────────────────────────┘
+```
+
+CPU spends all its time swapping pages,
+not executing actual work.
 {{</sidebar>}}
